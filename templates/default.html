@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="{{language}}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+  <!-- Primary Meta Tags -->
+  <title>{{title}}</title>
+  <meta name="title" content="{{title}}">
+  <meta name="description" content="{{description}}">
+  <meta name="keywords" content="{{keywords}}">
+  <meta name="author" content="{{author}}">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="{{language}}">
+  <meta name="revisit-after" content="7 days">
+  
+  <!-- Canonical URL -->
+  {{#if canonical}}
+  <link rel="canonical" href="{{canonical}}">
+  {{/if}}
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="{{canonical}}">
+  <meta property="og:title" content="{{title}}">
+  <meta property="og:description" content="{{description}}">
+  <meta property="og:image" content="{{coverImage}}">
+  <meta property="og:site_name" content="{{title}}">
+  <meta property="article:published_time" content="{{date}}">
+  <meta property="article:author" content="{{author}}">
+  <meta property="article:tag" content="{{tags}}">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="{{canonical}}">
+  <meta name="twitter:title" content="{{title}}">
+  <meta name="twitter:description" content="{{description}}">
+  <meta name="twitter:image" content="{{coverImage}}">
+  
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {{structuredData}}
+  </script>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  
+  <!-- Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- RSS Feed -->
+  <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/feed.xml">
+  
+  <!-- Styles -->
+  <style>
+  {{styles}}
+  </style>
+</head>
+<body>
+  <article>
+    {{content}}
+  </article>
+  
+  <!-- Analytics placeholder -->
+  <!-- Add your analytics script here -->
+</body>
+</html>

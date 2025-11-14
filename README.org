@@ -1,0 +1,52 @@
+
+* FILE STRUCTURE
+#+begin_src txt
+org2html/
+├── src/
+│   ├── cli/
+│   │   ├── index.ts           # CLI entry point
+│   │   ├── commands/
+│   │   │   ├── build.ts
+│   │   │   ├── watch.ts
+│   │   │   └── test.ts
+│   │   └── utils.ts
+│   ├── parser/
+│   │   ├── lexer.ts           # Tokenization
+│   │   ├── parser.ts          # AST generation
+│   │   ├── ast.ts             # AST node types
+│   │   └── metadata.ts        # Metadata extraction
+│   ├── renderer/
+│   │   ├── html-renderer.ts   # AST to HTML
+│   │   ├── template.ts        # Template processing
+│   │   └── sanitizer.ts       # XSS protection
+│   ├── plugins/
+│   │   ├── plugin-api.ts      # Plugin system
+│   │   ├── code-highlight.ts
+│   │   ├── shortcode.ts
+│   │   ├── toc.ts
+│   │   └── asset-fetcher.ts
+│   ├── assets/
+│   │   └── asset-handler.ts   # Image/video metadata
+│   ├── index.ts               # Main library API
+│   └── types.ts               # Shared types
+├── templates/
+│   └── base.html              # Default HTML template
+├── client/
+│   └── hydrate.ts             # Vue 3 hydration script
+├── tests/
+│   ├── fixtures/
+│   └── *.test.ts
+├── package.json
+├── tsconfig.json
+├── README.md
+└── .gitignore
+#+end_src
+
+* org2html
+
+Production-ready Org-mode to HTML parser with Vue 3 component support.
+
+** Installation
+#+begin_src bash
+npm install -g org2html
+#+end_src
