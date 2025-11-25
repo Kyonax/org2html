@@ -1,12 +1,15 @@
-This package transforms Org files into fully-rendered HTML templates or web-framework components.
-/(Currently supports Vue 3 components and static HTML output.)/
+This package transforms Org files into fully-rendered HTML templates or web-framework components. *(Currently supports Vue 3 components and static HTML output.)*
 
 The project is still in active development, evolving toward a framework-agnostic engine capable of generating components for any modern frontend stack. The roadmap includes first-class SEO integration and enhanced pipeline controls, a modular toolchain for developers who build fast and think faster.
 
-A lightweight compiler for the ones who use org for blogs, websites, and more. The interface is simple, use ~org2html --help~. More formats, more targets, more power coming soon.
+A lightweight compiler for the ones who use Org for blogs, websites, and more. The interface is simple — run `org2html --help`. More formats, more targets, more power coming soon.
 
-* FILE STRUCTURE
-#+begin_src txt
+> [!IMPORTANT]
+> This package is not stable yet, is still under develop, however
+> if you are interested on support it and contribute you can do it.
+
+# FILE STRUCTURE
+```txt
 org2html/
 ├── src/
 │   ├── cli/
@@ -46,18 +49,9 @@ org2html/
 ├── tsconfig.json
 ├── README.md
 └── .gitignore
-#+end_src
+```
 
-* org2html
-
-Production-ready Org-mode to HTML parser with Vue 3 component support.
-
-** Installation
-#+begin_src bash
+## Installation
+```bash
 npm install -g org2html
-#+end_src
-
-> [!IMPORTANT]
-> This package is not stable yet, is still under develop, however
-> if you are interested on support it and contribute you can do it.
-> [https://github.com/kyonax/org2html](Github Repo org2html)
+```
