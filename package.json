@@ -1,6 +1,6 @@
 {
   "name": "@kyonax/org2html",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Production-ready Org-mode to HTML parser with Vue 3 component support",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
