@@ -4,12 +4,12 @@
 
 These versions of **@kyonax/org2html** currently receive security patches and updates.
 
-| Version | Supported |
-|--------|-----------|
-| 1.x.x  | ✔️ Active (current major) |
-| 0.x.x  | ❌ Unsupported |
+| Version | Supported                |
+|---------|--------------------------|
+| 1.x.x   | ✔️ Active (current major) |
+| 0.x.x   | ❌ Unsupported           |
 
-**Note:**  
+**Note:**
 Using semantic versioning means only the latest minor/patch versions within an active major release are guaranteed to receive fixes.
 
 ---
@@ -46,12 +46,12 @@ To help us investigate efficiently, please include:
 
 We aim to handle security reports promptly:
 
-| Stage | Expected Time |
-|-------|---------------|
-| Acknowledgement | **48–72 hours** |
-| Initial investigation | **3–7 days** |
-| Fix development | **Varies by severity** |
-| Release of security advisory | With the patch |
+| Stage                        | Expected Time          |
+|------------------------------|------------------------|
+| Acknowledgement              | **48–72 hours**        |
+| Initial investigation        | **3–7 days**           |
+| Fix development              | **Varies by severity** |
+| Release of security advisory | With the patch         |
 
 You will receive updates throughout the entire process.
 
