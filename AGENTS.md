@@ -4,6 +4,7 @@
 - No `any` types - use proper typing
 - Use `const` over `let` when possible
 - Prefer interfaces over type aliases for objects
+- Not use Any Code Documentation
 
 ## React
 - Use functional components with hooks
