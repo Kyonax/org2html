@@ -1,0 +1,25 @@
+name: CI org2html Checks
+
+on: [push, pull_request]
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20.19.5"
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Check Tests
+              run: npm run test
+
+            - name: Check Lint
+              run: npm run lint
