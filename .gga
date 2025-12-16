@@ -9,7 +9,7 @@
 #   PROVIDER="codex"
 #   PROVIDER="ollama:llama3.2"
 #   PROVIDER="ollama:codellama"
-PROVIDER="copilot"
+PROVIDER="github:gpt-4.1"
 
 # File patterns to include in review (comma-separated)
 # Default: * (all files)

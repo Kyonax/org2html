@@ -16,6 +16,7 @@ export async function org2html(
   const result = await renderToHtml(ast, options);
 
   // Always apply template (default or custom)
+  // Not Comments
   result.html = await applyTemplate(
     result.html,
     result.metadata,
