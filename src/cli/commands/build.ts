@@ -1,4 +1,18 @@
-// src/cli/commands/build.ts
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/cli/commands/build.ts — Build command.
+ *
+ * fast-glob over the input pattern, render each .org file to
+ * HTML + Vue SFC + metadata.json + og-metadata.json +
+ * structured-data.json under <output>/<folder>/<slug>/, then
+ * emit sitemap.json, feed.json, and a routes.js manifest of
+ * lazy-loaded Vue route components.
+ */
+
 import { readFile, writeFile, mkdir, copyFile } from "fs/promises"
 import { join, dirname } from "path"
 import { fileURLToPath } from "url"

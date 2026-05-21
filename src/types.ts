@@ -1,4 +1,18 @@
-// src/types.ts
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/types.ts — Public type system.
+ *
+ * OrgMetadata, OrgOptions, RenderOptions, RenderResult,
+ * AssetMetadata, AstNode, OrgAst, OrgPlugin, BuildConfig, and
+ * the NodeType enumeration that covers all 28 supported nodes.
+ * Plugin extension surface: OrgMetadata has an `[key: string]:
+ * any` overflow so plugins can attach fields without widening
+ * the interface.
+ */
 
 export interface OrgMetadata {
   title?: string

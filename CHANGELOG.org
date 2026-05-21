@@ -1,0 +1,128 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-3.0-only — see LICENSE.
+
+#  ________ ______  __   ____  _________
+# /_  __/ // / __/ / /  / __ \/ ___/ __/
+#  / / / _  / _/  / /__/ /_/ / (_ /\ \
+# /_/ /_//_/___/ /____/\____/\___/___/
+#
+# CHANGELOG.org — Release history + TODO backlog
+# 2026-05-21
+#
+# Entry shape: * [vX.Y.Z] — YYYY-MM-DD :: Title, then *Summary:*
+# hook, then Added / Changed / Removed / Decided sub-groups.
+#
+# Guidelines:
+#   No emojis, no arrows, no private-file references
+#   Bold the *Summary:* hook, then bare facts
+
+#+TITLE: @kyonax/org2html Changelog
+#+AUTHOR: [[https://orcid.org/0009-0006-4459-5538][Cristian D. Moreno - Kyonax]]
+#+EMAIL: kyonax.corp@gmail.com
+#+DATE: May 21, 2026
+#+FILETAGS: :ORG_2_HTML:CHANGELOG:
+#+LAST_UPDATE: May 21, 2026
+#+OPTIONS: toc:nil num:nil H:4
+
+* [TODO]
+
+** Hygiene + correctness (Phase 1)
+- Comment sweep across =src/**/*.ts= per AGENTS.md
+- CLI version drift: =program.version("1.0.0")= -> read from =package.json= at build time
+- README ↔ tree reconciliation (annotate aspirational entries)
+- Add =@media (prefers-reduced-motion: reduce)= rule to =templates/styles.css=
+
+** Plugin API (Phase 2)
+- Author =src/plugins/plugin-api.ts= (registry + loader)
+- Refactor =code-highlight= and =toc= to register through the new API
+- Extend =RenderOptions= with =plugins?: OrgPlugin[]=
+- Unit tests for registry, ordering, async =postProcessor=
+
+** Missing plugins (Phase 3)
+- =src/plugins/shortcode.ts= — lift shortcode logic from =vue-generator.ts=
+- =src/plugins/asset-fetcher.ts= — wire =fetchRemoteAssets= contract
+- =src/assets/asset-handler.ts= — image / video metadata writer
+
+** Vue hydration (Phase 4)
+- =client/hydrate.ts= — runtime Vue 3 hydration for emitted SFCs
+
+** Test suite (Phase 5)
+- =tests/parser.test.ts=, =tests/renderer.test.ts=, =tests/sanitizer.test.ts=,
+  =tests/template.test.ts=, =tests/cli.test.ts=, =tests/vue-generator.test.ts=
+- Fixtures under =tests/fixtures/=
+
+** kyo-blog kickoff (Phase 6)
+- Decide repo layout (sibling vs monorepo)
+- Scaffold with =vite-ssg= + =vue-i18n= mirroring kyo-web-online
+- Install =@kyonax/org2html=, wire =org2html watch content/= with custom =--template-dir=
+- Port kyo-web-online OKLCH palette + HUD utilities
+
+* [Unreleased]
+
+*Summary:* Convention alignment with reckit / kyo-web-online. Tier 1 root
+files now carry the GPL-3.0-only header + figlet banner format; the full
+CI gate suite (eslint / precheck / vitest / build / security-scan /
+protected-files / pre-check-label) replaces the previous 26-line stub; a
+=scripts/= directory lands with =_lib.mjs=, =precheck.mjs=, and
+=check-license-headers.mjs=; governance files (=CODEOWNERS=,
+=SECURITY.org=, =PULL_REQUEST_TEMPLATE.md=) join =.github/=;
+=.editorconfig=, =.gitattributes=, =NOTICE=, =LICENSING.org=,
+=CONTRIBUTING.org=, =README.org= establish the cross-project conventions
+shared with sibling Kyonax repos. The =.gga= external code-review hook
+was retired in favor of the CI-gated license-header check.
+
+** Added
+- =LICENSING.org= — single-license guide and per-extension header conventions
+- =NOTICE= — attribution notice
+- =CONTRIBUTING.org= — contributor onboarding
+- =CHANGELOG.org= — this file
+- =.editorconfig= — editor-agnostic formatting baseline
+- =.gitattributes= — per-path encoding + EOL discipline
+- =.github/CODEOWNERS= — auto review-request routing
+- =.github/SECURITY.org= — banned patterns, enforcement, reporting
+- =.github/PULL_REQUEST_TEMPLATE.md= — default PR body
+- =scripts/_lib.mjs= — shared helpers
+- =scripts/precheck.mjs= — composite gate
+- =scripts/check-license-headers.mjs= — license-header validator
+- GPL-3.0-only preamble + filename block on every =src/**/*.ts= source
+  file (17 files). Existing JSDoc preserved. Placeholder garbage
+  (=// Comments and More Comments= in =src/index.ts=) removed.
+
+** Changed
+- =.github/workflows/ci.yml= — replaced 26-line stub with the 7-job
+  Kyonax gate suite (eslint + precheck + vitest + build + security-scan
+  + protected-files + pre-check-label)
+- =.github/workflows/publish.yml= — rewritten with figlet banner, proper
+  job-needs ordering, tolerant test step (passes on "no test files yet")
+- =README.md= -> =README.org= (Kyonax convention) — second pass adopts
+  the cross-project ASCII-art header pattern (org2html source-of-truth
+  art lives at =kyo-web-online/src/assets/ascii/org2html.txt=) plus the
+  reckit-style acronym tagline and shields.io badge row
+- =.gitignore= — replaced custom ASCII-banner stub with the Kyonax
+  Tier 1 header format; reorganized into nine concern sections
+  (Node/build/cache, Logs, Test/coverage/reports, Environment/secrets,
+  Editor swap files, OS junk, Temp/backup, Local-only contributor files,
+  App-default test folders). The =Editors / IDEs / AI agents= section
+  from the kyo-web-online template was intentionally NOT carried over.
+- =AGENTS.md= — refactored from one-liner rule into an explicit
+  three-exception clause (license preamble + filename block + JSDoc on
+  exported helpers documenting non-obvious WHY)
+- =.github/SECURITY.org=, =CONTRIBUTING.org=, =.github/workflows/ci.yml=
+  — scrubbed =.gga= references
+
+** Removed
+- =.gga= — external code-review tool config retired. AGENTS.md is now
+  enforced via =scripts/check-license-headers.mjs= in the CI gate
+  (license-preamble presence) plus the standard ESLint flat config; the
+  "no comments in TypeScript" rule is enforced via code review (CODEOWNERS).
+- =README.md= — superseded by =README.org=.
+
+* [v1.0.2] — 2026-03-31 :: Package metadata polish
+
+*Summary:* Pre-convention-alignment baseline. CLI shape + parser /
+renderer pipeline functional. Tagged on the npm registry.
+
+** Notes
+This entry summarizes the state at the start of the 2026-05-21
+convention alignment work; pre-1.0.2 commits were not back-filled into
+this changelog. =git log= remains authoritative for that period.

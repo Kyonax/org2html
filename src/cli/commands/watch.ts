@@ -1,3 +1,17 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/cli/commands/watch.ts — Watch command.
+ *
+ * Chokidar-driven dev loop: runs an initial build, then
+ * rebuilds the whole tree on every change / add event. Coarse
+ * by design — incremental rebuild lands when the plugin API
+ * lets us cache parse + render outputs by file hash.
+ */
+
 import chokidar from 'chokidar'
 import chalk from 'chalk'
 import { buildCommand } from './build.js'

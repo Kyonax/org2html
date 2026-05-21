@@ -1,0 +1,17 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-3.0-only — see LICENSE.
+
+#  ________ ______  ___________   __
+# /_  __/ // / __/ / __/ __/ _ | / /
+#  / / / _  / _/  _\ \/ _// __ |/ /__
+# /_/ /_//_/___/ /___/___/_/ |_/____/
+#
+# CODEOWNERS — Auto review-request routing
+# 2026-05-21
+#
+# GitHub auto-requests review from @Kyonax on every PR.
+#
+# Guidelines:
+#   Never add an extension — GitHub stops detecting the file
+
+* @Kyonax

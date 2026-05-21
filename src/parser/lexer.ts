@@ -1,3 +1,17 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/parser/lexer.ts — Org-mode tokenizer.
+ *
+ * Line-based scan that emits a Token stream consumed by
+ * parser.ts. Token types cover headings, lists, code blocks,
+ * generic blocks, tables, drawers, shortcodes, paragraphs,
+ * blanks, and raw text.
+ */
+
 export type TokenType =
   | 'HEADING'
   | 'LIST_ITEM'

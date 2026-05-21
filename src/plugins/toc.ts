@@ -1,3 +1,17 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/plugins/toc.ts — TOC builder.
+ *
+ * Walks the heading list collected by html-renderer.ts, opens
+ * and closes nested <ul> as the heading level rises and falls,
+ * and emits anchor links keyed by the heading id assigned
+ * during the body pass. maxDepth defaults to 3.
+ */
+
 export function generateToc(
   headings: Array<{ level: number; text: string; id: string }>,
   maxDepth: number = 3

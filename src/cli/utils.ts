@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/cli/utils.ts — Shared CLI helpers.
+ *
+ * Slug / path manipulation used by the build pipeline. Slug
+ * convention: `<YYYY-MM-DD>-<slugified-title>` (date sourced
+ * from #+DATE metadata, falls back to wall-clock when absent).
+ */
+
 import type { OrgMetadata } from "../types.js"
 import slugify from "slugify"
 import { relative, dirname, sep } from "path"

@@ -1,4 +1,18 @@
-// src/renderer/html-renderer.ts
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/renderer/html-renderer.ts — AST → HTML walker.
+ *
+ * Walks ast.children, dispatches per NodeType, and threads a
+ * mutable context (footnotes, heading collector, options) so
+ * the TOC and footnote rendering can finalize after the body
+ * pass. Code highlighting (Shiki) and sanitization (DOMPurify)
+ * are applied when their flags allow.
+ */
+
 import type { AstNode, OrgAst, RenderOptions, RenderResult } from '../types.js'
 import { sanitizeHtml } from './sanitizer.js'
 import { highlightCode } from '../plugins/code-highlight.js'

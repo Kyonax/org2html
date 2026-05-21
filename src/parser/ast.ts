@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/parser/ast.ts — AST node factories.
+ *
+ * createNode / createTextNode / createDocument. Factories
+ * spread `properties` and `children` conditionally so JSON
+ * serialization of leaf nodes stays compact.
+ */
+
 import type { AstNode, NodeType, OrgMetadata } from '../types.js'
 
 export function createNode(

@@ -1,25 +1,323 @@
-name: CI org2html Checks
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-3.0-only — see LICENSE.
 
-on: [push, pull_request]
+#  ________ ______  _      _____ _____________ ____________ _      _________
+# /_  __/ // / __/ | | /| / / _ /_  __/ ___/ // /_  __/ __ \ | /| / / __/ _ \
+#  / / / _  / _/   | |/ |/ / __ |/ / / /__/ _  / / / / /_/ / |/ |/ / _// , _/
+# /_/ /_//_/___/   |__/|__/_/ |_/_/  \___/_//_/ /_/  \____/|__/|__/___/_/|_|
+#
+# ci.yml — CI gate suite
+# 2026-05-21
+#
+# Runs on every PR / push to master. Seven jobs: eslint, precheck,
+# vitest, build, security-scan, protected-files, pre-check-label.
+# The aggregator toggles the `Pre-Check Failed` label.
+#
+# Guidelines:
+#   New jobs MUST be added to pre-check-label needs list
+#   Security Scan excludes eslint.config.mts (rule-strings match)
+#   Protected Files is advisory only — never blocks merge
+
+name: CI
+
+on:
+  pull_request:
+    branches: [master, main]
+  push:
+    branches: [master, main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
 
 jobs:
-    publish:
-        runs-on: ubuntu-latest
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+  precheck:
+    name: Precheck (composite gate)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: node scripts/precheck.mjs
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: "20.19.5"
+  tests:
+    name: Vitest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: Run tests (skip when no test files yet)
+        run: |
+          if npm test 2>&1 | tee /tmp/vitest.log; then
+            echo "Vitest passed."
+          else
+            if grep -qi "no test files found" /tmp/vitest.log; then
+              echo "::warning::No test files found yet — passing the job. Add tests under tests/."
+              exit 0
+            fi
+            echo "::error::Vitest reported failures."
+            exit 1
+          fi
 
-            - name: Install dependencies
-              run: npm ci
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ github.sha }}
+          path: dist/
+          retention-days: 7
 
-            - name: Check Tests
-              run: npm run test
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan source for dangerous patterns
+        run: |
+          EXIT_CODE=0
 
-            - name: Check Lint
-              run: npm run lint
+          # $1 = grep output (file:line:content lines)
+          # $2 = category label for the annotation message
+          annotate_hits() {
+            local hits="$1"
+            local label="$2"
+            while IFS= read -r hit; do
+              [ -z "$hit" ] && continue
+              local file="${hit%%:*}"
+              local rest="${hit#*:}"
+              local line="${rest%%:*}"
+              local content="${rest#*:}"
+              echo "[$label] $file:$line :: $content"
+              echo "::error file=${file},line=${line}::${label} — ${content}"
+            done <<< "$hits"
+          }
+
+          echo "=== Scanning for dangerous function calls ==="
+          # check-*.mjs scripts and eslint.config.mts contain the banned
+          # patterns as literal strings — those ARE the rules that forbid
+          # them everywhere else. Same exemption as kyo-web-online.
+          HITS=$(grep -rn \
+               --include='*.ts' --include='*.tsx' \
+               --include='*.js' --include='*.mjs' \
+               --exclude-dir='node_modules' --exclude-dir='dist' --exclude-dir='.cache' \
+               --exclude='check-*.mjs' \
+               --exclude='eslint.config.mts' \
+               -E 'eval\(|[^.a-zA-Z_]Function\(|\.innerHTML\s*=|document\.write\(' . || true)
+          if [ -n "$HITS" ]; then
+            annotate_hits "$HITS" "dangerous-call"
+            echo "::error::Dangerous function calls detected (eval, Function, innerHTML, document.write). See annotations above."
+            EXIT_CODE=1
+          fi
+
+          echo ""
+          echo "=== Scanning for setTimeout/setInterval with string arguments ==="
+          HITS=$(grep -rn \
+               --include='*.ts' --include='*.tsx' \
+               --include='*.js' --include='*.mjs' \
+               --exclude-dir='node_modules' --exclude-dir='dist' --exclude-dir='.cache' \
+               -E 'setTimeout\(\s*["\x27`]|setInterval\(\s*["\x27`]' . || true)
+          if [ -n "$HITS" ]; then
+            annotate_hits "$HITS" "implicit-eval"
+            echo "::error::setTimeout/setInterval called with string argument — use a function reference instead"
+            EXIT_CODE=1
+          fi
+
+          echo ""
+          echo "=== Scanning for hardcoded tokens/secrets ==="
+          HITS=$(grep -rn \
+               --include='*.ts' --include='*.tsx' \
+               --include='*.js' --include='*.mjs' \
+               --exclude-dir='node_modules' --exclude-dir='dist' --exclude-dir='.cache' \
+               -iE '(token|secret|api_key|password|apikey|api_secret)\s*[=:]\s*["\x27`]' . || true)
+          if [ -n "$HITS" ]; then
+            annotate_hits "$HITS" "possible-secret"
+            echo "::error::Possible hardcoded secret detected"
+            EXIT_CODE=1
+          fi
+
+          echo ""
+          echo "=== Scanning for insecure http:// URLs ==="
+          # Filter out: localhost / loopback, and XML/XHTML namespace
+          # URIs (xmlns="http://...") which are standardized identifiers,
+          # not fetchable URLs.
+          HITS=$(grep -rn \
+               --include='*.ts' --include='*.tsx' \
+               --include='*.js' --include='*.mjs' --include='*.html' \
+               --exclude-dir='node_modules' --exclude-dir='dist' --exclude-dir='.cache' \
+               -E 'http://' . \
+               | grep -v 'localhost' \
+               | grep -v '127.0.0.1' \
+               | grep -v 'xmlns' || true)
+          if [ -n "$HITS" ]; then
+            annotate_hits "$HITS" "insecure-http"
+            echo "::error::Insecure http:// URL detected — use https:// instead"
+            EXIT_CODE=1
+          fi
+
+          if [ "$EXIT_CODE" -eq 0 ]; then
+            echo ""
+            echo "All security checks passed."
+          fi
+
+          exit $EXIT_CODE
+
+  protected-files:
+    name: Protected Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for protected file modifications
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Tiered file list where silent modification could
+          # compromise the repo. High-churn individual files
+          # under scripts/check-*.mjs are intentionally excluded.
+          LEGAL_FILES="LICENSE COPYING NOTICE LICENSING.org"
+          GOVERNANCE_FILES=".github/CODEOWNERS .github/SECURITY.org .github/SECURITY.md .github/PULL_REQUEST_TEMPLATE.md AGENTS.md"
+          SUPPLY_CHAIN_FILES="package.json package-lock.json"
+          CI_SECURITY_FILES=".github/workflows/ci.yml .github/workflows/publish.yml eslint.config.mts scripts/precheck.mjs scripts/_lib.mjs scripts/check-license-headers.mjs"
+          BUILD_CONFIG_FILES="tsup.config.ts tsconfig.json .gitignore .gitattributes .editorconfig"
+          RELEASE_ARTIFACT_FILES="CHANGELOG.org README.org README.md"
+
+          if [ -z "${{ github.base_ref }}" ]; then
+            echo "Not a pull_request event — skipping protected-files diff."
+            exit 0
+          fi
+
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD 2>/dev/null || echo "")
+
+          check_category() {
+            local files="$1"
+            local hits=""
+            for pf in $files; do
+              if echo "$CHANGED" | grep -qx "$pf"; then
+                hits="${hits}- \`${pf}\` was modified\n"
+              fi
+            done
+            echo -n "$hits"
+          }
+
+          LEGAL_HITS=$(check_category "$LEGAL_FILES")
+          GOVERNANCE_HITS=$(check_category "$GOVERNANCE_FILES")
+          SUPPLY_HITS=$(check_category "$SUPPLY_CHAIN_FILES")
+          CI_HITS=$(check_category "$CI_SECURITY_FILES")
+          BUILD_HITS=$(check_category "$BUILD_CONFIG_FILES")
+          RELEASE_HITS=$(check_category "$RELEASE_ARTIFACT_FILES")
+
+          COMMENT=""
+          add_section() {
+            local title="$1"
+            local hits="$2"
+            local note="$3"
+            if [ -n "$hits" ]; then
+              COMMENT="${COMMENT}### ${title}\n\n${hits}\n*${note}*\n\n"
+            fi
+          }
+
+          add_section "Legal / Licensing" "$LEGAL_HITS" \
+            "Modifying these files changes the project's legal posture. Confirm with the maintainer before merging."
+          add_section "Governance" "$GOVERNANCE_HITS" \
+            "CODEOWNERS / SECURITY / AGENTS changes affect how every future PR is reviewed. Review carefully."
+          add_section "Supply Chain" "$SUPPLY_HITS" \
+            "Dependency or lockfile changes. Verify the diff (no unexpected packages, no version downgrades)."
+          add_section "CI / Security Config" "$CI_HITS" \
+            "Workflow / lint / precheck config. A quiet edit here can disable gates — diff against origin carefully."
+          add_section "Build / Config" "$BUILD_HITS" \
+            "Build, tsconfig, or gitignore config. Verify the build still passes and no ignored paths were accidentally un-ignored."
+          add_section "Release Artifact" "$RELEASE_HITS" \
+            "Release-tracking files. Expected on release PRs; flag on non-release PRs."
+
+          if [ -n "$COMMENT" ]; then
+            COMMENT="## Protected Files Modified\n\nOne or more files in the protected set were changed in this PR. Each category below explains why the file matters.\n\n${COMMENT}"
+            echo -e "$COMMENT"
+            echo "::warning::Protected files were modified in this PR — review carefully"
+
+            if [ -n "${{ github.event.pull_request.number }}" ]; then
+              gh pr comment "${{ github.event.pull_request.number }}" \
+                --body "$(echo -e "$COMMENT")" || true
+            fi
+          else
+            echo "No protected files were modified."
+          fi
+
+  pre-check-label:
+    name: Pre-Check Label
+    runs-on: ubuntu-latest
+    needs: [eslint, precheck, tests, build, security-scan]
+    if: always() && github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Sync "Pre-Check Failed" label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          ESLINT_RESULT: ${{ needs.eslint.result }}
+          PRECHECK_RESULT: ${{ needs.precheck.result }}
+          TESTS_RESULT: ${{ needs.tests.result }}
+          BUILD_RESULT: ${{ needs.build.result }}
+          SECURITY_RESULT: ${{ needs.security-scan.result }}
+        run: |
+          echo "Gate outcomes:"
+          echo "  eslint        : $ESLINT_RESULT"
+          echo "  precheck      : $PRECHECK_RESULT"
+          echo "  tests         : $TESTS_RESULT"
+          echo "  build         : $BUILD_RESULT"
+          echo "  security-scan : $SECURITY_RESULT"
+
+          if [[ "$ESLINT_RESULT" != "success" ]] \
+             || [[ "$PRECHECK_RESULT" != "success" ]] \
+             || [[ "$TESTS_RESULT" != "success" ]] \
+             || [[ "$BUILD_RESULT" != "success" ]] \
+             || [[ "$SECURITY_RESULT" != "success" ]]; then
+            echo "::warning::One or more pre-checks failed — applying 'Pre-Check Failed' label"
+            gh pr edit "$PR_NUMBER" \
+              --repo "$REPO" \
+              --add-label "Pre-Check Failed" || true
+          else
+            echo "All pre-checks passed — removing 'Pre-Check Failed' label if present"
+            gh pr edit "$PR_NUMBER" \
+              --repo "$REPO" \
+              --remove-label "Pre-Check Failed" 2>/dev/null || true
+          fi

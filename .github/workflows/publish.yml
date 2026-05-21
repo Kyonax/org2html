@@ -1,54 +1,72 @@
-name: Publish org2html to npm
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-3.0-only — see LICENSE.
+
+#  ________ ______  ________  __  ___  _____  _____  __
+# /_  __/ // / __/ / __/ __ \/ / / / |/ / _ \/ _ \ \/ /
+#  / / / _  / _/  / _// /_/ / /_/ /    / // / , _/\  /
+# /_/ /_//_/___/ /_/  \____/\____/_/|_/____/_/|_| /_/
+#
+# publish.yml — Tag-driven npm publish
+# 2026-05-21
+#
+# Trigger: tag matching v*.*.* (semver). Runs lint+test, then
+# builds and publishes @kyonax/org2html via NPM_TOKEN.
+#
+# Guidelines:
+#   Bump package.json BEFORE tagging (workflow does not bump)
+#   NPM_TOKEN lives in repo secrets — never inline it
+#   CLI version should read from package.json at build time
+
+name: Publish @kyonax/org2html to npm
 
 on:
-    push:
-        tags:
-            - "v*.*.*"
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
 
 jobs:
-    publish:
-        runs-on: ubuntu-latest
-        needs: [lint-and-test]
+  lint-and-test:
+    name: Lint + Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm ci
+      - run: npm run lint
+      - name: Run tests (skip when no test files yet)
+        run: |
+          if npm test 2>&1 | tee /tmp/vitest.log; then
+            echo "Vitest passed."
+          else
+            if grep -qi "no test files found" /tmp/vitest.log; then
+              echo "::warning::No test files found yet — passing the job."
+              exit 0
+            fi
+            echo "::error::Vitest reported failures."
+            exit 1
+          fi
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: "20.19.5"
-                  registry-url: "https://registry.npmjs.org"
-
-            - name: Install dependencies
-              run: npm ci
-
-            - name: Build package
-              run: npm run build
-
-            - name: Publish to npm
-              run: npm publish
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-    lint-and-test:
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: "20.19.5"
-                  registry-url: "https://registry.npmjs.org"
-
-            - name: Install dependencies
-              run: npm ci
-
-            - name: Check Tests
-              run: npm run test
-
-            - name: Check Lint
-              run: npm run lint
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    needs: [lint-and-test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm ci
+      - run: npm run build
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

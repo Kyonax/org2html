@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/renderer/template.ts — Mustache template engine.
+ *
+ * Resolves the active template (caller-supplied path →
+ * --template-dir/default.html → bundled default.html), then
+ * substitutes {{var}} expressions and {{#if foo}}…{{/if}}
+ * block helpers against the metadata + injected slots
+ * ({{content}}, {{styles}}, {{structuredData}}).
+ */
+
 import { readFile } from "fs/promises"
 import { join, dirname } from "path"
 import { fileURLToPath } from "url"

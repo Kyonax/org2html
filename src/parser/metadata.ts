@@ -1,3 +1,17 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/parser/metadata.ts — #+KEY: extraction + derived fields.
+ *
+ * extractMetadata scans the file's leading metadata block,
+ * normalizing the recognized #+KEY: lines into OrgMetadata.
+ * calculateReadingTime + extractExcerpt produce derived
+ * fields from the plain-text projection.
+ */
+
 import type { OrgMetadata, OrgOptions } from "../types.js"
 import slugify from "slugify"
 

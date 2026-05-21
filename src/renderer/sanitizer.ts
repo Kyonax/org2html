@@ -1,3 +1,17 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/renderer/sanitizer.ts — DOMPurify + jsdom wrapper.
+ *
+ * Server-side HTML sanitization with a curated allowlist of
+ * tags + attributes that preserves the SEO / accessibility
+ * surface (rel, target, loading, decoding, aria-*) while
+ * stripping script, style, iframe, and inline event handlers.
+ */
+
 import DOMPurify from 'dompurify'
 import { JSDOM } from 'jsdom'
 

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/cli/vue-generator.ts — Vue 3 SFC generation helpers.
+ *
+ * stripDocumentWrapper / safeEncodeForSfc / shortcode
+ * processing. Round-trips rendered HTML into a `<script
+ * setup>` SFC whose `<template>` block consumes downstream
+ * Vue primitives (UiCard, UiLink, etc.). Consumers wire the
+ * components-map.json that resolves PascalCase component
+ * names to import paths.
+ */
+
 import type { OrgMetadata } from "../types.js"
 
 /**

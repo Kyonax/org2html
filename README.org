@@ -1,0 +1,273 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-3.0-only — see LICENSE.
+
+#  ________ ______  ___  _______  _________  _  __
+# /_  __/ // / __/ / _ )/ __/ _ |/ ___/ __ \/ |/ /
+#  / / / _  / _/  / _  / _// __ / /__/ /_/ /    /
+# /_/ /_//_/___/ /____/___/_/ |_\___/\____/_/|_/
+#
+# README.org — GitHub landing page
+# 2026-05-21
+#
+# Visitor entry point: ASCII logo, tagline, badges, what / setup /
+# CLI / library / contributing pointer. Minimal — no verbose docs.
+#
+# Guidelines:
+#   ASCII source-of-truth: kyo-web-online/src/assets/ascii/org2html.txt
+#   Centering: <table align="center"> inside <div align="left">
+#   #+VERSION:, logo footer, and version badge MUST match
+
+#+AUTHOR: [[https://orcid.org/0009-0006-4459-5538][Cristian D. Moreno - Kyonax]]
+#+EMAIL: kyonax.corp@gmail.com
+#+DATE: May 21, 2026
+#+FILETAGS: :KYO:ORG_2_HTML:ENGINE:CCS:
+#+VERSION: v1.0.2
+#+LAST_UPDATE: May 21, 2026
+
+#+BEGIN_HTML
+<div align="left">
+<table align="center"><tr><td>
+<pre>
+                              ▒▒
+      ░░░░░░░░░░░░░ ░        ▓▓░
+     ░░▒▓██▓██▓█▓▒░░ ░      ▓▒▒
+           ░░░▒▓█▓▒░       ▒▒█░
+     ░      ░░▒▓█▓▒░   ░░ ▓▒▒▒
+      ░░▒▓█▓██▓█▓▒░░ ░▓░▓▓░░▒
+     ░░▒▓█▓▒░░       ▓██▓░░▒░  ░
+      ░▒▓█▓▒░░░░░░░  ▓█▓██▒▒▒▒▒
+      ░▒▓██▓██▓██▓▒░     ░░   ▒█▒░░
+     ░░░░░░░░░░░░░░     ░▓▒░       ░░░░░░▓
+   ░▒▓█████▓███▒░     ░             ░░   ▒▒
+  ░████▓▓█▓▓███░    ░              ░░░ ░▒▒
+ ░▒▒▓█████▓▒███░░   ░▒▒             ░▓▓▒▒
+ ░█████▓▓██▒███▒░  ░██▒▒██▓▓▒▓░░░░░▒▓▓▒░
+░███▒▒▓████░███▓░  ███▒▓░▒▒░
+░█▓▒██████░▒███▒░ ░██▓▓
+░█▒████▒▒▒████▓░░ ░██▓▓
+ ░▓██▒▓██████░░    ░██▓▓░
+  ░██▓█▓░░  ░    ░  ░███▓▓▒░
+  ░██▓░     ░   ░    ░▓████▓▓░
+    ░▓░░   ░     ░   ░ ░█████▒▓
+     ░▒▒░   ░           ░█████▓▓░
+      ░░▒▓        ░▒▓████▓▒░▓███▒▒
+     ░   ░ ░▒▒▒▒░░  ░   ░   ░▓▒▓█▒░
+          ░    ░░░   ░     ░   ░▒▒▓░
+                ░          ░     ░▒░     v1.0.2
+</pre>
+</td></tr></table>
+</div>
+
+<div align="center">
+<strong>O</strong>rg-mode &middot; <strong>R</strong>enderer &middot; <strong>G</strong>enerator &middot; <strong>2</strong> &middot; <strong>H</strong>ypertext &middot; <strong>T</strong>emplated &middot; <strong>M</strong>odular &middot; <strong>L</strong>ibrary
+<br>
+<br>
+</div>
+
+<div align="center">
+<a href="https://www.npmjs.com/package/@kyonax/org2html"><img src="https://img.shields.io/npm/v/@kyonax/org2html?labelColor=FFD400&color=FFE564" alt="npm version"></a>
+<a href="#"><img src="https://img.shields.io/github/languages/top/Kyonax/org2html?labelColor=FFD400&color=FFE564" alt="Top language"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-9A51C0?labelColor=7409AA" alt="GPL-3.0-only"></a>
+<a href="#"><img src="https://img.shields.io/badge/version-v1.0.2-755AC4?labelColor=3B14AF" alt="v1.0.2"></a>
+<a href="https://github.com/ccs-devhub"><img src="https://img.shields.io/badge/CCS_Member-FFE564?&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48cGF0aCBmaWxsPSIjOUI4MjAwIiBkPSJNIDI3IDIwMCBsIDAgMTczIDE3MyAwIDE3MyAwIDAgLTE3MyAwIC0xNzMgLTE3MyAwIC0xNzMgMCAwIDE3MyB6IG0gMzMyIDAgbCAwIDE1OSAtMTU5LjUgMCAtMTU5LjUgMCAwIC0xNTkgMCAtMTU5IDE1OS41IDAgMTU5LjUgMCAwIDE1OSB6IE0gNTIgMTIwIGwgMCA2OCA0OCAwIDQ4IDAgMCAtMjAgMCAtMjAgNTEuNSAwIDUxLjUgMCAwIDIwIDAgMjAgMjEuNSAwIDIxLjUgMCAwIC00MS41IDAgLTQxLjUgLTk0LjUgMCAtOTQuNSAwIDAgMjAgMCAyMCAtNSAwIC01IDAgMCAtMjUgMCAtMjUgMTA1IDAgMTA1IDAgMCA1MS41IDAgNTEuNSAtMTI2LjUgMCAtMTI2LjUgMCAwIDQ4IDAgNDggMTI2LjMgMC4yIDEyNi4yIDAuMyAwLjMgNS4zIDAuMyA1LjIgLTEyNi41IDAgLTEyNi42IDAgMCAyMS41IDAgMjEuNSAxNDggMCAxNDggMCAwIC00OCAwIC00OCAtMTI2LjIgLTAuMiAtMTI2LjMgLTAuMyAtMC4zIC01LjMgLTAuMyAtNS4yIDEyNi41IDAgMTI2LjYgMCAwIC05NC41IDAgLTk0LjUgLTE0OCAwIC0xNDggMCAwIDY4IHogTSAxNTkgMTczLjUgbCAwIDE0LjUgNDEgMCA0MSAwIDAgLTE0LjUgMCAtMTQuNSAtNDEgMCAtNDEgMCAwIDE0LjUgeiIvPjwvc3ZnPg==&labelColor=FFD400&style=flat-square" alt="Cyber Code Syndicate"></a>
+<br>
+<a href="https://github.com/sponsors/kyonax"><img src="https://img.shields.io/github/sponsors/kyonax?labelColor=EA4AAA&color=FF6BBA" alt="GitHub Sponsors"></a>
+<a href="https://x.com/kyonax_on_tech">
+  <img src="https://img.shields.io/twitter/follow/kyonax_on_tech" alt="X followers">
+</a>
+<a href="#"><img src="https://img.shields.io/github/followers/Kyonax" alt="GitHub followers"></a>
+<a href="#"><img src="https://img.shields.io/github/stars/Kyonax/org2html" alt="GitHub Repo stars"></a>
+</div>
+#+END_HTML
+
+* WHAT IS @kyonax/org2html?
+A TypeScript engine that transforms Org-mode (=.org=) files into static HTML or Vue 3 single-file components. Sanitize-first by default, plugin-aware, framework-agnostic. Designed as the *engine layer* beneath the future =kyo-blog= site, which composes engine output inside a Vue 3 + Vite + SCSS 7-1 shell that mirrors the visual language of the sibling [[https://github.com/Kyonax/kyo-web-online][kyo-web-online]] project.
+
+#+BEGIN_EXAMPLE
+org2html/
+  src/
+    index.ts                     public library API (parse + renderToHtml + applyTemplate + org2html())
+    types.ts                     public type system (OrgMetadata / RenderOptions / AstNode / OrgPlugin / ...)
+    cli/                         commander surface
+      index.ts                   build / watch / test / help
+      commands/                  { build, watch, test }.ts
+      vue-generator.ts           Vue 3 SFC emission helpers
+    parser/                      lexer + parser + ast factories + metadata extraction
+    renderer/                    html-renderer + template (mustache) + sanitizer (DOMPurify + jsdom)
+    plugins/                     code-highlight (Shiki) + toc
+  templates/                     ships in npm tarball
+    default.html                 full SEO surface (OG + Twitter + JSON-LD slot + manifest + RSS)
+    styles.css                   engine-default CSS (consumer overrides via --template-dir)
+    manifest.json / favicon.svg / robots.txt
+  scripts/                       _lib.mjs + precheck.mjs + check-license-headers.mjs
+  .github/                       CODEOWNERS + SECURITY.org + PULL_REQUEST_TEMPLATE.md + workflows/
+#+END_EXAMPLE
+
+#+BEGIN_QUOTE
+*STATUS:* Active development. The parse / render / template pipeline is functional; the CLI commands are wired. Plugin API, shortcode plugin, asset fetcher, asset handler, client hydration, and the test suite are next. Live TODO board lives in [[file:CHANGELOG.org][CHANGELOG.org]] §TODO.
+#+END_QUOTE
+
+* PREREQUISITES
+
+** Required
+- *Node.js* =>= 18.0.0=, enforced by the =engines.node= field in =package.json=. Verified on Node =20.x=.
+- *npm* =>= 9.x= (bundled with Node 18+).
+- *Git* =>= 2.30= for cloning and CI hooks.
+
+** Optional
+- *sharp* =^0.33= is an =optionalDependencies= entry. With it installed, the asset pipeline can probe image dimensions / convert formats. Without it, image-metadata features degrade gracefully.
+
+** Shipped with =npm install=
+- =commander ^11= (CLI surface), =chokidar ^3= (watch mode), =fast-glob ^3= (input discovery), =chalk ^5= (CLI output).
+- =shiki ^0.14= (code highlighting), =dompurify ^3= + =jsdom ^23= (server-side sanitization), =probe-image-size ^7= (asset metadata), =slugify ^1= (URL slugs).
+- =tsup ^8= (bundler), =typescript ^5= + =typescript-eslint ^8= + =eslint ^9= (lint + types), =vitest ^4= (tests).
+
+* SETUP
+
+#+BEGIN_SRC sh
+git clone https://github.com/Kyonax/org2html.git
+cd org2html
+nvm use         # picks the version pinned in .nvmrc
+npm ci
+npm run build
+node dist/cli/index.mjs help
+#+END_SRC
+
+Install globally as a CLI:
+
+#+BEGIN_SRC sh
+npm install -g @kyonax/org2html
+org2html help
+#+END_SRC
+
+Use as a library in another project:
+
+#+BEGIN_SRC sh
+npm install --save-dev @kyonax/org2html
+#+END_SRC
+
+* CLI SURFACE
+
+| Command                                    | What it does                                                              |
+|--------------------------------------------+---------------------------------------------------------------------------|
+| =org2html build <input> [options]=         | Build Org files to static HTML. Default output dir =dist=.                |
+| =org2html watch <input> [options]=         | Chokidar-driven dev loop; rebuilds on every change.                        |
+| =org2html test <file>=                     | Single-file parser + render preview.                                       |
+| =org2html help [command]=                  | Top-level or per-command help.                                             |
+
+** Build / watch options
+| Flag                          | Effect                                                          |
+|-------------------------------+-----------------------------------------------------------------|
+| =-o, --output <dir>=          | Output directory (default =dist=).                              |
+| =-t, --template <file>=       | Custom HTML template path.                                      |
+| =--template-dir <dir>=        | Directory with =default.html=, =styles.css=, =manifest.json=, etc. |
+| =--no-sanitize=               | Disable DOMPurify sanitization (build only).                    |
+| =--no-highlight=              | Disable Shiki code highlighting (build only).                   |
+
+* LIBRARY
+
+#+BEGIN_SRC ts
+import { org2html, parse, renderToHtml, applyTemplate } from '@kyonax/org2html'
+import type {
+  RenderOptions,
+  RenderResult,
+  OrgAst,
+  OrgMetadata,
+} from '@kyonax/org2html'
+
+const result = await org2html(orgString, {
+  sanitize: true,
+  codeHighlight: true,
+  fetchRemoteAssets: 'metadata',
+})
+
+// result: { html: string, metadata: OrgMetadata, assets?: AssetMetadata[] }
+#+END_SRC
+
+The three-step pipeline is exposed individually for finer control:
+
+#+BEGIN_SRC ts
+const ast = parse(orgString)
+const { html, metadata } = await renderToHtml(ast, options)
+const finalHtml = await applyTemplate(html, metadata, customTemplate, templateDir)
+#+END_SRC
+
+* DEV AND BUILD COMMANDS
+
+| Command                          | What it does                                                              |
+|----------------------------------+---------------------------------------------------------------------------|
+| =npm run dev=                    | =tsup --watch=. Live rebuilds into =dist/= on every save.                |
+| =npm run build=                  | =tsup= production build into =dist/=.                                    |
+| =npm run lint=                   | ESLint flat config over the source tree.                                  |
+| =npm test=                       | Vitest single-run. Currently no test files (=tests/= is the Phase 5 work). |
+| =npm run test:coverage=          | Vitest with v8 coverage.                                                  |
+| =node scripts/precheck.mjs=      | Composite local gate. Currently runs =check-license-headers=.             |
+
+** Validation gates
+Run on every PR via =.github/workflows/ci.yml=. Seven jobs:
+
+1. *ESLint* :: =npm run lint=.
+2. *Precheck* :: =node scripts/precheck.mjs= (composite local gate).
+3. *Vitest* :: =npm test=. Tolerant of an empty =tests/= directory.
+4. *Production build* :: =npm run build=. Uploads =dist/= as a 7-day artifact.
+5. *Security Scan* :: inline grep for =eval=, =Function()=, =innerHTML=, =document.write=, string-arg timers, hardcoded secrets, insecure =http://= URLs.
+6. *Protected Files* :: advisory PR comment on edits to legal / governance / supply-chain / CI / build / release files. Never blocks merge.
+7. *Pre-Check Label* :: aggregator. Applies / removes the =Pre-Check Failed= label.
+
+* REPOSITORY LAYOUT
+
+#+BEGIN_EXAMPLE
+org2html/
+├── src/                          TypeScript source (all files carry the GPL-3.0-only preamble)
+│   ├── index.ts
+│   ├── types.ts
+│   ├── cli/
+│   ├── parser/
+│   ├── renderer/
+│   └── plugins/
+├── templates/                    npm-tarball assets (default.html / styles.css / manifest / favicon / robots)
+├── scripts/                      _lib.mjs / precheck.mjs / check-license-headers.mjs
+├── .github/
+│   ├── CODEOWNERS
+│   ├── SECURITY.org
+│   ├── PULL_REQUEST_TEMPLATE.md
+│   └── workflows/ci.yml + publish.yml
+├── package.json
+├── tsconfig.json
+├── tsup.config.ts
+├── eslint.config.mts
+├── .editorconfig / .gitattributes / .gitignore / .nvmrc
+├── AGENTS.md                     code-review rules
+├── LICENSE / COPYING             GPL-3.0-only
+├── LICENSING.org                 license guide + header conventions
+├── NOTICE                        attribution
+├── CONTRIBUTING.org              contributor onboarding
+├── CHANGELOG.org                 release history + TODO board
+└── README.org                    this file
+#+END_EXAMPLE
+
+Aspirational paths (=src/plugins/plugin-api.ts=, =src/plugins/shortcode.ts=, =src/plugins/asset-fetcher.ts=, =src/assets/asset-handler.ts=, =client/hydrate.ts=, =tests/=) are tracked in [[file:CHANGELOG.org][CHANGELOG.org]] §TODO.
+
+* DESIGN SYSTEM CONTRACT
+
+org2html is the engine; the visual identity belongs downstream. The canonical look-and-feel contract lives in the sibling [[https://github.com/Kyonax/kyo-web-online][kyo-web-online]] project — 8-family OKLCH palette, 7 UI primitives (=UiCard=, =UiLink=, =UiButton=, =UiImage=, =UiIcon=, =UiSectionHeading=, =BrandIcon=), cyberpunk HUD ornaments (=.hud-deco=, =.element-flare=, =.state-grid=, =.icon-glyph=, =.ccs-glyph=, =.heart-glyph=), accessibility floor, and the image pipeline rules. When emitting Vue SFCs that consume those primitives, the engine's =src/cli/vue-generator.ts= helpers produce output that drops into a kyo-web-online-shaped Vite + vue-i18n shell.
+
+* CONTRIBUTING
+
+See [[file:CONTRIBUTING.org][CONTRIBUTING.org]] for the full guide: prerequisites, code conventions, branch workflow, CI pipeline, and PR process.
+
+Quick summary:
+
+- Code style follows [[https://github.com/ccs-devhub][CCS]] standards, enforced via [[file:eslint.config.mts][eslint.config.mts]].
+- *No comments in TypeScript source* (per [[file:AGENTS.md][AGENTS.md]]) except the GPL preamble + filename block + JSDoc on exported helpers that documents non-obvious WHY.
+- Vue 3 Composition API with =<script setup>= only (when emitting SFC output via =vue-generator.ts=).
+- Every source file needs the GPL-3.0-only license header, verified by =scripts/check-license-headers.mjs=.
+- All changes require review from =@Kyonax= ([[file:.github/CODEOWNERS][CODEOWNERS]]).
+- Branch model: =master= ← =feat-*= / =fix-*=.
+- All PRs must pass 7 CI checks before merge.
+
+* LICENSE
+
+Distributed under [[file:LICENSE][GPL-3.0-only]]. Every committed =.ts=, =.tsx=, =.js=, =.mjs= file carries the CCS license preamble (verified by =node scripts/precheck.mjs=). Version history at [[file:CHANGELOG.org][CHANGELOG.org]]. License posture and per-file header templates at [[file:LICENSING.org][LICENSING.org]]. Security disclosures at [[file:.github/SECURITY.org][SECURITY.org]] (=kyonax.corp@gmail.com= with =[SECURITY]= subject prefix, 90-day coordinated disclosure window).
+
+This is a personal-but-published library. External contributions are welcome via PR; the maintainer reviews and merges. There are no plans to widen scope beyond the engine + =kyo-blog= consumer.

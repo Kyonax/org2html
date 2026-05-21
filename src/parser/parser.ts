@@ -1,3 +1,17 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/parser/parser.ts — Token stream → OrgAst.
+ *
+ * Drives lexer.tokenize, walks the resulting Token[], builds
+ * the AST via the ast.ts factories, and derives readingTime /
+ * wordCount / excerpt from the plain-text projection of the
+ * tree. Excerpt falls back to metadata.description when set.
+ */
+
 import type { AstNode, OrgAst, OrgMetadata } from '../types.js'
 import { tokenize, type Token } from './lexer.js'
 import { createNode, createTextNode, createDocument } from './ast.js'

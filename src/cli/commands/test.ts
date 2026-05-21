@@ -1,3 +1,17 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/cli/commands/test.ts — Test command.
+ *
+ * Single-file preview: parses one .org file, dumps the
+ * extracted metadata, renders the body, prints the first 500
+ * chars of HTML. Intended for manual smoke testing — not a
+ * replacement for the vitest suite (Phase 5 work).
+ */
+
 import { readFile } from 'fs/promises'
 import chalk from 'chalk'
 import { parse } from '../../parser/parser.js'

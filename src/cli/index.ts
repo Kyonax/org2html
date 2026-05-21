@@ -1,4 +1,17 @@
 #!/usr/bin/env node
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/cli/index.ts — Commander setup.
+ *
+ * Wires the four CLI commands (build / watch / test / help)
+ * and a bespoke top-level help message. The hardcoded
+ * version("1.0.0") drifts from package.json — tracked as a
+ * Phase 1 fix in CHANGELOG.org §TODO.
+ */
 
 import { Command } from "commander";
 import { buildCommand } from "./commands/build.js";

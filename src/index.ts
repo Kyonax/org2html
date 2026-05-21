@@ -1,3 +1,17 @@
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+
+/*
+ * src/index.ts — Public library API.
+ *
+ * Re-exports parse / renderToHtml / applyTemplate and the
+ * default async org2html() that chains all three. applyTemplate
+ * is always called: callers who only want the article fragment
+ * should call parse + renderToHtml directly.
+ */
+
 export { parse } from "./parser/parser.js";
 export { renderToHtml } from "./renderer/html-renderer.js";
 export { applyTemplate } from "./renderer/template.js";
@@ -15,8 +29,6 @@ export async function org2html(
   const ast = parse(orgContent);
   const result = await renderToHtml(ast, options);
 
-  // Always apply template (default or custom)
-  // Not Comments
   result.html = await applyTemplate(
     result.html,
     result.metadata,
