@@ -1,0 +1,276 @@
+#+TITLE: O2H Style Book Showcase
+#+SUBTITLE: Every conformance object in one page
+#+AUTHOR: Cristian D. Moreno - Kyonax
+#+DATE: 2026-07-02
+#+HTML_LAYOUT: magazine
+
+#+BEGIN_EXPORT html
+<nav class="org-nav"><span class="org-brand">O2H</span><a href="#components">Components</a></nav>
+<div class="org-breadcrumb"><span>Home</span><span>Style Book</span><span>Showcase</span></div>
+<div class="org-statusbar"><span>STATUS: LIVE</span><span>SERIAL 0001</span></div>
+#+END_EXPORT
+
+* Design tokens
+The palette (TOK-001…008), status colours (TOK-003), type (TOK-009/010) and the
+4px spacing scale (TOK-012) — every colour, font and gutter on this page draws
+from these.
+
+#+BEGIN_EXPORT html
+<div class="org-swatches">
+  <span class="org-swatch org-swatch--signal-300">signal-300</span>
+  <span class="org-swatch org-swatch--signal-500">signal-500</span>
+  <span class="org-swatch org-swatch--signal-700">signal-700</span>
+  <span class="org-swatch org-swatch--ink">ink</span>
+  <span class="org-swatch org-swatch--slate">slate</span>
+  <span class="org-swatch org-swatch--paper">paper</span>
+  <span class="org-swatch org-swatch--line">line</span>
+  <span class="org-swatch org-swatch--card">card</span>
+  <span class="org-swatch org-swatch--go">go</span>
+  <span class="org-swatch org-swatch--hold">hold</span>
+  <span class="org-swatch org-swatch--stop">stop</span>
+</div>
+<p class="org-type-sample--editorial">Archivo — editorial voice</p>
+<p class="org-type-sample--mono">JetBrains Mono — code &amp; labels</p>
+<div class="org-space-scale">
+  <span style="width:4px;height:4px"></span>
+  <span style="width:8px;height:8px"></span>
+  <span style="width:16px;height:16px"></span>
+  <span style="width:24px;height:24px"></span>
+  <span style="width:44px;height:44px"></span>
+  <span style="width:64px;height:64px"></span>
+</div>
+#+END_EXPORT
+
+* Native constructs
+Body copy with *bold*, /italic/, _underline_, +strike+, =verbatim=, ~code~, a
+[[https://example.com][link]], sub_{1} and super^{2}, a [50%] cookie, and an
+inline timestamp <2026-07-02 Thu>.
+
+** Lists
+- unordered one
+- unordered two
+  - nested
+1. ordered one
+2. ordered two
+- [ ] a task
+- [X] a done task
+
+term :: a description-list definition
+
+** A table
+| Name | Score |
+|------+-------|
+| Ada  | 99    |
+| Alan | 95    |
+
+** Quotes, verse, center, example
+#+BEGIN_QUOTE
+An ordinary quote block.
+#+END_QUOTE
+
+#+ATTR_HTML: :class org-quote--pull
+#+BEGIN_QUOTE
+A pull-quote for emphasis.
+#+END_QUOTE
+
+#+BEGIN_VERSE
+line one
+line two
+#+END_VERSE
+
+#+BEGIN_CENTER
+centered text
+#+END_CENTER
+
+#+BEGIN_EXAMPLE
+literal example
+#+END_EXAMPLE
+
+: a fixed-width line
+
+** Callouts
+#+BEGIN_NOTE
+A note callout.
+#+END_NOTE
+
+#+BEGIN_TIP
+A tip callout.
+#+END_TIP
+
+#+BEGIN_WARNING
+A warning callout.
+#+END_WARNING
+
+#+BEGIN_DANGER
+A danger callout.
+#+END_DANGER
+
+** Code
+#+BEGIN_SRC typescript :tangle src/demo.ts
+const answer = 42
+#+END_SRC
+
+#+BEGIN_SRC diff
++added line
+-removed line
+#+END_SRC
+
+#+RESULTS:
+: 42
+
+** Figures, tasks, rules
+#+ATTR_HTML: :class org-figure--bracket
+[[/img/framed.png]]
+
+#+ATTR_HTML: :class org-figure--hatch
+[[/img/redacted.png]]
+
+*************** TODO A boxed inline task :now:
+*************** END
+
+:LOGBOOK:
+CLOCK: [2026-07-01]--[2026-07-01] =>  1:00
+:END:
+
+-----
+
+#+ATTR_HTML: :class org-hr--dashed
+-----
+
+#+ATTR_HTML: :class org-hr--tick
+-----
+
+A footnote reference.[fn:1]
+
+[fn:1] The footnote definition.
+
+* Components
+:PROPERTIES:
+:CUSTOM_ID: components
+:END:
+
+** Buttons (CMP-001)
+{{< button variant="primary" label="Primary" >}}
+{{< button variant="outline" label="Outline" >}}
+{{< button variant="ink" label="Ink" >}}
+{{< button variant="ghost" label="Ghost" >}}
+{{< button variant="bracketed" label="Bracketed" >}}
+{{< button variant="primary" size="sm" label="Small" >}}
+{{< button variant="primary" size="lg" label="Large" >}}
+{{< button variant="primary" state="disabled" label="Disabled" >}}
+{{< button variant="primary" state="loading" label="Loading" >}}
+
+** Cards (CMP-002)
+{{< card variant="blog" title="Blog card" >}}
+{{< card variant="project" title="Project card" >}}
+{{< card variant="feature" title="Feature card" >}}
+{{< card variant="compact" title="Compact card" >}}
+
+** Data + code chrome
+{{< stat-grid label="Traffic" >}}
+{{< callout variant="restricted" label="RESTRICTED" >}}
+{{< kbd label="Ctrl" >}}
+{{< command text="npm run build" >}}
+{{< terminal text="serve ./dist" >}}
+{{< file-tree label="src/" >}}
+{{< diagram label="architecture" >}}
+
+** Inputs (CMP-010…015)
+{{< input label="Name" >}}
+{{< input state="error" label="Email (invalid)" >}}
+{{< search label="Search…" >}}
+{{< select label="Choose one" >}}
+{{< textarea label="Message" >}}
+{{< toggle state="on" >}}
+
+** Navigation + overlays
+{{< tabs label="All" >}}
+{{< newsletter label="Subscribe" >}}
+{{< modal label="Modal body" >}}
+{{< modal variant="alert" label="Alert body" >}}
+{{< toast label="Saved" >}}
+{{< tooltip label="Hover me" >}}
+{{< accordion label="Details" >}}
+{{< pagination >}}
+
+** Feedback + status
+{{< skeleton >}}
+{{< spinner >}}
+{{< spinner variant="dots" >}}
+{{< progress >}}
+{{< progress variant="indeterminate" >}}
+{{< empty label="No results" >}}
+{{< error code="404" >}}
+{{< error variant="offline" >}}
+
+** Media + misc
+{{< avatar-group count="+5" >}}
+{{< badge count="7" >}}
+{{< back-to-top >}}
+{{< read-progress >}}
+{{< gallery >}}
+{{< carousel >}}
+{{< lightbox label="Zoom" >}}
+{{< reticle >}}
+{{< connector >}}
+
+* Media
+A YouTube embed (the only iframe the sanitizer keeps — youtube-nocookie only):
+
+{{< youtube id="69uT90tEJdE" title="Sample video embed" >}}
+
+A dependency-free scroll-snap carousel of images:
+
+#+BEGIN_EXPORT html
+<div class="org-carousel-strip">
+  <img src="https://cdn.esawebb.org/archives/images/screen/weic2603a.jpg" alt="Carousel image one" loading="lazy">
+  <img src="https://cdn.esawebb.org/archives/images/screen/weic2603b.jpg" alt="Carousel image two" loading="lazy">
+  <img src="https://cdn.esawebb.org/archives/images/screen/weic2603c.jpg" alt="Carousel image three" loading="lazy">
+</div>
+#+END_EXPORT
+
+* Interactive
+Powered by the default runtime =o2h.js= (no framework). The code blocks above
+copy on click, the images open in a lightbox, and the carousel gains arrows.
+Tabs and a modal, wired by the same runtime:
+
+#+BEGIN_EXPORT html
+<div data-o2h="tabs">
+  <div role="tablist" aria-label="Demo tabs">
+    <button data-tab="a" role="tab" type="button">Overview</button>
+    <button data-tab="b" role="tab" type="button">Details</button>
+    <button data-tab="c" role="tab" type="button">Specs</button>
+  </div>
+  <div data-panel="a" role="tabpanel"><p class="org-paragraph">The first panel — click a tab to switch.</p></div>
+  <div data-panel="b" role="tabpanel"><p class="org-paragraph">The second panel, revealed by JavaScript.</p></div>
+  <div data-panel="c" role="tabpanel"><p class="org-paragraph">The third panel. All keyboard-accessible.</p></div>
+</div>
+<p><button data-o2h-open="demo-modal" data-component="button" data-variant="primary" type="button">Open modal</button></p>
+<div data-o2h="modal" id="demo-modal">
+  <div data-component="modal">
+    <p class="org-paragraph">A real modal dialog. Click the backdrop or press Esc to close.</p>
+    <button data-o2h-close data-component="button" data-variant="outline" type="button">Close</button>
+  </div>
+</div>
+#+END_EXPORT
+
+* Decorations
+#+BEGIN_EXPORT html
+<div class="org-deco-ribbon">Ribbon (DEC-015)</div>
+<span class="org-deco-vlabel">Vertical label (DEC-014)</span>
+<div class="org-deco-reticle"></div>
+<div class="org-deco-boxed-x"></div>
+<div class="org-deco-dot-matrix" style="height:44px"></div>
+<div class="org-deco-scanline"></div>
+<div class="org-deco-barcode"></div>
+<span class="org-deco-connector"></span>
+#+END_EXPORT
+
+#+ATTR_HTML: :class org-hr--boxed-x
+-----
+
+* Chrome
+#+BEGIN_EXPORT html
+<div class="org-cover"><span class="org-cover-ribbon">Issue 01</span></div>
+<footer class="org-footer"><div class="org-footer-cols"><div>About</div><div>Docs</div><div>Legal</div></div><div class="org-footer-bar"></div></footer>
+#+END_EXPORT

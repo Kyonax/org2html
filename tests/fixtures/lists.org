@@ -1,0 +1,19 @@
+#+TITLE: Lists Demo
+
+Nested unordered list with a checkbox sub-item:
+
+- top item
+  - nested item
+  - [X] done sub-task
+  - [ ] open sub-task
+- second top item
+
+An ordered list with a counter reset:
+
+1. first
+2. [@5] jumps to five
+
+A description list:
+
+- Term A :: the definition of A
+- Term B :: the definition of B

@@ -1,0 +1,25 @@
+#+TITLE: Leaking Blocks Demo
+
+A fixed-width area is verbatim:
+
+: fixed line one
+: fixed line two
+
+An HTML export block passes through untouched:
+
+#+BEGIN_EXPORT html
+<div class="raw-widget">passthrough</div>
+#+END_EXPORT
+
+A LaTeX export block contributes nothing to HTML:
+
+#+BEGIN_EXPORT latex
+\emph{dropped}
+#+END_EXPORT
+
+A dynamic block re-parses its body as real blocks:
+
+#+BEGIN: generated :cols 2
+- item alpha
+- item beta
+#+END:

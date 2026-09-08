@@ -9,9 +9,10 @@
 # ci.yml — CI gate suite
 # 2026-05-21
 #
-# Runs on every PR / push to master. Seven jobs: eslint, precheck,
-# vitest, build, security-scan, protected-files, pre-check-label.
-# The aggregator toggles the `Pre-Check Failed` label.
+# Runs on every PR / push to master. Nine jobs: eslint, precheck,
+# vitest, build, install-smoke, package-lint, security-scan,
+# protected-files, pre-check-label. The aggregator toggles the
+# `Pre-Check Failed` label.
 #
 # Guidelines:
 #   New jobs MUST be added to pre-check-label needs list
@@ -20,11 +21,16 @@
 
 name: CI
 
+# RELEASE BRANCHES ARE GATED TOO. This listed only master/main while all v1.1.0 work
+# happened on `release-v0.1` — so every job below was dormant for the whole release cycle:
+# no tests, no precheck, no install smoke, no package lint. publish.yml triggers on a TAG,
+# and a tag fires from any branch, so the one workflow that could still run was the one
+# that publishes. A release line has to be gated by the same jobs that gate the trunk.
 on:
   pull_request:
-    branches: [master, main]
+    branches: [master, main, "release-*"]
   push:
-    branches: [master, main]
+    branches: [master, main, "release-*"]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
@@ -70,18 +76,18 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
-      - name: Run tests (skip when no test files yet)
-        run: |
-          if npm test 2>&1 | tee /tmp/vitest.log; then
-            echo "Vitest passed."
-          else
-            if grep -qi "no test files found" /tmp/vitest.log; then
-              echo "::warning::No test files found yet — passing the job. Add tests under tests/."
-              exit 0
-            fi
-            echo "::error::Vitest reported failures."
-            exit 1
-          fi
+      # THE GATE HAS TO ACTUALLY GATE. This step used to read
+      #   if npm test 2>&1 | tee /tmp/vitest.log; then
+      # and a bare `run:` on Linux is `bash -e {0}` — no `pipefail`. The `if` therefore
+      # tested `tee`'s exit status, which is always 0, so a RED SUITE REPORTED "Vitest
+      # passed." and the job succeeded. In publish.yml that meant a failing test suite
+      # published to npm. Demonstrated locally before the fix:
+      #   bash -e -c 'if false | tee x; then echo PASSED; fi'   ->   PASSED
+      #
+      # The companion "no test files found" escape hatch is gone too: it existed when the
+      # suite was empty, and with 61 test files it can only ever turn a suite that stopped
+      # being discovered into a green job.
+      - run: npm test
 
   build:
     name: Production build
@@ -93,6 +99,8 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
+      - name: Type-check
+        run: npm run typecheck
       - run: npm run build
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
@@ -278,10 +286,44 @@ jobs:
             echo "No protected files were modified."
           fi
 
+  install-smoke:
+    name: Install smoke (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['18', '20', '22']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - name: Pack, install into a clean ESM consumer, and run the CLI
+        run: node scripts/smoke-install.mjs
+
+  package-lint:
+    name: Package lint (publint + attw)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - name: publint (strict)
+        run: npx --yes publint@latest --strict
+      - name: Are the types wrong (ESM-only)
+        run: npx --yes @arethetypeswrong/cli@latest --pack . --ignore-rules cjs-resolves-to-esm
+
   pre-check-label:
     name: Pre-Check Label
     runs-on: ubuntu-latest
-    needs: [eslint, precheck, tests, build, security-scan]
+    needs: [eslint, precheck, tests, build, install-smoke, package-lint, security-scan]
     if: always() && github.event_name == 'pull_request'
     permissions:
       contents: read
@@ -297,6 +339,8 @@ jobs:
           PRECHECK_RESULT: ${{ needs.precheck.result }}
           TESTS_RESULT: ${{ needs.tests.result }}
           BUILD_RESULT: ${{ needs.build.result }}
+          INSTALL_SMOKE_RESULT: ${{ needs.install-smoke.result }}
+          PACKAGE_LINT_RESULT: ${{ needs.package-lint.result }}
           SECURITY_RESULT: ${{ needs.security-scan.result }}
         run: |
           echo "Gate outcomes:"
@@ -304,12 +348,16 @@ jobs:
           echo "  precheck      : $PRECHECK_RESULT"
           echo "  tests         : $TESTS_RESULT"
           echo "  build         : $BUILD_RESULT"
+          echo "  install-smoke : $INSTALL_SMOKE_RESULT"
+          echo "  package-lint  : $PACKAGE_LINT_RESULT"
           echo "  security-scan : $SECURITY_RESULT"
 
           if [[ "$ESLINT_RESULT" != "success" ]] \
              || [[ "$PRECHECK_RESULT" != "success" ]] \
              || [[ "$TESTS_RESULT" != "success" ]] \
              || [[ "$BUILD_RESULT" != "success" ]] \
+             || [[ "$INSTALL_SMOKE_RESULT" != "success" ]] \
+             || [[ "$PACKAGE_LINT_RESULT" != "success" ]] \
              || [[ "$SECURITY_RESULT" != "success" ]]; then
             echo "::warning::One or more pre-checks failed — applying 'Pre-Check Failed' label"
             gh pr edit "$PR_NUMBER" \

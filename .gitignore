@@ -124,12 +124,19 @@ temp/
 # ── Local-only contributor files ─────────────────────────────
 # Clipboard buffers for the most recent generated commit / PR
 # text — overwritten in place every time new text is produced.
+# COMMIT.md is the same thing under the extension the tooling
+# actually writes; it holds prepared commit text, never code.
 COMMIT.org
+COMMIT.md
 PR.org
 
-# ── App-default test folders ─────────────────────────────────
-# Author's local sandbox for testing the engine against real
-# .org files and dumping rendered outputs. Not part of the
-# library or tarball.
-images
-nodes
+# ── AI agent working directories ─────────────────────────────
+# Session state, plans and transcripts belonging to a single
+# contributor's tooling. Never part of the library or tarball.
+.claude/
+.shipwright/*.local.*
+
+# NOTE: images/ and nodes/ were removed here at v1.1.0. They were
+# an author's local sandbox that the TEST SUITE read from while
+# being gitignored, so a fresh clone could not run the tests. The
+# two fixtures the suite needed now live in tests/fixtures/.
