@@ -1,259 +1,1271 @@
-:root {
-  --color-text: #1a1a1a;
-  --color-background: #ffffff;
-  --color-primary: #0066cc;
-  --color-secondary: #666666;
-  --color-border: #e0e0e0;
-  --color-code-bg: #f5f5f5;
-  --color-link: #0066cc;
-  --color-link-hover: #0052a3;
-  --max-width: 800px;
-  --spacing-unit: 1rem;
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-mono: 'Courier New', Courier, monospace;
-}
+/*
+ * styles.css — @kyonax/org2html default stylesheet (the O2H Style Book instance).
+ *
+ * CONSUMES the --o2h-* design tokens defined ONCE in style-book/o2h-tokens.css
+ * ([D-16] single token authority) — this file declares NO tokens of its own.
+ * Every rule is scoped under .org-root so the engine's output never touches the
+ * host page's globals. A host re-themes by defining --host-* (see o2h-tokens.css)
+ * or swapping --template-dir. Zero !important; sharp by default (radius 0).
+ */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-text: #e0e0e0;
-    --color-background: #1a1a1a;
-    --color-primary: #4da6ff;
-    --color-secondary: #999999;
-    --color-border: #333333;
-    --color-code-bg: #2a2a2a;
-    --color-link: #4da6ff;
-    --color-link-hover: #80bfff;
-  }
-}
-
-* {
+/* Scoped reset — no global * selector; only the engine subtree. */
+.org-root,
+.org-root *,
+.org-root *::before,
+.org-root *::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
-body {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: calc(var(--spacing-unit) * 2);
-  font-family: var(--font-sans);
-  line-height: 1.6;
-  color: var(--color-text);
-  background-color: var(--color-background);
+/* Full-width page surface with a contained content column ("full-bleed" layout).
+ * The background (paper + ambient grid) spans the whole viewport; a 3-track grid
+ * keeps the actual content centered at a readable max-width (--o2h-measure),
+ * flanked by responsive gutters. A top-level element can opt into edge-to-edge
+ * width with .org-full-bleed (e.g. a section that carries its own background). */
+.org-root {
+  display: grid;
+  position: relative;
+  grid-template-columns:
+    [full-start] minmax(var(--o2h-gutter), 1fr)
+    [content-start] min(100% - (2 * var(--o2h-gutter)), var(--o2h-measure)) [content-end]
+    minmax(var(--o2h-gutter), 1fr) [full-end];
+  row-gap: var(--o2h-space-5);
+  padding-block: var(--o2h-space-5);
+  font-family: var(--o2h-font-editorial);
+  font-size: var(--o2h-fs-body);
+  line-height: var(--o2h-lh-body);
+  color: var(--o2h-fg);
+  background-color: var(--o2h-bg);
+  /* Ambient 44px two-axis grid field (O2H #grid) — faint, on-grid. */
+  background-image:
+    linear-gradient(to right, var(--o2h-grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--o2h-grid-line) 1px, transparent 1px);
+  background-size: var(--o2h-grid-module) var(--o2h-grid-module);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Typography */
-h1, h2, h3, h4, h5, h6 {
-  margin-top: calc(var(--spacing-unit) * 2);
-  margin-bottom: var(--spacing-unit);
-  line-height: 1.3;
-  font-weight: 600;
-  color: var(--color-text);
+/* Every top-level block sits in the centered content track; its outer block
+ * margins are dropped so row-gap owns the vertical rhythm between sections. */
+.org-root > * { grid-column: content; margin-block: 0; }
+/* Media breakouts (.org-full-bleed / .org-wide) are defined at the END of this
+ * sheet — see "BREAKOUTS · LAST WORD". They set an inline margin, and any later
+ * rule using the `margin:` shorthand would silently reset it. */
+/* Trim a section's trailing margin so it can't compound with the row-gap. */
+.org-root .org-section > :last-child { margin-bottom: 0; }
+
+/* DEC-001 crosshair nodes — ambient mono "+" registration marks at the page
+ * corners. Absolutely positioned so they stay out of the content grid. */
+.org-root::before,
+.org-root::after {
+  content: "+";
+  position: absolute;
+  font-family: var(--o2h-font-mono);
+  font-size: 14px;
+  line-height: 1;
+  color: var(--o2h-mute);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.org-root::before { top: 8px; left: 8px; }
+.org-root::after { bottom: 8px; right: 8px; }
+
+.org-root ::selection {
+  background: var(--o2h-selection-bg);
+  color: var(--o2h-selection-fg);
 }
 
-h1 { font-size: 2.5rem; margin-top: 0; }
-h2 { font-size: 2rem; }
-h3 { font-size: 1.5rem; }
-h4 { font-size: 1.25rem; }
-h5 { font-size: 1.1rem; }
-h6 { font-size: 1rem; }
+/* ── Headings ─────────────────────────────────────────────────────────────── */
+.org-root .org-heading {
+  margin: var(--o2h-space-4) 0 var(--o2h-space-3);
+  line-height: 1.15;
+  font-weight: 700;
+  color: var(--o2h-fg);
+}
+/* Top-level section headings sit flush to the top of their section — the gap
+ * before each top-level section is owned by the root grid's row-gap, so it
+ * never compounds. Nested subsection headings keep the space-4 top margin. */
+.org-root > .org-section > .org-heading { margin-top: 0; }
+.org-root .outline-1 {
+  position: relative;
+  font-family: var(--o2h-font-display);
+  font-size: var(--o2h-fs-h1);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+.org-root .outline-2 { font-size: var(--o2h-fs-h2); }
+.org-root .outline-3 { font-size: var(--o2h-fs-h3); }
+.org-root .outline-4 { font-size: 20px; }
+.org-root .outline-5 { font-size: 17px; }
+.org-root .outline-6 { font-size: var(--o2h-fs-body); }
 
-p {
-  margin-bottom: var(--spacing-unit);
+.org-root .org-heading-number {
+  font-family: var(--o2h-font-mono);
+  color: var(--o2h-mute);
+  margin-right: var(--o2h-space-2);
 }
 
-a {
-  color: var(--color-link);
-  text-decoration: none;
-  transition: color 0.2s ease;
+/* ── Article header + document title (MAP-002/003 · SB-106 · SB-012) ─────────── */
+.org-root .org-article-header {
+  position: relative;
+  padding: var(--o2h-space-4) 0;
+  border-bottom: var(--o2h-border);
+}
+.org-root .org-heading--title {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  font-family: var(--o2h-font-display);
+  /* SB-012 cover title, responsive so it never overflows a phone */
+  font-size: clamp(var(--o2h-fs-h1), 8vw, var(--o2h-fs-display));
+  line-height: 1.04;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+}
+/* DEC-003 registration brackets — orange corner marks offset off the title box. */
+.org-root .org-heading--title::before,
+.org-root .org-heading--title::after {
+  content: "";
+  position: absolute;
+  width: 0.34em;
+  height: 0.34em;
+  border: 2px solid var(--o2h-accent);
+  pointer-events: none;
+}
+.org-root .org-heading--title::before { left: -0.42em; top: -0.16em; border-right: 0; border-bottom: 0; }
+.org-root .org-heading--title::after  { right: -0.42em; bottom: 0; border-left: 0; border-top: 0; }
+.org-root .org-article-subtitle {
+  margin: var(--o2h-space-3) 0 0;
+  font-size: var(--o2h-fs-h3);
+  font-weight: 400;
+  color: var(--o2h-slate);
+}
+.org-root .org-article-byline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--o2h-space-3);
+  margin: var(--o2h-space-3) 0 0;
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-label-track);
+  color: var(--o2h-mute);
 }
 
-a:hover {
-  color: var(--color-link-hover);
+/* ── Paragraphs + emphasis ──────────────────────────────────────────────────── */
+.org-root .org-paragraph { margin: 0 0 var(--o2h-space-3); }
+.org-root strong { font-weight: 700; }
+.org-root em { font-style: italic; }
+.org-root u { text-decoration: underline; text-decoration-color: var(--o2h-accent); }
+.org-root del { color: var(--o2h-mute); }
+
+/* ── Links ─────────────────────────────────────────────────────────────────── */
+.org-root .org-link {
+  color: var(--o2h-link);
   text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s ease;
 }
-
-strong {
-  font-weight: 600;
+.org-root .org-link:hover { color: var(--o2h-signal-500); }
+.org-root .org-link:focus-visible {
+  outline: 2px solid var(--o2h-accent);
+  outline-offset: 2px;
 }
+.org-root .org-link-external { font-size: 0.85em; margin-left: 0.15em; }
 
-em {
+/* ── Code — inline + block ───────────────────────────────────────────────────── */
+.org-root .org-code,
+.org-root .org-verbatim {
+  font-family: var(--o2h-font-mono);
+  font-size: 0.9em;
+  background: var(--o2h-code-inline-bg);
+  border: 1px solid var(--o2h-code-inline-border);
+  color: var(--o2h-code-inline-fg);
+  padding: 0.1em 0.35em;
+}
+.org-root .org-verbatim { color: var(--o2h-ink); }
+.org-root pre {
+  font-family: var(--o2h-font-mono);
+  background: var(--o2h-code-bg);
+  color: var(--o2h-syn-plain);
+  padding: var(--o2h-space-3);
+  margin: 0 0 var(--o2h-space-3);
+  overflow-x: auto;
+  border: var(--o2h-border);
+}
+.org-root pre code { background: none; border: 0; padding: 0; color: inherit; }
+/* The Shiki "o2h" code theme: the css-variables theme emits color:var(--shiki-*)
+ * on <pre>/<span> (kept by the [D-07] style scope); bind those to --o2h-syn-* so
+ * code re-themes with the Style Book instead of a baked github-dark palette. */
+.org-root .org-src.shiki {
+  --shiki-color-background: var(--o2h-code-bg);
+  --shiki-color-text: var(--o2h-syn-plain);
+  --shiki-token-keyword: var(--o2h-syn-keyword);
+  --shiki-token-constant: var(--o2h-syn-number);
+  --shiki-token-string: var(--o2h-syn-string);
+  --shiki-token-string-expression: var(--o2h-syn-string);
+  --shiki-token-function: var(--o2h-syn-function);
+  --shiki-token-parameter: var(--o2h-syn-plain);
+  --shiki-token-punctuation: var(--o2h-syn-punct);
+  --shiki-token-comment: var(--o2h-syn-comment);
+  --shiki-token-link: var(--o2h-syn-string);
+}
+.org-root .org-example,
+.org-root .org-fixed-width { color: var(--o2h-syn-plain); }
+
+/* ── Code-block chrome — header bar + gutter (MAP-036 · SB-069/070/071/072) ──── */
+/* The block carries the frame + margin; the <pre> inside sheds its own so the
+ * header bar and code read as one unit with sharp, joined corners. */
+.org-root .org-src-block {
+  margin: 0 0 var(--o2h-space-3);
+  border: var(--o2h-border);
+  background: var(--o2h-code-bg);
+  overflow: hidden;
+}
+.org-root .org-src-block > .org-src { margin: 0; border: 0; }
+.org-root .org-src-header {
+  display: flex;
+  align-items: center;
+  gap: var(--o2h-space-2);
+  padding: var(--o2h-space-2) var(--o2h-space-3);
+  background: var(--o2h-code-header-bg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: var(--o2h-font-mono);
+  font-size: 0.72rem;
+}
+/* SB-069 — three traffic-light squares (sharp, radius 0), decorative. */
+.org-root .org-src-lights { display: inline-flex; gap: 6px; }
+.org-root .org-src-light { width: 11px; height: 11px; background: var(--o2h-code-gutter); }
+.org-root .org-src-light:nth-child(1) { background: var(--o2h-stop); }
+.org-root .org-src-light:nth-child(2) { background: var(--o2h-hold); }
+.org-root .org-src-light:nth-child(3) { background: var(--o2h-go); }
+/* SB-070 — filename + language tag. */
+.org-root .org-src-title { display: inline-flex; align-items: baseline; gap: var(--o2h-space-2); min-width: 0; }
+.org-root .org-src-filename { color: var(--o2h-syn-plain); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.org-root .org-src-lang { color: var(--o2h-syn-comment); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.66rem; }
+/* SB-071 — COPY affordance (host wires the click at hydration, [D-22]). */
+.org-root .org-src-copy {
+  margin-left: auto;
+  font: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--o2h-syn-plain);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 2px 8px;
+  cursor: pointer;
+}
+.org-root .org-src-copy:hover,
+.org-root .org-src-copy:focus-visible { color: var(--o2h-accent); border-color: var(--o2h-accent); }
+/* SB-072 — line-number gutter: a CSS counter on Shiki's per-line spans. */
+.org-root .org-src--numbered code { counter-reset: o2h-line; }
+.org-root .org-src--numbered .line::before {
+  counter-increment: o2h-line;
+  content: counter(o2h-line);
+  display: inline-block;
+  width: 2.5ch;
+  margin-right: var(--o2h-space-3);
+  text-align: right;
+  color: var(--o2h-code-gutter);
+  user-select: none;
+}
+/* Diff variant (MAP-037 / SB-079) — +/- line tints + a coloured gutter edge. */
+.org-root .org-diff .line { display: block; padding-left: var(--o2h-space-2); border-left: var(--o2h-stripe-thin) solid transparent; }
+.org-root .org-diff .org-diff-add { background: var(--o2h-go-wash); border-left-color: var(--o2h-go); }
+.org-root .org-diff .org-diff-del { background: var(--o2h-stop-wash); border-left-color: var(--o2h-stop); }
+.org-root .org-diff .org-diff-hunk { color: var(--o2h-syn-comment); }
+/* Code-execution output (MAP-038 / SB-076) — green left border. */
+.org-root .org-results { border-left: var(--o2h-rail) solid var(--o2h-go); }
+.org-root .org-verse {
+  font-family: var(--o2h-font-mono);
+  background: var(--o2h-line-soft);
+  padding: var(--o2h-space-3);
+  border-left: var(--o2h-border-emphasis);
+}
+.org-root .org-center { text-align: center; }
+
+/* ── Blockquote + callouts ───────────────────────────────────────────────────── */
+.org-root .org-quote {
+  margin: var(--o2h-space-4) 0;
+  padding: var(--o2h-space-2) var(--o2h-space-4);
+  border-left: var(--o2h-rail) solid var(--o2h-accent);
+  color: var(--o2h-slate);
   font-style: italic;
 }
-
-/* Code */
-code {
-  background: var(--color-code-bg);
-  padding: 0.2em 0.4em;
-  border-radius: 3px;
-  font-size: 0.9em;
-  font-family: var(--font-mono);
-  color: var(--color-text);
+/* Callouts (MAP-035 · SB-057–060). Four intents = left-border + tinted bg + a
+ * mono label row. IMPORTANT→tip, CAUTION→warning, ABSTRACT→note resolve in the
+ * renderer, so only the four canonical intents are styled here. */
+.org-root .org-callout {
+  margin: var(--o2h-space-4) 0;
+  padding: var(--o2h-space-3) var(--o2h-space-4);
+  border: var(--o2h-border);
+  border-left: var(--o2h-stripe) solid var(--o2h-ink);
+  background: var(--o2h-card);
 }
+.org-root .org-callout-label {
+  margin: 0 0 var(--o2h-space-1);
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-label-track);
+  text-transform: var(--o2h-label-transform);
+  color: var(--o2h-mute);
+}
+.org-root .org-callout-body > :last-child { margin-bottom: 0; }
+.org-root .org-callout--note    { border-left-color: var(--o2h-ink); }
+.org-root .org-callout--tip     { border-left-color: var(--o2h-accent); background: var(--o2h-accent-wash); }
+.org-root .org-callout--tip     .org-callout-label { color: var(--o2h-signal-700); }
+.org-root .org-callout--warning { border-left-color: var(--o2h-hold);   background: var(--o2h-hold-wash); }
+.org-root .org-callout--warning .org-callout-label { color: var(--o2h-hold); }
+.org-root .org-callout--danger  { border-left-color: var(--o2h-stop);   background: var(--o2h-stop-wash); }
+.org-root .org-callout--danger  .org-callout-label { color: var(--o2h-stop); }
 
-pre {
-  background: var(--color-code-bg);
-  padding: var(--spacing-unit);
-  border-radius: 5px;
+/* ── Lists ─────────────────────────────────────────────────────────────────── */
+/* One tidy indent per level = padding-left only (the browser's default ~40px
+ * <ul> padding is replaced, so bullets sit close to the text, not far out). */
+.org-root .org-ul, .org-root .org-ol { margin: 0 0 var(--o2h-space-3) 0; padding-left: var(--o2h-space-4); }
+.org-root .org-ul .org-ul, .org-root .org-ul .org-ol,
+.org-root .org-ol .org-ul, .org-root .org-ol .org-ol { margin-bottom: 0; }
+.org-root .org-ul li, .org-root .org-ol li { margin: var(--o2h-space-1) 0; }
+.org-root .org-dl { margin: 0 0 var(--o2h-space-3); }
+.org-root .org-dt { font-weight: 700; }
+.org-root .org-dd { margin: 0 0 var(--o2h-space-2) var(--o2h-space-4); }
+.org-root .org-li--checkbox { list-style: none; }
+.org-root .org-li--checkbox input { accent-color: var(--o2h-accent); margin-right: var(--o2h-space-1); }
+
+/* ── Tables — hairline-seam recipe ─────────────────────────────────────────────
+ * THE FRAME OWNS THE OVERFLOW; THE TABLE OWNS ITS OWN WIDTH.
+ *
+ * A table cannot be laid out below its min-content width — that is a rule of the table
+ * layout algorithm, not a style choice — so a narrow screen leaves only two outcomes and
+ * both are bad: the table overflows the PAGE (measured at 390px: 191px of horizontal page
+ * scroll, exactly the wide table's overshoot), or, where it does fit, every column is
+ * squeezed until the words wrap a character at a time and the table stops being readable.
+ *
+ * So the table is given a frame that scrolls. Inside it the table takes its NATURAL width
+ * — `max-content`, so nothing is crushed — with `min-width: 100%` so a small table still
+ * fills the column instead of huddling at the left. The page stops scrolling sideways and
+ * the TABLE does, which is the thing the reader actually wants to move. */
+.org-root .org-table-scroll {
   overflow-x: auto;
-  margin-bottom: var(--spacing-unit);
-  border: 1px solid var(--color-border);
-}
-
-pre code {
-  background: none;
-  padding: 0;
-  border-radius: 0;
-}
-
-/* Blockquotes */
-blockquote {
-  border-left: 4px solid var(--color-primary);
-  padding-left: var(--spacing-unit);
-  margin: var(--spacing-unit) 0;
-  color: var(--color-secondary);
-  font-style: italic;
-}
-
-/* Lists */
-ul, ol {
-  margin-bottom: var(--spacing-unit);
-  padding-left: calc(var(--spacing-unit) * 2);
-}
-
-li {
-  margin-bottom: calc(var(--spacing-unit) * 0.5);
-}
-
-ul ul, ol ol, ul ol, ol ul {
-  margin-top: calc(var(--spacing-unit) * 0.5);
-  margin-bottom: 0;
-}
-
-/* Tables */
-table {
-  border-collapse: collapse;
-  width: 100%;
-  margin: var(--spacing-unit) 0;
-  overflow-x: auto;
-  display: block;
-}
-
-@media (min-width: 768px) {
-  table {
-    display: table;
-  }
-}
-
-th, td {
-  border: 1px solid var(--color-border);
-  padding: calc(var(--spacing-unit) * 0.5);
-  text-align: left;
-}
-
-th {
-  background: var(--color-code-bg);
-  font-weight: 600;
-}
-
-tr:nth-child(even) {
-  background: rgba(0, 0, 0, 0.02);
-}
-
-@media (prefers-color-scheme: dark) {
-  tr:nth-child(even) {
-    background: rgba(255, 255, 255, 0.02);
-  }
-}
-
-/* Table of Contents */
-.toc {
-  background: var(--color-code-bg);
-  padding: var(--spacing-unit);
-  border-radius: 5px;
-  margin-bottom: calc(var(--spacing-unit) * 2);
-  border: 1px solid var(--color-border);
-}
-
-.toc h2 {
-  margin-top: 0;
-  font-size: 1.2rem;
-}
-
-.toc ul {
-  list-style: none;
-  padding-left: var(--spacing-unit);
-}
-
-.toc a {
-  color: var(--color-text);
-}
-
-.toc a:hover {
-  color: var(--color-primary);
-}
-
-/* Footnotes */
-.footnotes {
-  margin-top: calc(var(--spacing-unit) * 3);
-  padding-top: var(--spacing-unit);
-  border-top: 1px solid var(--color-border);
-  font-size: 0.9em;
-  color: var(--color-secondary);
-}
-
-.footnotes ol {
-  padding-left: calc(var(--spacing-unit) * 1.5);
-}
-
-/* Images */
-img {
+  /* A table at the end of its travel must not hand the gesture to the page and start a
+   * back-navigation. Contained here, the swipe simply stops. */
+  overscroll-behavior-x: contain;
   max-width: 100%;
-  height: auto;
-  border-radius: 5px;
-  margin: var(--spacing-unit) 0;
+  /* The frame is the box now, so it carries the block margin the table used to. */
+  margin: 0 0 var(--o2h-space-4);
+  /* A MINIMAL BAR. The scrollbar is a hint that there is more, not a piece of furniture:
+   * thin, on no track, in the sheet's own hairline colour. Hiding it outright would leave
+   * a pointer user with no indication the table moves at all. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--o2h-line) transparent;
+}
+.org-root .org-table-scroll::-webkit-scrollbar { height: 6px; }
+.org-root .org-table-scroll::-webkit-scrollbar-track { background: transparent; }
+.org-root .org-table-scroll::-webkit-scrollbar-thumb { background: var(--o2h-line); }
+.org-root .org-table-scroll::-webkit-scrollbar-thumb:hover { background: var(--o2h-mute); }
+/* Grab-to-pan is a POINTER affordance. A touch screen already pans a scroll container by
+ * swipe and needs no cursor; showing a grab hand to a finger promises a gesture that is
+ * not the one being made. */
+@media (hover: hover) and (pointer: fine) {
+  .org-root .org-table-scroll.is-scrollable { cursor: grab; }
+  .org-root .org-table-scroll.is-panning { cursor: grabbing; }
+}
+/* While a pan is running the drag must not paint a text selection across every cell it
+ * crosses. Only while panning — a table is exactly the thing readers copy out of. */
+.org-root .org-table-scroll.is-panning {
+  -webkit-user-select: none;
+          user-select: none;
+}
+.org-root .org-table-scroll:focus-visible { outline: 2px solid var(--o2h-accent); outline-offset: -2px; }
+.org-root .org-table-scroll > .org-table {
+  width: max-content;
+  min-width: 100%;
+  margin: 0;
+}
+.org-root .org-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  margin: 0 0 var(--o2h-space-4);
+  background: var(--o2h-line);
+  border: var(--o2h-border);
+  font-size: 0.95em;
+}
+.org-root .org-table th,
+.org-root .org-table td {
+  padding: var(--o2h-space-2) var(--o2h-space-3);
+  background: var(--o2h-card);
+  border: var(--o2h-seam-gap) solid var(--o2h-line);
+}
+.org-root .org-table thead th {
+  background: var(--o2h-ink);
+  color: var(--o2h-card);
+  text-align: left;
+  font-family: var(--o2h-font-mono);
+  /* A column head is the AUTHOR's word, not the sheet's: it keeps the case they typed. */
+  letter-spacing: var(--o2h-label-track);
+  font-size: var(--o2h-label-size);
+}
+.org-root .org-table caption { color: var(--o2h-mute); font-size: var(--o2h-fs-caption); padding: var(--o2h-space-1); }
+.org-root .org-left { text-align: left; }
+.org-root .org-center { text-align: center; }
+.org-root .org-right { text-align: right; }
+
+/* ── Figures + images ────────────────────────────────────────────────────────── */
+.org-root .org-figure { position: relative; margin: var(--o2h-space-5) 0; padding: 3px; }
+.org-root .org-image { max-width: 100%; height: auto; display: block; border: var(--o2h-border); }
+/* DEC-002 crop marks — corner L's just outside the frame (diagonal pair). */
+.org-root .org-figure::before,
+.org-root .org-figure::after {
+  content: "";
+  position: absolute;
+  width: 12px; height: 12px;
+  border: 1px solid var(--o2h-ink);
+  pointer-events: none;
+}
+.org-root .org-figure::before { left: -3px; top: -3px; border-right: 0; border-bottom: 0; }
+.org-root .org-figure::after  { right: -3px; bottom: -3px; border-left: 0; border-top: 0; }
+.org-root .org-figcaption {
+  margin-top: var(--o2h-space-1);
+  color: var(--o2h-mute);
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-fs-caption);
 }
 
-/* Horizontal Rule */
-hr {
-  border: none;
-  border-top: 1px solid var(--color-border);
-  margin: calc(var(--spacing-unit) * 2) 0;
+/* ── Rules + drawers ─────────────────────────────────────────────────────────── */
+/* DEC-012 rule variants: default = 2px orange; .org-hr--dashed and .org-hr--tick
+ * modifiers give the dashed and tick-capped looks from the book. */
+.org-root .org-hr,
+.org-root hr {
+  border: 0;
+  border-top: var(--o2h-rule);
+  margin: var(--o2h-space-5) 0;
+  position: relative;
+}
+.org-root .org-hr--dashed { border-top: 1px dashed var(--o2h-line); }
+.org-root .org-hr--tick::before,
+.org-root .org-hr--tick::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  width: 2px;
+  height: 10px;
+  background: var(--o2h-accent);
+}
+.org-root .org-hr--tick::before { left: 0; }
+.org-root .org-hr--tick::after { right: 0; }
+.org-root .org-drawer,
+.org-root .org-dynamic-block {
+  border: var(--o2h-border-dashed);
+  padding: var(--o2h-space-3);
+  margin: 0 0 var(--o2h-space-3);
 }
 
-/* Article */
-article {
-  min-height: 100vh;
+/* ── TOC ───────────────────────────────────────────────────────────────────── */
+.org-root .org-toc {
+  border: var(--o2h-border);
+  padding: var(--o2h-space-3) var(--o2h-space-4);
+  margin: 0;
+  background: var(--o2h-card);
+}
+.org-root .org-toc-title {
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  text-transform: var(--o2h-label-transform);
+  letter-spacing: var(--o2h-label-track);
+  margin: 0 0 var(--o2h-space-2);
+}
+.org-root .org-toc ul { list-style: none; margin: 0 0 0 var(--o2h-space-3); padding: 0; }
+.org-root .org-toc-link { color: var(--o2h-fg); text-decoration: none; }
+.org-root .org-toc-link:hover { color: var(--o2h-accent); }
+
+/* ── Footnotes ───────────────────────────────────────────────────────────────── */
+.org-root .org-fnref a { color: var(--o2h-link); text-decoration: none; }
+.org-root .org-footnotes {
+  margin-top: var(--o2h-space-6);
+  font-size: 0.9em;
+  color: var(--o2h-slate);
+}
+.org-root .org-footnote-back { text-decoration: none; margin-right: var(--o2h-space-1); }
+
+/* ── Headline meta — mono coordinate tags ────────────────────────────────────── */
+.org-root .org-todo, .org-root .org-priority, .org-root .org-tag,
+.org-root .org-timestamp, .org-root .org-statistics-cookie, .org-root .org-cite {
+  font-family: var(--o2h-font-mono);
+  /* Absolute label size, not em: these ride inside headings (H1 = 48px), so
+     0.8em rendered ~38px labels. --o2h-label-size keeps them a small,
+     consistent coordinate tag in every context (matches .org-toc-label). */
+  font-size: var(--o2h-label-size);
+  border: 1px solid var(--o2h-ink);
+  padding: 0.05em 0.4em;
+  margin-right: var(--o2h-space-1);
+  vertical-align: middle;
+}
+/* DEC-018 status pill — TODO carries a leading dot. The dot used to BLINK (ANM-001), and
+ * a blink is a demand for attention: correct for a terminal cursor, wrong for a workflow
+ * keyword, because a document with six TODO headlines then had six things flashing at a
+ * reader who is trying to read prose. The dot stays — it is the state's own colour — and
+ * it holds still. ANM-001 is still used where a blink means something (the terminal). */
+.org-root .org-todo { background: var(--o2h-ink); color: var(--o2h-card); }
+.org-root .org-todo::before {
+  content: "";
+  display: inline-block;
+  width: 0.4em;
+  height: 0.4em;
+  margin-right: 0.4em;
+  vertical-align: 0.1em;
+  border-radius: var(--o2h-radius-full);
+  background: var(--o2h-accent);
+}
+.org-root .org-done { background: var(--o2h-go); border-color: var(--o2h-go); color: var(--o2h-card); }
+.org-root .org-priority { color: var(--o2h-stop); border-color: var(--o2h-stop); }
+/* D-31 — tags ride in the headline's flag row, laid out by the book. A float here made a
+ * wrapping title flow AROUND the chips and stranded them on a line of their own. */
+.org-root .org-tags { display: inline-flex; flex-wrap: wrap; gap: var(--o2h-space-1); }
+.org-root .org-cite { color: var(--o2h-accent); border-color: var(--o2h-accent); }
+.org-root .org-math { font-family: var(--o2h-font-mono); }
+.org-root .org-subscript, .org-root .org-superscript { font-size: 0.75em; }
+
+/* ── Planning / clock ────────────────────────────────────────────────────────── */
+.org-root .org-planning { font-family: var(--o2h-font-mono); font-size: 0.85em; color: var(--o2h-mute); margin: 0 0 var(--o2h-space-3); }
+.org-root .org-planning-keyword { color: var(--o2h-ink); font-weight: 700; }
+.org-root .org-logbook { border: var(--o2h-border-dashed); padding: var(--o2h-space-2); margin: 0 0 var(--o2h-space-3); }
+.org-root .org-clock { font-family: var(--o2h-font-mono); font-size: 0.85em; margin: 0; }
+
+/* ── SB-3 · TOC rail + remaining native constructs + decoration utilities ────── */
+
+/* MAP-048 — each TOC link carries an active orange left-border rail (transparent
+ * by default, lit on hover/focus or when a host sets aria-current). A true sticky
+ * side-rail needs a multi-column layout with a dedicated aside column; in the
+ * single-column default the TOC is an inline card at the top of the content
+ * column, so it is NOT made sticky here — pinning a full-width card would overlap
+ * the sections that scroll behind it. */
+.org-root .org-toc-link {
+  display: inline-block;
+  border-left: var(--o2h-stripe-thin) solid transparent;
+  padding-left: var(--o2h-space-2);
+  margin-left: calc(-1 * var(--o2h-space-2));
+}
+.org-root .org-toc-link:hover,
+.org-root .org-toc-link:focus-visible,
+.org-root .org-toc-link[aria-current] { border-left-color: var(--o2h-accent); color: var(--o2h-accent); }
+
+/* MAP-046 — :LOGBOOK: → <details> accordion (shares the CMP-022 look). */
+.org-root .org-drawer--logbook { border: var(--o2h-border); padding: 0; }
+.org-root .org-drawer-summary {
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  text-transform: var(--o2h-label-transform);
+  letter-spacing: var(--o2h-label-track);
+  padding: var(--o2h-space-2) var(--o2h-space-3);
+  cursor: pointer;
+  list-style: none;
+}
+.org-root .org-drawer-summary::-webkit-details-marker { display: none; }
+/* The open/closed marker is a PAIR, and it was neither. Closed drew "+", open drew "\00d7"
+ * (a multiplication sign) — two different ideas, and a close-box on something that is not
+ * closable. Worse, the trailing space in "\00d7 " was eaten as the hex escape's own
+ * terminator, so the open state lost its gap and read as one word. It is now +/- with a
+ * NON-BREAKING space, which no escape can swallow, and the open rule matches every drawer
+ * rather than only the logbook. */
+.org-root .org-drawer-summary::before { content: "+\00a0"; color: var(--o2h-accent); }
+.org-root .org-drawer[open] > .org-drawer-summary::before { content: "\2212\00a0"; }
+.org-root .org-drawer-body {
+  padding: var(--o2h-space-3);
+  border-top: var(--o2h-border);
+  white-space: pre-wrap;
+  font-family: var(--o2h-font-mono);
+  font-size: 0.85em;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  body {
-    padding: var(--spacing-unit);
-  }
-  
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.5rem; }
-  h3 { font-size: 1.25rem; }
+/* MAP-051 — inlinetask: a small boxed task, ink frame + orange left rail. */
+.org-root .org-inlinetask {
+  border: var(--o2h-border-emphasis);
+  border-left: var(--o2h-rail) solid var(--o2h-accent);
+  padding: var(--o2h-space-2) var(--o2h-space-3);
+  margin: 0 0 var(--o2h-space-3);
+  max-width: 44ch;
+}
+.org-root .org-inlinetask-heading { margin: 0; font-family: var(--o2h-font-mono); font-size: 0.9em; }
+
+/* MAP-030 — pull-quote: oversized editorial quote with DEC-003 corner brackets. */
+.org-root .org-quote--pull {
+  border: 0;
+  position: relative;
+  font-family: var(--o2h-font-editorial);
+  font-size: 1.5em;
+  line-height: 1.25;
+  font-weight: 600;
+  padding: var(--o2h-space-4);
+  margin: var(--o2h-space-5) 0;
+  text-align: center;
+}
+.org-root .org-quote--pull::before,
+.org-root .org-quote--pull::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--o2h-accent);
+}
+.org-root .org-quote--pull::before { top: -3px; left: -3px; border-right: 0; border-bottom: 0; }
+.org-root .org-quote--pull::after { bottom: -3px; right: -3px; border-left: 0; border-top: 0; }
+
+/* DEC-006 — figure bracket frame: side rails + a [ FIG.0x ] counter label. */
+.org-root { counter-reset: o2h-fig; }
+.org-root .org-figure--bracket {
+  position: relative;
+  padding: var(--o2h-space-4);
+  border-left: var(--o2h-stripe-thin) solid var(--o2h-ink);
+  border-right: var(--o2h-stripe-thin) solid var(--o2h-ink);
+}
+.org-root .org-figure--bracket::before {
+  counter-increment: o2h-fig;
+  content: "[ FIG." counter(o2h-fig, decimal-leading-zero) " ]";
+  position: absolute;
+  top: -0.6em;
+  left: var(--o2h-space-3);
+  background: var(--o2h-bg);
+  padding: 0 var(--o2h-space-1);
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-label-track);
+  color: var(--o2h-accent);
+}
+/* DEC-008 — diagonal hatch: redacted / placeholder fill. */
+.org-root .org-figure--hatch {
+  background-image: repeating-linear-gradient(45deg, var(--o2h-line) 0, var(--o2h-line) 1px, transparent 1px, transparent 7px);
 }
 
-/* Print Styles */
-@media print {
-  body {
-    max-width: 100%;
-    padding: 0;
-    color: #000;
-    background: #fff;
+/* Decoration utilities (DEC-004/005/009/010/011/014/015/016) — reusable classes
+ * consumed by the components (SB-4), the template chrome (SB-5) and the showcase. */
+/* DEC-004 target reticle — circle + cross-hairs. */
+.org-root .org-deco-reticle {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--o2h-ink);
+  border-radius: var(--o2h-radius-full);
+}
+.org-root .org-deco-reticle::before,
+.org-root .org-deco-reticle::after { content: ""; position: absolute; background: var(--o2h-ink); }
+.org-root .org-deco-reticle::before { left: 50%; top: 4px; bottom: 4px; width: 1px; transform: translateX(-50%); }
+.org-root .org-deco-reticle::after { top: 50%; left: 4px; right: 4px; height: 1px; transform: translateY(-50%); }
+/* DEC-005 boxed X — 46×46 ink box + centred ×; also an .org-hr variant. */
+.org-root .org-deco-boxed-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--o2h-ink);
+  font-family: var(--o2h-font-mono);
+}
+.org-root .org-deco-boxed-x::before { content: "\00d7"; }
+.org-root .org-hr--boxed-x { border: 0; text-align: center; }
+.org-root .org-hr--boxed-x::before {
+  content: "\00d7";
+  display: inline-block;
+  width: 46px;
+  height: 46px;
+  line-height: 44px;
+  border: 1px solid var(--o2h-ink);
+  font-family: var(--o2h-font-mono);
+}
+/* DEC-009 dot matrix — faint radial-dot texture. */
+.org-root .org-deco-dot-matrix { background-image: radial-gradient(var(--o2h-line) 1.4px, transparent 1.4px); background-size: 10px 10px; }
+/* DEC-010 scanline — dark plate swept by a moving highlight (ANM-002). */
+.org-root .org-deco-scanline { position: relative; overflow: hidden; min-height: 44px; background: var(--o2h-code-bg); }
+.org-root .org-deco-scanline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(var(--o2h-syn-plain), transparent);
+  opacity: 0.12;
+  animation: o2h-scan 2.4s linear infinite;
+}
+/* DEC-011 barcode strip — vertical bars, e.g. a footer bottom bar. */
+.org-root .org-deco-barcode {
+  height: 28px;
+  background-image: repeating-linear-gradient(90deg, var(--o2h-ink) 0, var(--o2h-ink) 2px, transparent 2px, transparent 4px, var(--o2h-ink) 4px, var(--o2h-ink) 5px, transparent 5px, transparent 9px);
+}
+/* DEC-014 vertical label — rotated mono caption on a page edge / section rail. */
+.org-root .org-deco-vlabel {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-label-track);
+  text-transform: var(--o2h-label-transform);
+  color: var(--o2h-mute);
+}
+/* DEC-015 orange ribbon — full-width signal band. */
+.org-root .org-deco-ribbon {
+  background: var(--o2h-accent);
+  color: var(--o2h-accent-fg);
+  padding: var(--o2h-space-2) var(--o2h-space-3);
+  font-family: var(--o2h-font-mono);
+  text-transform: var(--o2h-label-transform);
+  letter-spacing: var(--o2h-label-track);
+  font-size: var(--o2h-label-size);
+}
+/* DEC-016 connector node — square–line–+ leader for diagrams. */
+.org-root .org-deco-connector { display: inline-flex; align-items: center; gap: 4px; font-family: var(--o2h-font-mono); color: var(--o2h-ink); }
+.org-root .org-deco-connector::before { content: ""; width: 6px; height: 6px; background: var(--o2h-ink); }
+.org-root .org-deco-connector::after { content: "\2014 +"; }
+
+/* ── SB-4 · Component default STATIC looks — keyed on [data-component] ──────────
+ * The engine emits inert <div data-component="X" data-variant="Y" data-label="…">
+ * placeholders ([D-22]); these rules give each a recognizable STATIC shell so a
+ * plain build renders a look without the (website-project) runtime. Labels ride
+ * the data-label / data-title / data-text mirror (SB-4) and print via attr(). */
+.org-root [data-component] { font-family: var(--o2h-font-editorial); }
+
+/* CMP-001 button */
+.org-root [data-component="button"] {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 40px; padding: 0 var(--o2h-space-3);
+  border: var(--o2h-border-emphasis); background: var(--o2h-accent); color: var(--o2h-accent-fg);
+  font-family: var(--o2h-font-mono); font-size: 0.9em; cursor: pointer;
+}
+.org-root [data-component="button"]::before { content: attr(data-label); }
+.org-root [data-component="button"][data-variant="outline"] { background: transparent; color: var(--o2h-ink); }
+.org-root [data-component="button"][data-variant="ink"] { background: var(--o2h-ink); color: var(--o2h-card); border-color: var(--o2h-ink); }
+.org-root [data-component="button"][data-variant="ghost"] { background: transparent; border-color: transparent; color: var(--o2h-ink); }
+.org-root [data-component="button"][data-variant="bracketed"] { background: transparent; color: var(--o2h-ink); }
+.org-root [data-component="button"][data-variant="bracketed"]::before { content: "[ " attr(data-label) " ]"; }
+.org-root [data-component="button"][data-size="sm"] { min-height: 32px; font-size: 0.8em; }
+.org-root [data-component="button"][data-size="lg"] { min-height: 48px; }
+.org-root [data-component="button"][data-state="disabled"] { opacity: 0.5; cursor: not-allowed; }
+.org-root [data-component="button"][data-state="loading"]::after {
+  content: ""; width: 0.8em; height: 0.8em; margin-left: 0.5em;
+  border: var(--o2h-stripe-thin) solid currentColor; border-top-color: transparent;
+  border-radius: var(--o2h-radius-full); animation: o2h-spin 0.7s linear infinite;
+}
+
+/* CMP-002 card */
+.org-root [data-component="card"] { display: block; border: var(--o2h-border); background: var(--o2h-card); padding: var(--o2h-space-4); min-height: 88px; }
+.org-root [data-component="card"]:hover { border-color: var(--o2h-ink); }
+.org-root [data-component="card"]::before { content: attr(data-title); display: block; font-weight: 700; }
+.org-root [data-component="card"][data-variant="compact"] { padding: var(--o2h-space-2) var(--o2h-space-3); min-height: 0; }
+
+/* CMP-003 stat-grid — bordered cell grid (runtime fills the numerals). */
+.org-root [data-component="stat-grid"] { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1px; background: var(--o2h-line); border: var(--o2h-border); min-height: 72px; }
+.org-root [data-component="stat-grid"]::before { content: attr(data-label); grid-column: 1 / -1; background: var(--o2h-card); padding: var(--o2h-space-3); font-family: var(--o2h-font-mono); font-size: var(--o2h-label-size); letter-spacing: var(--o2h-label-track); }
+
+/* CMP-004 callout variant=restricted — inverted plate + orange brackets. */
+.org-root [data-component="callout"] { display: block; position: relative; border: var(--o2h-border-emphasis); background: var(--o2h-ink); color: var(--o2h-card); padding: var(--o2h-space-4); }
+.org-root [data-component="callout"]::before { content: attr(data-label); font-family: var(--o2h-font-mono); color: var(--o2h-accent); }
+
+/* CMP-005 kbd — key cap with a 3px bottom border. */
+.org-root [data-component="kbd"] { display: inline-block; border: 1px solid var(--o2h-ink); border-bottom-width: 3px; padding: 0.1em 0.5em; font-family: var(--o2h-font-mono); font-size: 0.85em; background: var(--o2h-card); }
+.org-root [data-component="kbd"]::before { content: attr(data-label); }
+
+/* CMP-006 command — dark copyable one-liner with an orange $. */
+.org-root [data-component="command"] { display: flex; align-items: center; gap: var(--o2h-space-2); background: var(--o2h-code-bg); color: var(--o2h-syn-plain); padding: var(--o2h-space-2) var(--o2h-space-3); font-family: var(--o2h-font-mono); }
+.org-root [data-component="command"]::before { content: "$"; color: var(--o2h-accent); }
+.org-root [data-component="command"]::after { content: attr(data-text); }
+
+/* CMP-007 terminal — dark frame + prompt + blinking cursor (ANM-001). */
+.org-root [data-component="terminal"] { display: block; background: var(--o2h-code-bg); color: var(--o2h-syn-plain); border: var(--o2h-border); padding: var(--o2h-space-3); font-family: var(--o2h-font-mono); min-height: 72px; }
+.org-root [data-component="terminal"]::before { content: "> " attr(data-text); }
+.org-root [data-component="terminal"]::after { content: "\2588"; animation: o2h-blink 1.1s steps(2, start) infinite; }
+
+/* CMP-008 file-tree — mono list frame, orange root folder. */
+.org-root [data-component="file-tree"] { display: block; border: var(--o2h-border); background: var(--o2h-card); padding: var(--o2h-space-3); font-family: var(--o2h-font-mono); font-size: 0.85em; min-height: 72px; }
+.org-root [data-component="file-tree"]::before { content: attr(data-label); color: var(--o2h-accent); }
+
+/* CMP-009 diagram — schematic surface with a dot-matrix field (CHR-007). */
+.org-root [data-component="diagram"] { display: grid; place-items: center; min-height: 160px; border: var(--o2h-border); background-image: radial-gradient(var(--o2h-line) 1.4px, transparent 1.4px); background-size: 12px 12px; }
+.org-root [data-component="diagram"]::before { content: attr(data-label); font-family: var(--o2h-font-mono); font-size: var(--o2h-label-size); color: var(--o2h-mute); }
+
+/* CMP-010/012 input (+ error state) & CMP-011 search & CMP-013 select & CMP-014 textarea */
+.org-root [data-component="input"],
+.org-root [data-component="search"],
+.org-root [data-component="select"],
+.org-root [data-component="textarea"] { display: block; width: 100%; border: var(--o2h-border); background: var(--o2h-card); padding: var(--o2h-space-2) var(--o2h-space-3); min-height: 40px; font-family: var(--o2h-font-mono); }
+.org-root [data-component="input"]::before,
+.org-root [data-component="search"]::before,
+.org-root [data-component="select"]::before,
+.org-root [data-component="textarea"]::before { content: attr(data-label); color: var(--o2h-mute); }
+.org-root [data-component="input"]:focus-within,
+.org-root [data-component="search"]:focus-within { border-color: var(--o2h-accent); }
+.org-root [data-component="input"][data-state="error"] { border-color: var(--o2h-stop); background: var(--o2h-stop-wash); }
+.org-root [data-component="search"]::after { content: "\2315"; float: right; }
+.org-root [data-component="select"]::after { content: "\25BE"; float: right; }
+.org-root [data-component="textarea"] { min-height: 88px; resize: vertical; }
+
+/* CMP-015 toggle — square knob track. */
+.org-root [data-component="toggle"] { display: inline-block; width: 44px; height: 24px; border: var(--o2h-border-emphasis); background: var(--o2h-card); position: relative; }
+.org-root [data-component="toggle"]::before { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: var(--o2h-ink); }
+.org-root [data-component="toggle"][data-state="on"] { background: var(--o2h-accent); }
+.org-root [data-component="toggle"][data-state="on"]::before { left: auto; right: 2px; background: var(--o2h-accent-fg); }
+
+/* CMP-016 tabs — hairline-seam row, active = ink fill (set by host). */
+.org-root [data-component="tabs"] { display: flex; gap: 0; border: var(--o2h-border); font-family: var(--o2h-font-mono); font-size: 0.85em; min-height: 40px; }
+.org-root [data-component="tabs"]::before { content: attr(data-label); padding: var(--o2h-space-2) var(--o2h-space-3); background: var(--o2h-ink); color: var(--o2h-card); }
+
+/* CMP-017 newsletter — dark band with an underlined email field. */
+.org-root [data-component="newsletter"] { display: block; background: var(--o2h-ink); color: var(--o2h-card); padding: var(--o2h-space-4); }
+.org-root [data-component="newsletter"]::before { content: attr(data-label); display: block; font-family: var(--o2h-font-mono); }
+.org-root [data-component="newsletter"]::after { content: "email@\2192"; display: inline-block; margin-top: var(--o2h-space-2); border-bottom: 1px solid var(--o2h-accent); color: var(--o2h-card); }
+
+/* CMP-018/019 modal (+ alert) — centred plate with orange registration brackets. */
+.org-root [data-component="modal"] { display: block; position: relative; border: var(--o2h-border-emphasis); background: var(--o2h-card); padding: var(--o2h-space-5); max-width: 32rem; animation: o2h-fade 0.2s ease-out; }
+.org-root [data-component="modal"]::before,
+.org-root [data-component="modal"]::after { content: ""; position: absolute; width: 16px; height: 16px; border: 2px solid var(--o2h-accent); }
+.org-root [data-component="modal"]::before { top: -3px; left: -3px; border-right: 0; border-bottom: 0; }
+.org-root [data-component="modal"]::after { bottom: -3px; right: -3px; border-left: 0; border-top: 0; }
+.org-root [data-component="modal"][data-variant="alert"] { border-color: var(--o2h-stop); }
+
+/* CMP-020 toast — bottom-right chip, ANM-003 rise-in. */
+.org-root [data-component="toast"] { display: inline-block; border: var(--o2h-border-emphasis); background: var(--o2h-card); padding: var(--o2h-space-2) var(--o2h-space-3); animation: o2h-toast 0.3s ease-out; }
+.org-root [data-component="toast"]::before { content: attr(data-label); }
+
+/* CMP-021 tooltip — dashed-underline trigger. */
+.org-root [data-component="tooltip"] { border-bottom: 1px dashed var(--o2h-ink); cursor: help; }
+.org-root [data-component="tooltip"]::before { content: attr(data-label); }
+
+/* CMP-022 accordion — shares the LOGBOOK look (MAP-046). */
+.org-root [data-component="accordion"] { display: block; border: var(--o2h-border); }
+.org-root [data-component="accordion"]::before { content: "+ " attr(data-label); display: block; padding: var(--o2h-space-2) var(--o2h-space-3); font-family: var(--o2h-font-mono); }
+
+/* CMP-023 pagination — mono hairline-seam buttons. */
+.org-root [data-component="pagination"] { display: inline-flex; border: var(--o2h-border); font-family: var(--o2h-font-mono); }
+.org-root [data-component="pagination"]::before { content: "1 2 3 \2026"; padding: var(--o2h-space-2) var(--o2h-space-3); }
+
+/* CMP-024 skeleton — shimmer plate (ANM-005) / scanline (ANM-002). */
+.org-root [data-component="skeleton"] { display: block; min-height: 72px; background: linear-gradient(90deg, var(--o2h-line-soft) 25%, var(--o2h-line) 37%, var(--o2h-line-soft) 63%); background-size: 200% 100%; animation: o2h-shimmer 1.4s linear infinite; }
+
+/* CMP-025 spinner — square (ANM-006) / dots (ANM-008). */
+.org-root [data-component="spinner"] { display: inline-block; width: 24px; height: 24px; border: var(--o2h-stripe-thin) solid var(--o2h-ink); border-top-color: transparent; animation: o2h-spin 0.7s linear infinite; }
+.org-root [data-component="spinner"][data-variant="dots"] { border: 0; border-radius: var(--o2h-radius-full); background: var(--o2h-accent); animation: o2h-pulse 1s ease-in-out infinite; }
+
+/* CMP-026 progress — determinate bar / indeterminate sweep (ANM-007). */
+.org-root [data-component="progress"] { display: block; height: 8px; border: var(--o2h-border); background: var(--o2h-card); position: relative; overflow: hidden; }
+.org-root [data-component="progress"]::before { content: ""; position: absolute; inset: 0 60% 0 0; background: var(--o2h-accent); }
+.org-root [data-component="progress"][data-variant="indeterminate"]::before { inset: 0; width: 40%; animation: o2h-indet 1.1s linear infinite; }
+
+/* CMP-027 empty — bordered glyph + label. */
+.org-root [data-component="empty"] { display: grid; place-items: center; gap: var(--o2h-space-2); min-height: 120px; border: var(--o2h-border-dashed); text-align: center; }
+.org-root [data-component="empty"]::before { content: "\2205"; font-size: 1.5em; color: var(--o2h-mute); }
+.org-root [data-component="empty"]::after { content: attr(data-label); font-family: var(--o2h-font-mono); font-size: var(--o2h-label-size); }
+
+/* CMP-028/029 error — inverted plate, big orange numeral / offline red pulse. */
+.org-root [data-component="error"] { display: grid; place-items: center; min-height: 160px; background: var(--o2h-ink); color: var(--o2h-card); }
+.org-root [data-component="error"]::before { content: attr(data-code); font-family: var(--o2h-font-mono); font-size: 3em; color: var(--o2h-accent); }
+.org-root [data-component="error"][data-variant="offline"]::before { content: "\25CF"; color: var(--o2h-stop); animation: o2h-pulse 1.2s ease-in-out infinite; }
+
+/* CMP-030 avatar-group — overlapped disc row + +N. */
+.org-root [data-component="avatar-group"] { display: inline-flex; }
+.org-root [data-component="avatar-group"]::before { content: attr(data-count); display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: var(--o2h-radius-full); background: var(--o2h-accent); color: var(--o2h-accent-fg); font-family: var(--o2h-font-mono); font-size: 0.75em; }
+
+/* CMP-031 badge — orange count bubble. */
+.org-root [data-component="badge"] { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: var(--o2h-radius); background: var(--o2h-accent); color: var(--o2h-accent-fg); font-family: var(--o2h-font-mono); font-size: 0.7em; }
+.org-root [data-component="badge"]::before { content: attr(data-count); }
+
+/* CMP-032 back-to-top — 44px FAB hit target. */
+.org-root [data-component="back-to-top"] { display: inline-grid; place-items: center; width: 44px; height: 44px; border: var(--o2h-border-emphasis); background: var(--o2h-card); cursor: pointer; }
+.org-root [data-component="back-to-top"]::before { content: "\2191"; }
+
+/* CMP-033 read-progress — arc ring (clip approximated by a bordered disc). */
+.org-root [data-component="read-progress"] { display: inline-block; width: 32px; height: 32px; border: var(--o2h-rail) solid var(--o2h-line); border-top-color: var(--o2h-accent); border-radius: var(--o2h-radius-full); }
+
+/* CMP-034 gallery — tile grid shell. */
+.org-root [data-component="gallery"] { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: var(--o2h-space-2); }
+.org-root [data-component="gallery"]::before,
+.org-root [data-component="gallery"]::after { content: ""; aspect-ratio: 1; background-image: repeating-linear-gradient(45deg, var(--o2h-line) 0, var(--o2h-line) 1px, transparent 1px, transparent 7px); }
+
+/* CMP-035 carousel — track frame with a centre reticle + dot nav. */
+.org-root [data-component="carousel"] { display: grid; place-items: center; min-height: 160px; border: var(--o2h-border); position: relative; }
+.org-root [data-component="carousel"]::after { content: "\2022 \2022 \2022"; position: absolute; bottom: var(--o2h-space-2); letter-spacing: 0.3em; color: var(--o2h-mute); }
+
+/* CMP-036 lightbox — dimmed overlay plate. */
+.org-root [data-component="lightbox"] { display: grid; place-items: center; min-height: 160px; background: rgba(11, 11, 11, 0.85); color: var(--o2h-card); animation: o2h-fade 0.2s ease-out; }
+.org-root [data-component="lightbox"]::before { content: attr(data-label); font-family: var(--o2h-font-mono); }
+
+/* CMP-037 reticle & CMP-038 connector — reuse the DEC-004 / DEC-016 primitives. */
+.org-root [data-component="reticle"] {
+  position: relative; width: 44px; height: 44px;
+  border: 1px solid var(--o2h-ink); border-radius: var(--o2h-radius-full);
+}
+.org-root [data-component="reticle"]::before,
+.org-root [data-component="reticle"]::after { content: ""; position: absolute; background: var(--o2h-ink); }
+.org-root [data-component="reticle"]::before { left: 50%; top: 4px; bottom: 4px; width: 1px; transform: translateX(-50%); }
+.org-root [data-component="reticle"]::after { top: 50%; left: 4px; right: 4px; height: 1px; transform: translateY(-50%); }
+.org-root [data-component="connector"] { display: inline-flex; align-items: center; gap: 4px; font-family: var(--o2h-font-mono); color: var(--o2h-ink); }
+.org-root [data-component="connector"]::before { content: ""; width: 6px; height: 6px; background: var(--o2h-ink); }
+.org-root [data-component="connector"]::after { content: "\2014 +"; }
+
+/* A top-level (direct grid-child) inline component must not stretch to the
+ * content column — keep it at its natural width. Block components stretch. */
+.org-root > [data-component="button"],
+.org-root > [data-component="kbd"],
+.org-root > [data-component="toggle"],
+.org-root > [data-component="badge"],
+.org-root > [data-component="tooltip"],
+.org-root > [data-component="toast"],
+.org-root > [data-component="pagination"],
+.org-root > [data-component="avatar-group"],
+.org-root > [data-component="back-to-top"],
+.org-root > [data-component="spinner"],
+.org-root > [data-component="read-progress"],
+.org-root > [data-component="reticle"],
+.org-root > [data-component="connector"] { justify-self: start; }
+
+/* ── SB-5 · Page layouts (LAY-001…008) — keyed on .org-layout--<slug> ──────────
+ * #+HTML_LAYOUT: <slug> puts org-layout--<slug> on .org-root; each mainly retunes
+ * the content measure + rhythm + masthead. Absent / unknown = the article base. */
+/* LAY-006 article — the default single-column measure. A PURE MARKER: it sets no
+ * measure of its own, so `#+HTML_LAYOUT: article` renders identically to a document
+ * with no layout keyword at all, in whichever book is loaded (kwo 696px, o2h 72ch).
+ * It previously hard-set `72ch` here, which silently NARROWED the default book by
+ * 98.4px — the opposite of what an "explicit marker for the default" should do. A
+ * literal measure must not live in this sheet anyway: it would leak one book's
+ * reading column into the other. The value belongs to `--o2h-measure` in the book's
+ * own token layer, and a host still overrides it with `--host-measure`. */
+.org-root.org-layout--article { /* no measure override — inherits the book default */ }
+/* LAY-001 magazine — wide measure, heavy masthead, accent top rule. */
+.org-root.org-layout--magazine { --o2h-measure: 66rem; }
+.org-root.org-layout--magazine .org-article-header { border-top: var(--o2h-stripe) solid var(--o2h-accent); padding-top: var(--o2h-space-4); }
+.org-root.org-layout--magazine .org-heading--title { font-size: clamp(2.5rem, 7vw, 4.5rem); }
+/* LAY-002 archive — list-dense: tighter rhythm, smaller body. */
+.org-root.org-layout--archive { row-gap: var(--o2h-space-3); font-size: 0.94em; }
+.org-root.org-layout--archive .org-heading { margin-top: var(--o2h-space-3); }
+/* LAY-003 editorial — narrow measure, airy leading, large heads. */
+.org-root.org-layout--editorial { --o2h-measure: 42rem; line-height: 1.7; }
+.org-root.org-layout--editorial .org-heading--title { font-size: clamp(2rem, 6vw, 3.5rem); }
+/* LAY-004 feed — compact stream. */
+.org-root.org-layout--feed { --o2h-measure: 40rem; row-gap: var(--o2h-space-4); }
+/* LAY-005 author — bordered bio-style masthead. */
+.org-root.org-layout--author .org-article-header { border: var(--o2h-border); padding: var(--o2h-space-4); background: var(--o2h-card); }
+/* LAY-007 category — wide measure for an index/grid page. */
+.org-root.org-layout--category { --o2h-measure: 66rem; }
+/* LAY-008 newsletter — email-width centred column. */
+/* newsletter — a narrow, email-width column; only the masthead is centred, the
+ * body stays left-aligned for readability. */
+.org-root.org-layout--newsletter { --o2h-measure: 37.5rem; }
+.org-root.org-layout--newsletter .org-article-header { text-align: center; }
+
+/* ── SB-5 · Template chrome (CHR-002…006) — reusable classes ───────────────────
+ * Shipped as classes for a template / host / #+BEGIN_EXPORT html to place; not
+ * auto-injected (single-document site chrome stays a website-project concern,
+ * [D-22]). */
+/* CHR-002 — top nav bar + brand glyph. */
+.org-root .org-nav { display: flex; align-items: center; justify-content: space-between; gap: var(--o2h-space-3); padding: var(--o2h-space-3) 0; border-bottom: var(--o2h-border); }
+.org-root .org-brand { display: inline-flex; align-items: center; gap: var(--o2h-space-2); font-family: var(--o2h-font-mono); font-weight: 700; letter-spacing: var(--o2h-label-track); text-transform: var(--o2h-label-transform); }
+.org-root .org-brand::before { content: ""; width: 12px; height: 12px; background: var(--o2h-accent); }
+.org-root .org-nav a { font-family: var(--o2h-font-mono); font-size: var(--o2h-label-size); text-transform: var(--o2h-label-transform); letter-spacing: var(--o2h-label-track); }
+/* CHR-003 — breadcrumb trail. */
+.org-root .org-breadcrumb { font-family: var(--o2h-font-mono); font-size: var(--o2h-label-size); color: var(--o2h-mute); letter-spacing: var(--o2h-label-track); }
+.org-root .org-breadcrumb a + a::before,
+.org-root .org-breadcrumb span + span::before { content: " / "; color: var(--o2h-line); }
+/* CHR-005 — status / serial strip. */
+.org-root .org-statusbar { display: flex; justify-content: space-between; font-family: var(--o2h-font-mono); font-size: var(--o2h-label-size); letter-spacing: var(--o2h-label-track); color: var(--o2h-mute); border-block: var(--o2h-border); padding: var(--o2h-space-2) 0; }
+/* CHR-004 — footer columns + a barcode bottom bar (DEC-011). */
+.org-root .org-footer { border-top: var(--o2h-border-emphasis); margin-top: var(--o2h-space-6); padding-top: var(--o2h-space-4); }
+.org-root .org-footer-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--o2h-space-4); }
+.org-root .org-footer-bar {
+  height: 28px;
+  margin-top: var(--o2h-space-4);
+  background-image: repeating-linear-gradient(90deg, var(--o2h-ink) 0, var(--o2h-ink) 2px, transparent 2px, transparent 4px, var(--o2h-ink) 4px, var(--o2h-ink) 5px, transparent 5px, transparent 9px);
+}
+/* CHR-006 — cover masthead with orange ribbon bands. */
+.org-root .org-cover { position: relative; padding: var(--o2h-space-6) var(--o2h-space-4); border: var(--o2h-border-emphasis); }
+.org-root .org-cover::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: var(--o2h-space-2); background: var(--o2h-accent); }
+.org-root .org-cover-ribbon { display: inline-block; background: var(--o2h-accent); color: var(--o2h-accent-fg); padding: var(--o2h-space-1) var(--o2h-space-3); font-family: var(--o2h-font-mono); text-transform: var(--o2h-label-transform); letter-spacing: var(--o2h-label-track); font-size: var(--o2h-label-size); }
+
+/* ── Design-token swatches (TOK-001…013) — make the palette / type / spacing
+ * visible in a style-book tokens section. Each swatch fills from a token var, so
+ * they double as a live check that the tokens resolve. */
+.org-root .org-swatches { display: flex; flex-wrap: wrap; gap: var(--o2h-space-2); margin: 0 0 var(--o2h-space-3); }
+.org-root .org-swatch {
+  display: inline-grid;
+  align-content: end;
+  width: 104px;
+  height: 76px;
+  padding: var(--o2h-space-1) var(--o2h-space-2);
+  border: var(--o2h-border);
+  font-family: var(--o2h-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--o2h-card);
+}
+.org-root .org-swatch--signal-300 { background: var(--o2h-signal-300); color: var(--o2h-ink); }
+.org-root .org-swatch--signal-500 { background: var(--o2h-signal-500); }
+.org-root .org-swatch--signal-700 { background: var(--o2h-signal-700); }
+.org-root .org-swatch--ink { background: var(--o2h-ink); }
+.org-root .org-swatch--slate { background: var(--o2h-slate); }
+.org-root .org-swatch--paper { background: var(--o2h-paper); color: var(--o2h-ink); }
+.org-root .org-swatch--line { background: var(--o2h-line); color: var(--o2h-ink); }
+.org-root .org-swatch--card { background: var(--o2h-card); color: var(--o2h-ink); }
+.org-root .org-swatch--go { background: var(--o2h-go); }
+.org-root .org-swatch--hold { background: var(--o2h-hold); color: var(--o2h-ink); }
+.org-root .org-swatch--stop { background: var(--o2h-stop); }
+.org-root .org-type-sample--editorial { font-family: var(--o2h-font-editorial); font-size: 1.4rem; margin: 0; }
+.org-root .org-type-sample--mono { font-family: var(--o2h-font-mono); font-size: 1.2rem; margin: 0; }
+.org-root .org-space-scale { display: flex; align-items: flex-end; gap: var(--o2h-space-2); }
+.org-root .org-space-scale > span { display: block; background: var(--o2h-ink); }
+
+/* ── Title bleed (#+TITLE_BLEED: t) — wide masthead OVER a narrow body ──────────
+ * The reading body is held to a comfortable column while the masthead breaks out
+ * to --o2h-measure-wide and centres, so the title clearly extends PAST the body
+ * on both sides (feature-article / hero style). Overrides a layout's wide measure
+ * for the body so the contrast always reads. */
+.org-root.org-title-bleed {
+  --o2h-measure: var(--host-measure, 68ch);
+}
+.org-root.org-title-bleed .org-article-header {
+  grid-column: full-start / full-end;
+  width: min(100% - 2 * var(--o2h-gutter), var(--o2h-measure-wide));
+  margin-inline: auto;
+  text-align: center;
+}
+.org-root.org-title-bleed .org-heading--title { font-size: clamp(2.5rem, 6vw, 4rem); }
+.org-root.org-title-bleed .org-article-byline { justify-content: center; }
+
+/* ── Responsive media embed (YouTube) — 16:9 frame, no layout shift ─────────────
+ * The only iframe the sanitizer keeps is a youtube(-nocookie) embed (see
+ * sanitizer.ts); this gives it a fluid, aspect-locked box. */
+/* No border: a video wears no frame in any state, and this is the sheet every book
+ * inherits, so the rule has to hold here or a tokens-only book re-draws it. */
+.org-root .org-embed { margin-block: 0 var(--o2h-space-4); background: var(--o2h-ink); }
+.org-root .org-embed-stage { position: relative; aspect-ratio: 16 / 9; display: block; }
+.org-root .org-embed-stage > iframe,
+.org-root .org-embed-stage > video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* ── Carousel — a dependency-free horizontal scroll-snap strip of images ────────
+ * Author it with a row of <img> inside .org-carousel-strip (a #+BEGIN_EXPORT html
+ * block or a template). Drag / swipe / scroll horizontally; each slide snaps. */
+.org-root .org-carousel-strip {
+  display: flex;
+  gap: var(--o2h-space-2);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  margin-block: 0 var(--o2h-space-3);
+  padding-bottom: var(--o2h-space-2);
+}
+.org-root .org-carousel-strip > * {
+  flex: 0 0 clamp(220px, 72%, 420px);
+  scroll-snap-align: start;
+}
+.org-root .org-carousel-strip img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border: var(--o2h-border);
+}
+.org-root .org-carousel-strip::-webkit-scrollbar { height: 8px; }
+.org-root .org-carousel-strip::-webkit-scrollbar-thumb { background: var(--o2h-line); }
+
+/* ── Interactive runtime (o2h.js) — styles for enhanced / injected elements ─────
+ * These pair with the default runtime script. With JS off the base looks + the
+ * CSS-native interactions (scroll-snap, <details>) still work; these rules just
+ * dress the JS affordances (lightbox, carousel arrows, FAB, progress, modal). */
+/* Lightbox overlay */
+.org-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: var(--o2h-space-5);
+  background: rgba(11, 11, 11, 0.9);
+  cursor: zoom-out;
+  animation: o2h-fade 0.15s ease-out;
+}
+.org-lightbox-overlay img { max-width: 100%; max-height: 100%; border: var(--o2h-border-emphasis); }
+/* Carousel arrows */
+/* The arrows overlay the STRIP's own grid cell. They used to be absolutely positioned at
+ * top:50% of .org-carousel — which also contains the dot rail BELOW the strip — so they
+ * were pushed down by half the rail's height and sat visibly off-centre against the image
+ * they page. Placing strip and buttons in the same grid cell centres them on the picture
+ * and needs no magic number for the rail. */
+.org-root .org-carousel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.org-root .org-carousel-strip { grid-area: 1 / 1; }
+.org-root .org-carousel-rail { grid-area: 2 / 1; }
+.org-root .org-carousel-btn {
+  grid-area: 1 / 1;
+  align-self: center;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: var(--o2h-border-emphasis);
+  background: var(--o2h-card);
+  color: var(--o2h-ink);
+  font-size: 1.4rem;
+  cursor: pointer;
+  z-index: 2;
+}
+.org-root .org-carousel-btn--prev { justify-self: start; margin-inline-start: var(--o2h-space-2); }
+.org-root .org-carousel-btn--next { justify-self: end; margin-inline-end: var(--o2h-space-2); }
+.org-root .org-carousel-btn:hover { background: var(--o2h-accent); color: var(--o2h-accent-fg); border-color: var(--o2h-accent); }
+/* Back-to-top FAB (injected or enhanced) — fixed, hidden until scrolled */
+.org-back-to-top {
+  position: fixed;
+  right: var(--o2h-space-4);
+  bottom: var(--o2h-space-4);
+  z-index: 900;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: var(--o2h-border-emphasis);
+  background: var(--o2h-card);
+  color: var(--o2h-ink);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s;
+}
+.org-back-to-top::before { content: "\2191"; }
+.org-back-to-top.is-visible { opacity: 1; visibility: visible; }
+/* Read-progress bar */
+.org-read-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 950; background: transparent; }
+.org-read-progress > i { display: block; height: 100%; width: 0; background: var(--o2h-accent); }
+/* Copy feedback */
+.org-root .org-src-copy.is-copied { color: var(--o2h-go); border-color: var(--o2h-go); }
+/* Toast dismissed */
+.org-root [data-component="toast"].is-hidden { display: none; }
+/* Modal (JS-driven) — hidden until .is-open */
+.org-root [data-o2h="modal"] {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  place-items: center;
+  padding: var(--o2h-space-5);
+  background: rgba(11, 11, 11, 0.6);
+}
+.org-root [data-o2h="modal"].is-open { display: grid; animation: o2h-fade 0.15s ease-out; }
+.org-root [data-o2h="modal"] > * { max-width: 32rem; }
+/* Tabs (JS-driven) */
+.org-root [data-o2h="tabs"] [data-tab] { cursor: pointer; }
+.org-root [data-o2h="tabs"] [data-tab].is-active { color: var(--o2h-accent); border-bottom: var(--o2h-stripe-thin) solid var(--o2h-accent); }
+.org-root [data-o2h="tabs"] [data-panel][hidden] { display: none; }
+/* #+BEGIN_TABS structure — the look belongs to the book, the geometry belongs here. */
+.org-root .org-tablist { display: flex; flex-wrap: wrap; }
+.org-root .org-tab { font: inherit; cursor: pointer; }
+.org-root .org-tabpanel[hidden] { display: none; }
+/* A chart's source table travels WITH the drawing for a screen reader, a crawler, a
+ * text-only reader and a print — hidden from sight, never removed from the document.
+ * `display: none` would take it out of the accessibility tree too, which is the whole
+ * thing this is here to avoid. */
+.org-root .org-chart-data {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .org-lightbox-overlay,
+  .org-root [data-o2h="modal"].is-open { animation: none; }
+  .org-back-to-top { transition: none; }
+}
+
+/* ── Animations (ANM-001…008) ─────────────────────────────────────────────────
+ * The book's eight keyframes, shipped in the default CSS and consumed by the
+ * status pill (blink) and the Phase-4 components (spinner/toast/skeleton/…).
+ * All are neutralized by the prefers-reduced-motion: reduce block below. */
+@keyframes o2h-blink       { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }        /* ANM-001 */
+@keyframes o2h-scan        { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } } /* ANM-002 */
+@keyframes o2h-toast       { 0% { transform: translateY(120%); opacity: 0; } 100% { transform: none; opacity: 1; } } /* ANM-003 */
+@keyframes o2h-fade        { 0% { opacity: 0; } 100% { opacity: 1; } }                      /* ANM-004 */
+@keyframes o2h-shimmer     { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } } /* ANM-005 */
+@keyframes o2h-spin        { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } } /* ANM-006 */
+@keyframes o2h-indet       { 0% { left: -40%; } 100% { left: 100%; } }                      /* ANM-007 */
+@keyframes o2h-pulse       { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }              /* ANM-008 */
+
+/* ── Dark mode: EXPLICIT opt-in ONLY ─────────────────────────────────────────────
+ * Activated solely by `--theme dark` (→ .org-root[data-theme="dark"]). There is
+ * deliberately NO prefers-color-scheme / OS-browser auto-switch: the output theme
+ * is chosen by the author at build time, never inferred from the visitor's
+ * environment. Default output is always light. */
+.org-root[data-theme="dark"] {
+  --o2h-bg: var(--o2h-ink);
+  --o2h-fg: #EDEDEA;
+  --o2h-surface: #17171A;
+  --o2h-card: #17171A;
+  --o2h-line: #2A2A2E;
+  --o2h-line-soft: #202024;
+  --o2h-mute: #9A9A96;
+  --o2h-slate: #C7C7C2;
+  --o2h-link: var(--o2h-signal-300);
+  --o2h-code-inline-bg: #202024;
+  --o2h-code-inline-border: #2A2A2E;
+  --o2h-code-inline-fg: var(--o2h-signal-300);
+}
+
+/* Reduced-motion (WCAG 2.3.3 / R-08): neutralize ALL animation, transition and
+ * smooth scrolling inside the engine subtree — including anything a host layers
+ * on later. This universal reset is the ONE sanctioned use of !important (the
+ * only way to reliably override author/inline motion); every other rule in this
+ * sheet stays !important-free. */
+@media (prefers-reduced-motion: reduce) {
+  .org-root *,
+  .org-root *::before,
+  .org-root *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
-  
-  a {
-    color: #000;
-    text-decoration: underline;
-  }
-  
-  pre, code {
-    border: 1px solid #000;
-  }
+}
+
+
+/* ── BREAKOUTS · LAST WORD ────────────────────────────────────────────────────
+ * Break media (images / carousels / videos / tables) OUT of the reading column —
+ * works both at the top level AND nested inside a section, via a viewport-
+ * relative inline margin. .org-full-bleed reaches the viewport edges; .org-wide
+ * caps at the masthead width (--o2h-measure-wide). Add either class to a figure
+ * (via #+ATTR_HTML :class), a .org-carousel-strip, a table, or an .org-embed.
+ *
+ * THIS BLOCK MUST STAY LAST. Component rules above set margins with the
+ * `margin:` shorthand (`margin: X 0` zeroes the UA inline margin a <figure>,
+ * <blockquote> or <table> ships with), which resets the inline margin these
+ * rules depend on. Same specificity → source order decides, so a nested
+ * full-bleed figure kept its 100vw width but lost its negative pull and pushed
+ * the whole page into a horizontal scroll. Keep the breakout the last word. */
+/* The class is REPEATED in each selector on purpose. Source order alone was not enough:
+ * the book layer loads after this sheet, and one `margin: X 0` on `.org-figure` there was
+ * enough to reset the inline margin again. Doubling the class raises specificity to (0,3,0),
+ * which no single-class construct rule in any book can outrank — the breakout stays the last
+ * word no matter what loads after it. */
+.org-root .org-full-bleed.org-full-bleed,
+.org-root .org-wide.org-wide { max-width: none; }
+.org-root .org-full-bleed.org-full-bleed {
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+}
+.org-root .org-wide.org-wide {
+  width: min(100vw - 2 * var(--o2h-gutter), var(--o2h-measure-wide));
+  margin-inline: calc(50% - min(50vw - var(--o2h-gutter), var(--o2h-measure-wide) / 2));
+}
+/* A TOP-LEVEL breakout is a grid item — centre it with the grid instead of the
+ * margin trick (a grid item ignores negative auto-margins), so the hero doesn't
+ * left-align. */
+.org-root > .org-full-bleed.org-full-bleed {
+  grid-column: full-start / full-end;
+  width: auto;
+  margin-inline: 0;
+}
+.org-root > .org-wide.org-wide {
+  grid-column: full-start / full-end;
+  justify-self: center;
+  width: min(100% - 2 * var(--o2h-gutter), var(--o2h-measure-wide));
+  margin-inline: 0;
 }
