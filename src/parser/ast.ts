@@ -11,7 +11,7 @@
  * serialization of leaf nodes stays compact.
  */
 
-import type { AstNode, NodeType, OrgMetadata } from '../types.js'
+import type { AstNode, NodeType, OrgAst, OrgMetadata } from '../types.js'
 
 export function createNode(
   type: NodeType,
@@ -32,7 +32,7 @@ export function createTextNode(value: string): AstNode {
   }
 }
 
-export function createDocument(metadata: OrgMetadata, children: AstNode[]): AstNode {
+export function createDocument(metadata: OrgMetadata, children: AstNode[]): OrgAst {
   return {
     type: 'document',
     metadata,
