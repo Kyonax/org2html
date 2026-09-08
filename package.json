@@ -33,12 +33,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kyonax/org2html.git"
+    "url": "git+https://github.com/Kyonax/org2html.git"
   },
   "bugs": {
-    "url": "https://github.com/kyonax/org2html/issues"
+    "url": "https://github.com/Kyonax/org2html/issues"
   },
-  "homepage": "https://github.com/kyonax/org2html#readme",
+  "homepage": "https://github.com/Kyonax/org2html#readme",
   "keywords": [
     "org-mode",
     "org2html",
@@ -54,7 +54,7 @@
   ],
   "author": {
     "name": "Cristian D. Moreno - Kyonax",
-    "url": "https://github.com/kyonax"
+    "url": "https://github.com/Kyonax"
   },
   "maintainers": [
     {
