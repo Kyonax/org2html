@@ -15,6 +15,13 @@
 export { parse } from "./parser/parser.js";
 export { renderToHtml } from "./renderer/html-renderer.js";
 export { applyTemplate } from "./renderer/template.js";
+export { resolveStyleBook, KNOWN_CONSTRUCTS } from "./renderer/style-book.js";
+export { PluginRegistry, codeHighlightPlugin } from "./plugins/plugin-api.js";
+export { renderComponentPlaceholder, parseComponentArgs, parseComponentBody } from "./plugins/shortcode.js";
+export { addImageDimensions, resolveImageDimensions } from "./plugins/asset-fetcher.js";
+export { probeLocalImage } from "./assets/asset-handler.js";
+export { resolveOrgFileKeywords, parseIncludeSpec, startupToOptions } from "./cli/org-resolve.js";
+export { titleFromFilename } from "./cli/utils.js";
 export type * from "./types.js";
 
 import { parse } from "./parser/parser.js";
@@ -34,6 +41,12 @@ export async function org2html(
     result.metadata,
     options.template,
     options.templateDir,
+    {
+      injectDefaultStyles: options.injectDefaultStyles,
+      styleMode: options.styleMode,
+      cssVars: options.cssVars,
+      fontStack: options.fontStack,
+    },
   );
 
   return result;

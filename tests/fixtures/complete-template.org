@@ -1,0 +1,365 @@
+#+TITLE: Complete Org2HTML Template - SEO Optimized Article
+#+AUTHOR: Your Name
+#+DATE: 2025-01-21
+#+EMAIL: your.email@example.com
+#+DESCRIPTION: A comprehensive template demonstrating all org2html features including SEO metadata, Open Graph tags, Twitter Cards, and full Org-mode syntax support for creating optimized web content.
+#+KEYWORDS: org-mode, html, seo, vue, template, web development, static site generator
+#+LANGUAGE: en
+#+CATEGORY: Documentation
+#+FILETAGS: :template:documentation:seo:
+
+# SEO & Social Media Metadata
+#+CANONICAL: https://example.com/articles/complete-template
+#+COVER_IMAGE: /images/article-cover.png
+#+OG_TITLE: Complete Org2HTML Template - Master SEO & Org-mode Syntax
+#+OG_DESCRIPTION: Learn how to create SEO-optimized articles with org2html. This template covers all metadata fields, Open Graph tags, Twitter Cards, and Org-mode syntax elements.
+#+OG_IMAGE: /images/og-image-1200x630.png
+#+TWITTER_CARD: summary_large_image
+#+TWITTER_SITE: @yoursite
+#+TWITTER_CREATOR: @yourhandle
+#+THEME_COLOR: #3b82f6
+#+ROBOTS: index, follow
+
+# Optional: Custom properties in a drawer
+:PROPERTIES:
+:CUSTOM_ID: complete-template
+:EXPORT_FILE_NAME: complete-template
+:END:
+
+* Introduction
+
+[[file:./tests/test.org][New File Article]]
+
+[[file:pixel.png]]
+
+[[https://cdn.mos.cms.futurecdn.net/9meMCxtJU3NWkh5YcPs7qG.jpg]]
+
+#+ALT: Testing Shit
+[[https://youtu.be/8JTx8llpBxQ]]
+
+This is a *comprehensive template* that demonstrates /all features/ of the ~org2html~ parser. Use this as a reference when creating your own Org-mode files for web publishing with full SEO optimization.
+
+The template covers:
+- All SEO metadata fields (title, description, Open Graph, Twitter Cards)
+- Complete Org-mode syntax support
+- Vue component integration via shortcodes
+- Best practices for web content structure
+
+* SEO Metadata Fields Reference                                    :seo:
+
+** Basic Metadata
+
+All metadata fields are defined at the top of the file using the ~#+FIELD:~ syntax:
+
+- ~#+TITLE:~ - The main page title (appears in ~<title>~ tag and ~<h1>~)
+- ~#+AUTHOR:~ - Content author name
+- ~#+DATE:~ - Publication date (ISO format recommended: YYYY-MM-DD)
+- ~#+EMAIL:~ - Author email address
+- ~#+DESCRIPTION:~ - Meta description for search engines (150-160 characters recommended)
+- ~#+KEYWORDS:~ - Comma-separated keywords for SEO
+- ~#+LANGUAGE:~ - Content language code (e.g., ~en~, ~es~, ~fr~)
+- ~#+CATEGORY:~ - Content category/section
+- ~#+FILETAGS:~ - Org-mode tags in ~:tag1:tag2:~ format
+
+** Advanced SEO Fields
+
+- ~#+CANONICAL:~ - Canonical URL to prevent duplicate content issues
+- ~#+COVER_IMAGE:~ - Main article image (used as fallback for social media)
+- ~#+THEME_COLOR:~ - Browser theme color (hex code)
+- ~#+ROBOTS:~ - Search engine directives (e.g., ~index, follow~ or ~noindex, nofollow~)
+
+** Open Graph Metadata
+
+Open Graph tags control how your content appears when shared on social media platforms like Facebook, LinkedIn, and Slack:
+
+- ~#+OG_TITLE:~ - Custom title for social media (can differ from page title)
+- ~#+OG_DESCRIPTION:~ - Custom description for social shares (longer than meta description)
+- ~#+OG_IMAGE:~ - Social media preview image (1200x630px recommended)
+
+If not specified, these fields fall back to ~#+TITLE:~, ~#+DESCRIPTION:~, and ~#+COVER_IMAGE:~ respectively.
+
+** Twitter Card Metadata
+
+Twitter Cards enhance how your content appears on Twitter/X:
+
+- ~#+TWITTER_CARD:~ - Card type: ~summary~, ~summary_large_image~, ~app~, or ~player~
+- ~#+TWITTER_SITE:~ - Your site's Twitter handle (e.g., ~@yoursite~)
+- ~#+TWITTER_CREATOR:~ - Content creator's Twitter handle (e.g., ~@author~)
+
+* Org-mode Syntax Reference                                      :syntax:
+
+** Headings and Structure
+
+Headings are created with asterisks. The number of asterisks determines the heading level:
+
+#+BEGIN_EXAMPLE
+* Level 1 Heading
+** Level 2 Heading
+*** Level 3 Heading
+**** Level 4 Heading
+***** Level 5 Heading
+****** Level 6 Heading
+#+END_EXAMPLE
+
+You can add tags to headings using the ~:tag:~ syntax at the end of the line.
+
+** Text Formatting
+
+Org-mode supports rich inline text formatting:
+
+- *Bold text* using ~*asterisks*~
+- /Italic text/ using ~/slashes/~
+- _Underlined text_ using ~_underscores_~
+- +Strikethrough text+ using ~+plus signs+~
+- ~Inline code~ using ~tildes~
+- =Verbatim text= using ~=equals signs=~
+
+You can combine formatting: */bold and italic/*, *_bold and underlined_*, etc.
+
+** Lists
+
+*** Unordered Lists
+
+Create unordered lists with ~-~, ~+~, or ~*~:
+
+- First item
+- Second item
+  - Nested item
+  - Another nested item
+- Third item
+
+*** Ordered Lists
+
+Create ordered lists with numbers followed by ~.~ or ~)~:
+
+1. First step
+2. Second step
+   1. Sub-step A
+   2. Sub-step B
+3. Third step
+
+*** Mixed Lists
+
+You can mix ordered and unordered lists:
+
+1. First ordered item
+   - Unordered sub-item
+   - Another sub-item
+2. Second ordered item
+   + Different bullet style
+   + Works the same way
+
+** Links and Images
+
+*** External Links
+
+Links use double square brackets: ~[[url][description]]~
+
+- [[https://example.com][Visit Example Website]]
+- [[https://github.com/yourusername/org2html][View on GitHub]]
+- [[mailto:contact@example.com][Send Email]]
+
+If you omit the description, the URL itself is displayed: [[https://example.com]]
+
+*** Images
+
+Images use the same syntax as links, but the parser automatically detects image file extensions:
+
+[[/images/example.png][Example Image Alt Text]]
+
+Supported formats: ~.png~, ~.jpg~, ~.jpeg~, ~.gif~, ~.svg~, ~.webp~
+
+** Code Blocks
+
+Code blocks support syntax highlighting for multiple languages:
+
+#+BEGIN_SRC javascript
+// JavaScript example
+function greet(name) {
+  return `Hello, ${name}!`;
+}
+
+console.log(greet('World'));
+#+END_SRC
+
+#+BEGIN_SRC python
+# Python example
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+print(fibonacci(10))
+#+END_SRC
+
+#+BEGIN_SRC typescript
+// TypeScript example
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+const user: User = {
+  id: 1,
+  name: 'John Doe',
+  email: 'john@example.com'
+};
+#+END_SRC
+
+** Tables
+
+Org-mode tables are created with pipes ~|~:
+
+| Feature          | Supported | Notes                        |
+|------------------+-----------+------------------------------|
+| SEO Metadata     | Yes       | Full Open Graph support      |
+| Syntax Highlight | Yes       | Via highlight.js plugin      |
+| Vue Components   | Yes       | Through shortcodes           |
+| Table of Contents| Yes       | Auto-generated via TOC plugin|
+| Responsive Design| Yes       | Mobile-first templates       |
+
+** Special Blocks
+
+*** Quotes
+
+#+BEGIN_QUOTE
+This is a blockquote. Use it for highlighting important quotes, testimonials, or cited content from other sources.
+
+Blockquotes can span multiple paragraphs and include other formatting like *bold* and /italic/ text.
+#+END_QUOTE
+
+*** Examples
+
+#+BEGIN_EXAMPLE
+This is an example block.
+It preserves formatting and spacing.
+  Including indentation.
+    And multiple levels.
+#+END_EXAMPLE
+
+*** Centered Text
+
+#+BEGIN_CENTER
+This text is centered.
+Perfect for important announcements or featured content.
+#+END_CENTER
+
+*** Verse (Poetry)
+
+#+BEGIN_VERSE
+Roses are red,
+Violets are blue,
+Org-mode is great,
+And so are you!
+#+END_VERSE
+
+** Drawers
+
+Drawers are collapsible sections that can contain metadata or additional information:
+
+:PROPERTIES:
+:CUSTOM_ID: example-drawer
+:CREATED: 2025-01-21
+:UPDATED: 2025-01-21
+:END:
+
+The ~:PROPERTIES:~ drawer is special and used for metadata. Other drawer types are preserved in the output.
+
+:NOTES:
+This is a custom drawer for notes.
+You can create any drawer name you want.
+:END:
+
+** Footnotes
+
+You can add footnotes[fn:1] to your content for additional context[fn:important] or citations[fn:2].
+
+[fn:1] This is the first footnote with additional information.
+
+[fn:important] This is a named footnote. You can use any label you want.
+
+[fn:2] Footnotes are great for references and citations without cluttering the main text.
+
+** Line Breaks
+
+Use double backslashes ~\\~ to force a line break within a paragraph:\\
+This text appears on a new line\\
+without starting a new paragraph.
+
+* Vue Component Integration                                  :components:
+
+** Shortcodes
+
+Org2html supports Vue component integration through shortcodes. Use the ~{{< component >}}~ syntax:
+
+{{< Alert type="info" title="Information" >}}
+
+{{< Button variant="primary" size="large" >}}
+
+{{< Card title="Example Card" image="/images/card.jpg" >}}
+
+** Component Mapping
+
+To use shortcodes, create a ~components-map.json~ file in your content directory:
+
+#+BEGIN_SRC json
+{
+  "Alert": "@/components/Alert.vue",
+  "Button": "@/components/Button.vue",
+  "Card": "@/components/Card.vue"
+}
+#+END_SRC
+
+The build process will automatically replace shortcodes with Vue component imports.
+
+* Best Practices                                            :guidelines:
+
+** SEO Optimization
+
+1. *Always include core metadata*: ~TITLE~, ~DESCRIPTION~, ~KEYWORDS~
+2. *Use descriptive titles*: 50-60 characters for optimal display
+3. *Write compelling descriptions*: 150-160 characters for search snippets
+4. *Provide Open Graph images*: 1200x630px for best social media display
+5. *Set canonical URLs*: Prevent duplicate content penalties
+6. *Use semantic heading structure*: Don't skip heading levels
+7. *Add alt text to images*: Improves accessibility and SEO
+
+** Content Structure
+
+1. *Start with an introduction*: Explain what the article covers
+2. *Use clear headings*: Break content into logical sections
+3. *Keep paragraphs short*: 3-4 sentences for better readability
+4. *Use lists for scanability*: Bullet points and numbered lists
+5. *Include code examples*: When relevant to your content
+6. *Add visual elements*: Images, tables, and diagrams
+7. *End with a conclusion*: Summarize key points
+
+** Performance
+
+1. *Optimize images*: Use WebP format when possible
+2. *Lazy load images*: Improves initial page load time
+3. *Minimize metadata*: Only include necessary fields
+4. *Use code splitting*: For large Vue components
+5. *Enable caching*: Configure proper cache headers
+
+* Conclusion
+
+This template demonstrates the full capabilities of org2html for creating SEO-optimized, feature-rich web content. Use it as a reference when building your own articles, documentation, or blog posts.
+
+Key takeaways:
+- Comprehensive SEO metadata support (Open Graph, Twitter Cards, etc.)
+- Full Org-mode syntax compatibility
+- Vue component integration via shortcodes
+- Flexible templating system
+- Optimized for search engines and social media
+
+For more information, visit the [[https://github.com/yourusername/org2html][org2html repository]] or check the [[/docs][documentation]].
+
+* Additional Resources                                      :resources:
+
+- [[https://orgmode.org/manual/][Org-mode Manual]]
+- [[https://ogp.me/][Open Graph Protocol]]
+- [[https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards][Twitter Cards Documentation]]
+- [[https://developers.google.com/search/docs/advanced/structured-data/intro-structured-data][Google Structured Data]]
+- [[https://vuejs.org/guide/introduction.html][Vue.js Documentation]]

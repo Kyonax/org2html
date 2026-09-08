@@ -1,0 +1,14 @@
+#+TITLE: The Second Corpus Document
+#+DATE: 2026-07-09
+#+CATEGORY: engineering
+#+DESCRIPTION: A sibling in the same category, so relations have something to relate.
+#+FILETAGS: :parsing:
+
+* Body
+
+A plain document. It shares =engineering= with the first, which is what makes the
+relations sidecar non-trivial.
+
+| Field | Value |
+|-------+-------|
+| a     | 1     |
