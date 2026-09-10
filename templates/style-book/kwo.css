@@ -216,6 +216,16 @@
   font-family: var(--o2h-font-display);
   letter-spacing: 0.02em;
   text-transform: none;
+  /* A HEADING MUST BE ALLOWED TO BREAK A WORD. Display sizes and a narrow
+   * screen make this arithmetic, not style: one long word at heading size is
+   * simply wider than a phone, and `overflow-wrap: normal` has no legal place
+   * to break it, so it runs off the page and takes the whole document's
+   * scroll width with it. Measured on a Spanish article at 320px and 342px:
+   * the page scrolled 41px sideways, identically at both widths, because the
+   * offending word is a fixed size. Body text never hits this — its words are
+   * small enough to fit — which is why the rule belongs here and not on
+   * `.org-root`. */
+  overflow-wrap: anywhere;
 }
 .org-root .outline-1,
 .org-root .outline-2 {
@@ -302,6 +312,13 @@
 /* ── §1.3 · Prose rhythm [A1 .doc-prose / .doc-list] ────────────────────────────────────
  * 1.4rem between paragraphs, rounded onto the grid at 24px. */
 .org-root .org-paragraph { margin: 0 0 var(--o2h-space-3); }
+/* ...but NOT on a paragraph the grid already spaces. styles.css states the law —
+ * `.org-root > * { margin-block: 0 }`, "outer block margins are dropped so row-gap owns the
+ * vertical rhythm" — and loses it, because that selector is (0,1,0) and the rule above is
+ * (0,2,0). So every TOP-LEVEL paragraph added its 24px to the 48px row-gap and sat in 72px.
+ * The margin is still right for a paragraph INSIDE `.org-section`, where no row-gap reaches
+ * it; this hands the direct children back to the grid, which is what the book says owns them. */
+.org-root > .org-paragraph { margin-block: 0; }
 
 /* ── §1.4 · The SIGN-OFF unit [A1 .doc__signoff] ────────────────────────────────────────
  * "Replaces the site footer on document pages — these routes render no landing chrome below
@@ -318,7 +335,9 @@
   color: var(--o2h-mute);
 }
 .org-root .org-footnotes {
-  margin-top: var(--o2h-space-5);
+  /* No margin-top here either — the base sheet dropped its own and row-gap owns
+   * the space above a top-level block. What this book adds is the hairline and
+   * the air between it and the notes. */
   padding-top: var(--o2h-space-3);
   border-top: var(--o2h-border);
   font-size: var(--o2h-fs-caption);
@@ -382,7 +401,16 @@
   letter-spacing: 0;
 }
 /* A link is INK with an underline; the accent arrives on hover only [A1 .kyo-prose a].
- * This is the single biggest reason a document page reads as a document. */
+ * This is the single biggest reason a document page reads as a document.
+ *
+ * THE BARE ELEMENT IS IN THE LIST ON PURPOSE. The renderer classes every link
+ * IT emits, but an <a> written by hand inside a `#+BEGIN_EXPORT html` block
+ * passes through verbatim with no class, so it fell through to the browser's
+ * own default — cyan and underlined, in the middle of a document that never
+ * uses that anywhere else. `.org-root a` is (0,1,1), below every classed rule
+ * in this book, so a toc link, a footnote backref, an embed byline and a tag
+ * link all keep winning; only genuinely unclassed anchors change. */
+.org-root a,
 .org-root .org-link {
   font-family: var(--o2h-font-mono);
   font-weight: 700;
@@ -392,6 +420,8 @@
   letter-spacing: 0;
   transition: color var(--o2h-motion-hover) var(--o2h-ease);
 }
+.org-root a:hover,
+.org-root a:focus-visible,
 .org-root .org-link:hover,
 .org-root .org-link:focus-visible { color: var(--o2h-accent); }
 /* [A2] _theme.scss `.icon-mask--external`: an off-site link carries the Lucide
@@ -1995,7 +2025,15 @@
 .org-root .org-math-display {
   display: block;
   margin-block: var(--o2h-space-3);
+  /* A long equation scrolls SIDEWAYS; it must never grow a vertical scrollbar.
+   * `overflow-x: auto` alone does not say that — per CSS Overflow 3, once one
+   * axis is not `visible` the other computes from `visible` to `auto` too. The
+   * rendered <math> box lands on a fractional height (60.6px inside a 61px
+   * line), so those two stray pixels were enough to lay out a real vertical
+   * scrollbar, 6px wide, down the right of every display equation. Naming both
+   * axes is the whole fix. */
   overflow-x: auto;
+  overflow-y: hidden;
 }
 .org-root .org-math-display math {
   display: block;
@@ -2176,7 +2214,12 @@
 }
 .org-back-to-top:hover,
 .org-back-to-top:focus-visible { color: var(--o2h-accent); border-color: var(--o2h-accent); }
-.org-read-progress { background: var(--o2h-accent); }
+/* The TRACK stays transparent and only the `<i>` fill carries the accent — the
+ * base sheet already says so. Painting the track accent here (which this rule
+ * used to do) is not a themed progress bar, it is a permanent full-width band
+ * that reads 100% before the reader has scrolled anything. The fill is what
+ * this book had a right to colour. */
+.org-read-progress > i { background: var(--o2h-accent); }
 
 /* ════════════════════════════════════════════════════════════════════════════════════════
  * §11 · LIGHT INVERSE
