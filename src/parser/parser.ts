@@ -1315,6 +1315,50 @@ function matchDelimited(
   return { raw: text.slice(i, end + close.length), end: end + close.length, display }
 }
 
+// A LaTeX DISPLAY ENVIRONMENT — \begin{equation}…\end{equation} and friends.
+//
+// Org writes real mathematics this way far more often than it writes $$…$$, and
+// without this the whole block fell through to the inline scanner: `\begin{…}`
+// survived as literal text, the body was half-converted by the $-rules around
+// it, and the reader got `\begin{equation} ∫ … \frac{√{π}}{2} \end{equation}`
+// printed as prose. It looked like a rendering bug and was really a parse gap.
+//
+// THE DELIMITERS ARE KEPT. temml understands the environment itself — it is the
+// thing that numbers an `equation` and aligns an `align` — so the fragment is
+// handed over whole rather than unwrapped, exactly as `\[…\]` is.
+//
+// The name is matched against a closed list. An unknown environment is left as
+// text on purpose: `\begin{verbatim}` is not mathematics, and guessing would
+// hand temml something it would only refuse.
+const MATH_ENVIRONMENTS = [
+  "equation", "align", "gather", "multline", "flalign", "alignat",
+  "eqnarray", "split", "cases", "matrix", "pmatrix", "bmatrix",
+  "vmatrix", "Vmatrix", "Bmatrix", "smallmatrix", "array", "aligned", "gathered",
+]
+
+function matchMathEnvironment(
+  text: string,
+  i: number,
+  memo?: ScanMemo,
+): { raw: string; end: number; display: boolean } | null {
+  if (!text.startsWith("\\begin{", i)) return null
+  const nameEnd = text.indexOf("}", i + 7)
+  if (nameEnd === -1) return null
+  // A starred form (equation*) is the same environment without numbering.
+  const name = text.slice(i + 7, nameEnd)
+  const bare = name.endsWith("*") ? name.slice(0, -1) : name
+  if (!MATH_ENVIRONMENTS.includes(bare)) return null
+  const close = `\\end{${name}}`
+  const memoKey = `env:${name}`
+  if (scanKnownToFail(memo, memoKey, nameEnd)) return null
+  const end = text.indexOf(close, nameEnd)
+  if (end === -1) {
+    noteScanFailed(memo, memoKey, nameEnd)
+    return null
+  }
+  return { raw: text.slice(i, end + close.length), end: end + close.length, display: true }
+}
+
 // Org's $…$ inline math with its boundary rules — the pre/post guards keep
 // currency ("$5 and $10") from being mistaken for a math fragment.
 function matchDollarMath(
@@ -1710,6 +1754,7 @@ function parseInlineMarkup(text: string, depth = 0): AstNode[] {
     // LaTeX fragments — delimiters preserved so a host math renderer (KaTeX /
     // MathJax) can process them; escaped + wrapped in .org-math at render time.
     const mathFrag =
+      matchMathEnvironment(text, i, scanMemo) ||
       matchDelimited(text, i, '$$', '$$', true, scanMemo) ||
       matchDelimited(text, i, '\\[', '\\]', true, scanMemo) ||
       matchDelimited(text, i, '\\(', '\\)', false, scanMemo) ||
