@@ -43,6 +43,9 @@ components / hydration / multi-document site concerns are out of scope here.
 * [Unreleased]
 
 * [v1.2.0] — 2026-09-09
+** Changed — every version literal states 1.2.0 (2026-09-11)
+- =README.org= (=#+VERSION=, the figlet banner, the shields badge) and both Style Book manifests (=templates/style-book/stylebook.json= for kwo, =templates/style-book/o2h/stylebook.json= for o2h) said 1.1.0 while =package.json= said 1.2.0; =scripts/check-version.mjs= was red on all five and is green now ("every version literal agrees on 1.2.0"). =npm run typecheck= clean and =npm test= 768 of 768 after the change.
+
 ** Fixed — a long word in a heading dragged the whole page sideways (2026-09-09)
 - *A PHONE COULD SCROLL A DOCUMENT SIDEWAYS, AND THE HEADING DID IT.* =.org-heading= set a display face and a letter-spacing but never said what to do when a single word is wider than the screen, so =overflow-wrap= stayed at its =normal= default: no legal break point inside a word, therefore the word overflows and the document's scroll width grows to match. Measured on a Spanish article at both 320px and 342px — the page scrolled *41px* sideways at both, identically, which is the signature of one fixed-size string rather than a layout that fails to scale. Body prose never reaches this, because its words are small enough to fit at any supported width; only headings are set large enough for an ordinary word to outgrow a phone, which is why the rule lands on =.org-heading= and not on =.org-root=. Verified by the reverse experiment too: forcing =min-width: 0= onto the grid items changed nothing, so this was never the classic grid blow-out it resembles.
 
