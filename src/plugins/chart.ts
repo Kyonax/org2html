@@ -43,13 +43,27 @@ export type ChartSpec = {
 
 const VIEW_W = 720
 const VIEW_H = 340
-const PAD_R = 12
 const PAD_T = 30
 const PAD_B = 52
 /* The left gutter holds the tick labels; an axis TITLE needs its own column beside them
  * or the rotated text runs straight through "1.5k". */
 const PAD_L_PLAIN = 56
 const PAD_L_TITLED = 84
+/*
+ * THE PLOT IS CENTRED IN THE FIGURE, so the right gutter MATCHES the left one.
+ *
+ * It used to be a flat 12, which is all a bar needs to avoid touching the edge —
+ * but the left gutter is 56 or 84 because the tick labels and the axis title
+ * live there. The drawing was therefore inset ~71px on one side and ~10px on the
+ * other, and the bars sat visibly right of centre under a caption and a text
+ * column that were both centred. Nothing was misaligned in the markup; the
+ * asymmetry was inside the viewBox, which is the hardest place to see it.
+ *
+ * Mirroring the gutter costs plot width — 624 to 552 units with an axis title —
+ * and buys a drawing whose mass is where the reader expects it. A bar chart is
+ * a picture, and a picture that sits off-centre reads as a mistake.
+ */
+const padRightFor = (padLeft: number): number => padLeft
 
 /**
  * Read a table cell as a number. Org tables are text, so a value arrives as "1753",
@@ -100,6 +114,7 @@ function tickText(v: number, unit: string): string {
 export function renderBarChart(data: ChartDatum[], spec: ChartSpec, unit: string): string {
   if (data.length === 0) return ''
   const PAD_L = spec.axisLabel ? PAD_L_TITLED : PAD_L_PLAIN
+  const PAD_R = padRightFor(PAD_L)
   const plotW = VIEW_W - PAD_L - PAD_R
   const plotH = VIEW_H - PAD_T - PAD_B
   const top = niceMax(Math.max(...data.map((d) => d.value)))

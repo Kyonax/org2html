@@ -21,7 +21,7 @@
 #+EMAIL: kyonax.corp@gmail.com
 #+DATE: May 21, 2026
 #+FILETAGS: :KYO:ORG_2_HTML:ENGINE:CCS:
-#+VERSION: v1.1.0
+#+VERSION: v1.2.0
 #+LAST_UPDATE: September 04, 2026
 
 #+BEGIN_HTML
@@ -53,7 +53,7 @@
       ░░▒▓        ░▒▓████▓▒░▓███▒▒
      ░   ░ ░▒▒▒▒░░  ░   ░   ░▓▒▓█▒░
           ░    ░░░   ░     ░   ░▒▒▓░
-                ░          ░     ░▒░     v1.1.0
+                ░          ░     ░▒░     v1.2.0
 </pre>
 </td></tr></table>
 </div>
@@ -68,7 +68,7 @@
 <a href="https://www.npmjs.com/package/@kyonax/org2html"><img src="https://img.shields.io/npm/v/@kyonax/org2html?labelColor=FFD400&color=FFE564" alt="npm version"></a>
 <a href="#"><img src="https://img.shields.io/github/languages/top/Kyonax/org2html?labelColor=FFD400&color=FFE564" alt="Top language"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-9A51C0?labelColor=7409AA" alt="GPL-3.0-only"></a>
-<a href="#"><img src="https://img.shields.io/badge/version-v1.1.0-755AC4?labelColor=3B14AF" alt="v1.1.0"></a>
+<a href="#"><img src="https://img.shields.io/badge/version-v1.2.0-755AC4?labelColor=3B14AF" alt="v1.2.0"></a>
 <a href="https://github.com/ccs-devhub"><img src="https://img.shields.io/badge/CCS_Member-FFE564?&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48cGF0aCBmaWxsPSIjOUI4MjAwIiBkPSJNIDI3IDIwMCBsIDAgMTczIDE3MyAwIDE3MyAwIDAgLTE3MyAwIC0xNzMgLTE3MyAwIC0xNzMgMCAwIDE3MyB6IG0gMzMyIDAgbCAwIDE1OSAtMTU5LjUgMCAtMTU5LjUgMCAwIC0xNTkgMCAtMTU5IDE1OS41IDAgMTU5LjUgMCAwIDE1OSB6IE0gNTIgMTIwIGwgMCA2OCA0OCAwIDQ4IDAgMCAtMjAgMCAtMjAgNTEuNSAwIDUxLjUgMCAwIDIwIDAgMjAgMjEuNSAwIDIxLjUgMCAwIC00MS41IDAgLTQxLjUgLTk0LjUgMCAtOTQuNSAwIDAgMjAgMCAyMCAtNSAwIC01IDAgMCAtMjUgMCAtMjUgMTA1IDAgMTA1IDAgMCA1MS41IDAgNTEuNSAtMTI2LjUgMCAtMTI2LjUgMCAwIDQ4IDAgNDggMTI2LjMgMC4yIDEyNi4yIDAuMyAwLjMgNS4zIDAuMyA1LjIgLTEyNi41IDAgLTEyNi42IDAgMCAyMS41IDAgMjEuNSAxNDggMCAxNDggMCAwIC00OCAwIC00OCAtMTI2LjIgLTAuMiAtMTI2LjMgLTAuMyAtMC4zIC01LjMgLTAuMyAtNS4yIDEyNi41IDAgMTI2LjYgMCAwIC05NC41IDAgLTk0LjUgLTE0OCAwIC0xNDggMCAwIDY4IHogTSAxNTkgMTczLjUgbCAwIDE0LjUgNDEgMCA0MSAwIDAgLTE0LjUgMCAtMTQuNSAtNDEgMCAtNDEgMCAwIDE0LjUgeiIvPjwvc3ZnPg==&labelColor=FFD400&style=flat-square" alt="Cyber Code Syndicate"></a>
 <br>
 <a href="https://github.com/sponsors/kyonax"><img src="https://img.shields.io/github/sponsors/kyonax?labelColor=EA4AAA&color=FF6BBA" alt="GitHub Sponsors"></a>

@@ -192,6 +192,16 @@
         return best
       }
 
+      /* While a programmatic move is in flight the active dot is whatever we asked
+       * for, not whatever the strip is passing over. -1 means "trust the scroll". */
+      var pinned = -1
+      var pinTimer = 0
+      function pin(i, immediate) {
+        pinned = i
+        window.clearTimeout(pinTimer)
+        pinTimer = window.setTimeout(function () { pinned = -1 }, immediate ? 120 : 600)
+      }
+
       /* THE LANDING IS THE CONTRACT; THE ANIMATION IS AN ENHANCEMENT. A smooth
        * scrollTo is not guaranteed to do anything: with smooth scrolling switched
        * off in the browser it can be a NO-OP rather than an instant move, and then
@@ -209,8 +219,28 @@
         if (!slide) return
         var left = slide.offsetLeft - strip.offsetLeft
         setActive(i)
+        /* PIN THE DOT TO THE DESTINATION for the length of the move. The scroll
+         * listener below recomputes the nearest slide on every frame, so during a
+         * smooth scroll the active dot used to walk through every slide in between
+         * and then snap back — the strip looked like it was searching for the
+         * answer. The pin is released on a timer rather than on `scrollend`, which
+         * is still not everywhere. */
+        pin(i, jump)
         if (jump || reduceMotion) {
+          /* A CUT MUST ACTUALLY CUT. `behavior: "instant"` moves the strip in one
+           * frame, but the sheet also declares `scroll-snap-type: x mandatory` and
+           * `scroll-behavior: smooth` — so the snap engine re-settles immediately
+           * afterwards and animates that correction, and the wrap came out as a
+           * teleport with a visible drift chasing it. Both are suspended for the
+           * frame in which the jump lands and restored on the next one, so the seam
+           * is one clean cut and everything else keeps the sheet's behaviour. */
+          strip.style.scrollSnapType = "none"
+          strip.style.scrollBehavior = "auto"
           strip.scrollTo({ left: left, behavior: "instant" })
+          window.requestAnimationFrame(function () {
+            strip.style.scrollSnapType = ""
+            strip.style.scrollBehavior = ""
+          })
           return
         }
         var from = strip.scrollLeft
@@ -236,7 +266,13 @@
         var n = slides.length
         var from = indexAt()
         var to = (from + dir + n) % n
-        goTo(to, Math.abs(to - from) > 1)
+        /* IT IS THE WRAP THAT CUTS, not the distance. Deciding on
+         * `Math.abs(to - from) > 1` meant a TWO-slide strip animated its wrap
+         * (|0-1| is 1) while a three-slide strip cut — the same gesture behaving
+         * differently for no reason a reader could see. Asking whether the index
+         * went backwards while moving forwards names the seam exactly, at any
+         * length. */
+        goTo(to, (dir > 0 && to < from) || (dir < 0 && to > from))
       }
 
       ;["prev", "next"].forEach(function (which) {
@@ -267,7 +303,10 @@
         d.className = "org-carousel-dot"
         d.setAttribute("aria-label", "Go to slide " + (i + 1))
         on(d, "click", function () {
-          goTo(i)
+          /* Jumping from dot 1 to dot 6 smooth-scrolled the whole strip past the
+           * reader — the very effect the seam cut exists to avoid. A neighbouring
+           * dot still animates. */
+          goTo(i, Math.abs(i - indexAt()) > 1)
         })
         rail.appendChild(d)
         dots.push(d)
@@ -278,7 +317,7 @@
        * rAF-throttled, so a swipe repaints one class rather than every frame. */
       var ticking = false
       var syncDots = function () {
-        setActive(indexAt())
+        setActive(pinned >= 0 ? pinned : indexAt())
         ticking = false
       }
       on(strip, "scroll", function () {
@@ -1143,20 +1182,53 @@
     })
   }
 
+  /*
+   * THE HOST DECIDES WHICH ENHANCEMENTS RUN.
+   *
+   * Every feature below is an enhancement, and a host that already owns one of
+   * them does not want a second. A site with its own image viewer got TWO
+   * overlays on one click; a site that does not want a reading-progress bar got
+   * one welded to <body> anyway. Neither could be turned off: `boot()` called
+   * all thirteen unconditionally, the guard flags are set by the initialisers
+   * themselves so pre-setting them is a race the host usually loses, and the
+   * listeners are anonymous so nothing can unbind them afterwards.
+   *
+   * So the runtime reads `window.O2H_CONFIG` before it does anything. Any key
+   * set to `false` turns that feature off; everything else stays on, which
+   * keeps the default behaviour identical for every host that never sets it.
+   * Read ONCE, at boot, so a later mutation cannot half-enable a feature whose
+   * markup was never prepared.
+   *
+   *   <script>window.O2H_CONFIG = { lightbox: false, readProgress: false }</script>
+   *   <script src="/o2h.js" defer></script>
+   *
+   * An inline script is not deferred, so it always runs first — which is the
+   * point: this is a decision the host makes BEFORE the runtime exists, not a
+   * race it has to win afterwards.
+   */
+  var FEATURES = [
+    ["copy", initCopy],
+    ["lightbox", initLightbox],
+    ["carousel", initCarousel],
+    ["tables", initTables],
+    ["embeds", initEmbeds],
+    ["toggle", initToggle],
+    ["tabs", initTabs],
+    ["modal", initModal],
+    ["toast", initToast],
+    ["backToTop", initBackToTop],
+    ["readProgress", initReadProgress],
+    ["diagrams", initDiagrams],
+    ["videoPlayer", initVideoPlayer],
+  ]
+
+  var config = (typeof window !== "undefined" && window.O2H_CONFIG) || {}
+
   function boot() {
-    initCopy()
-    initLightbox()
-    initCarousel()
-    initTables()
-    initEmbeds()
-    initToggle()
-    initTabs()
-    initModal()
-    initToast()
-    initBackToTop()
-    initReadProgress()
-    initDiagrams()
-    initVideoPlayer()
+    FEATURES.forEach(function (feature) {
+      if (config[feature[0]] === false) return
+      feature[1]()
+    })
   }
 
   if (document.readyState === "loading") {
@@ -1165,6 +1237,15 @@
     boot()
   }
 
-  // Expose a manual re-scan for dynamically inserted content.
-  window.O2H = { enhance: boot }
+  /* A manual re-scan for dynamically inserted content, the resolved config so a
+     host can see what actually took effect, and the individual initialisers for
+     a host that wants to compose its own boot order. */
+  window.O2H = {
+    enhance: boot,
+    config: config,
+    features: FEATURES.reduce(function (map, feature) {
+      map[feature[0]] = feature[1]
+      return map
+    }, {}),
+  }
 })()

@@ -479,8 +479,13 @@
 
 /* ── Footnotes ───────────────────────────────────────────────────────────────── */
 .org-root .org-fnref a { color: var(--o2h-link); text-decoration: none; }
+/* NO margin-top: the notes are a top-level block and `.org-root`'s row-gap
+ * already spaces them. This rule used to add 96px on top of that 48px, and it
+ * won because `.org-root .org-footnotes` is (0,2,0) against the (0,1,0) of the
+ * `.org-root > * { margin-block: 0 }` law twenty lines up — the third rule in
+ * this sheet to defeat its own stated rhythm the same way. The notes sat in a
+ * 144px band with a rule floating in the middle of it. */
 .org-root .org-footnotes {
-  margin-top: var(--o2h-space-6);
   font-size: 0.9em;
   color: var(--o2h-slate);
 }

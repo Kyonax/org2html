@@ -1,6 +1,6 @@
 {
   "name": "@kyonax/org2html",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "CLI that converts Org-mode (.org) files into clean, accessible, SEO-ready HTML (and Vue SFCs)",
   "type": "module",
   "sideEffects": false,
