@@ -1,0 +1,47 @@
+#+TITLE: Alex Doe
+#+AUTHOR: Senior Frontend Web Developer \\
+#+AUTHOR: Springfield/Elbonia | +00 000 000 0000 | [[mailto:alex.doe@example.com][alex.doe@example.com]] | [[https://www.linkedin.com/in/example/][Linkedin]] | [[https://github.com/example][Github]] | [[https://example.github.io][Personal Web]]
+#+FILETAGS: :JS-FR: :CV:
+#+OPTIONS: toc:nil num:nil date:nil H:5
+#+SETUPFILE: ./latex/cv-latex-export.org
+
+# A CV-SHAPED FIXTURE, DELIBERATELY FICTIONAL.
+#
+# This replaces a real person's CV that used to live in a GITIGNORED nodes/ directory while
+# the test suite read from it — so a fresh clone could not run the tests, and moving the file
+# in as-is would have committed a phone number and a personal email address to a public
+# repository that publishes to npm.
+#
+# What the test actually needs is the SHAPE, and every awkward thing about it is kept:
+#   - a CONTINUED #+AUTHOR (the trailing \\ and a second #+AUTHOR line),
+#   - a #+SETUPFILE naming a file that DOES NOT EXIST — the original's did not either, and a
+#     missing setupfile must warn rather than throw,
+#   - #+OPTIONS switching off the toc, numbering and the date,
+#   - raw LaTeX spacing macros scattered through the body, which are not Org constructs and
+#     must survive as text rather than crashing the parser,
+#   - headlines used as section rules rather than as an outline.
+
+\\
+
+\vspace{0.4cm}
+*Senior Frontend Web Developer* with 7 years of experience delivering *scalable, adaptable and
+high-performance* frontend solutions. Skilled in applying design patterns, best practices and
+clean code guidelines to complex projects.
+
+\vspace{0.2cm}
+
+* EXPERIENCE
+\hspace{0.2cm}
+*Example Company* \hspace{0.3cm} /Senior Frontend Developer/ \hspace{0.3cm} 2020 - Present
+
+- Delivered a design system consumed by four product teams.
+- Cut the median page load by 40% on the main storefront.
+
+\vspace{0.3cm}
+
+* EDUCATION
+\hspace{0.2cm}
+*Example University* \hspace{0.3cm} /BSc Computer Science/ \hspace{0.3cm} 2014 - 2018
+
+* SKILLS
+JavaScript, TypeScript, Vue, CSS, accessibility, performance.

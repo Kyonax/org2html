@@ -1,0 +1,2254 @@
+/*
+ * kwo.css — the Kyo Web Online book's construct layer.
+ *
+ * WHAT  The deltas between the shared per-construct implementation (templates/styles.css)
+ *       and the design language. Loaded AFTER styles.css, so every rule here is an override
+ *       of a rule that already exists — this file adds no new hooks.
+ * WHY   A Style Book is a VALUE swap wherever tokens can carry the difference. What tokens
+ *       cannot carry is SHAPE: which element wears the frame, where the stripe sits, what a
+ *       label sounds like. That is this file.
+ *
+ * THE FOUR AUTHORITIES are named in kwo-tokens.css and cited inline below as [A1]..[A4]:
+ *   [A1] kyo-web-online /resume + /privacy (document-page.vue)  — the main style
+ *   [A2] kyo-web-online media (ui/image.vue, ui/youtube-facade.vue)
+ *   [A3] nano-core dashboard (web/client/src/styles/tokens.scss) — the report ramp
+ *   [A4] book-kyonax canon v6 (tokens + rules/kyonax.rules.json) — the laws
+ *
+ * THE LAWS, in the order they bind ([A4] rules/kyonax.rules.json):
+ *   hairlines-only ......... every stroke is 1px; weight is ALPHA, never width
+ *   one-accent-per-composition  fields stay white-on-black; ONE mark takes the accent;
+ *                          a state colour replaces the accent to ENCODE, never to decorate
+ *   grid-is-law ............ 8 · 16 · 24 · 32 · 48 · 96, and nothing between
+ *   no-radius-no-emoji-no-gradient
+ *   two-voices-split ....... mono = machine (labels, chrome, specs, code, uppercase +
+ *                          tracking) · sans = human (titles, prose, names, sentence case)
+ *   content-legible ........ content >= 14px; chrome <= 12px only where it is chrome
+ *   annotated-edges ........ a frame earns a quiet telemetry caption, aria-hidden
+ *   every-mark-earns-its-place
+ */
+
+/* ════════════════════════════════════════════════════════════════════════════════════════
+ * §0 · WEBFONTS — the two voices [A4 two-voices-split]
+ * Subset WOFF2, copied to <output>/fonts/ next to styles.css. `font-display: swap` keeps
+ * text painted while they load, and every family carries a system fallback in the token
+ * layer, so a build whose assets were not copied still renders correctly — just not in
+ * Geomanist.
+ * ════════════════════════════════════════════════════════════════════════════════════════ */
+@font-face {
+  font-family: 'Geomanist';
+  src: url('/fonts/GeomanistRegular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geomanist';
+  src: url('/fonts/GeomanistBold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SpaceMono';
+  src: url('/fonts/SpaceMonoNerdFont-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SpaceMono';
+  src: url('/fonts/SpaceMonoNerdFont-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════════════
+ * §1 · THE DOCUMENT SHELL [A1 document-page.vue]
+ *
+ * The COLOUR LAW is quoted from that file: "grayscale only. A document reads as a document,
+ * so it opts out of the yellow accent, HUD decorations and flare." An article is a document
+ * page, so the accent is spent on ONE thing per composition and everything else is ink.
+ * ════════════════════════════════════════════════════════════════════════════════════════ */
+
+/* .doc { padding: 3.5rem 1.25rem 4rem } — expressed on the 8px grid: 48 top, 64 bottom.
+ * The inline gutters stay with the engine's responsive --o2h-gutter, which is what keeps
+ * the sheet off the edge on a phone. */
+.org-root {
+  padding-block: var(--o2h-space-5) calc(var(--o2h-space-5) + var(--o2h-space-2));
+  letter-spacing: var(--o2h-prose-track);
+  word-spacing: var(--o2h-prose-word);
+  /* The measure is a property of the CONTAINER [A1]: `max-width` and `font-size` are
+     declared on the SAME element, so `ch` resolves against the size the text actually
+     renders at. The engine's grid already caps the content track at --o2h-measure and this
+     element carries --o2h-fs-body, so the pair holds — do not re-cap inside. */
+  row-gap: var(--o2h-space-5);
+}
+
+/* ── §1.1 · The masthead ────────────────────────────────────────────────────────────────
+ * [A1] privacy.vue rules a document title one step BELOW the CV nameplate: "a nameplate
+ * rather than a document title". So fs-h1 flat, sentence case, flush left, tight leading —
+ * not the O2H cover-title clamp that ran to 72px and uppercased. */
+.org-root .org-article-header {
+  padding: 0 0 var(--o2h-space-3);
+  margin-bottom: var(--o2h-space-4);
+  border-bottom: var(--o2h-border);
+}
+.org-root .org-heading--title {
+  display: block;
+  font-size: clamp(var(--o2h-fs-h2), 6vw, var(--o2h-fs-h1));
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--o2h-ink);
+}
+/* D-02 — the masthead sits FLUSH with the prose. It used to be pulled outside the column
+ * ("the title runs a wider measure"); against the reference that reads as a misaligned
+ * page, because privacy.vue and the CV both start the title on the same edge as the first
+ * paragraph. One left edge for masthead, prose, section rules and sign-off. */
+.org-root .org-article-subtitle {
+  margin-top: var(--o2h-space-2);
+  font-size: var(--o2h-fs-h3);
+  line-height: 1.35;
+  color: var(--o2h-slate);
+  letter-spacing: var(--o2h-prose-track);
+}
+/* The contact/byline row — [A1] resume.vue `.resume__contact`: mono, small, quiet, with
+ * neutral-50 separators. Chrome voice, so <=12px is correct here. */
+.org-root .org-article-byline {
+  gap: var(--o2h-space-2);
+  margin-top: var(--o2h-space-2);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-label-track);
+  color: var(--o2h-mute);
+}
+.org-root .org-article-author { color: var(--o2h-slate); }
+.org-root .org-article-email,
+.org-root .org-article-date { color: var(--o2h-mute); }
+/* [A1] `.resume__contact-link` — a contact reads like every other link on the page. */
+.org-root .org-article-email a { color: inherit; }
+
+/* ── The taxonomy row (P-02) ─────────────────────────────────────────────────────────────
+ * What the article is filed under, and what it is about. Two groups on one line, each
+ * labelled by a mono caption the sheet writes — so the terms themselves stay clean data a
+ * host can wrap in its own archive links. Categories take the accent (a category is the
+ * ONE structural fact about where a post lives); tags stay neutral, because a post with
+ * eight tags would otherwise be eight accents in a row. */
+.org-root .org-taxonomy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--o2h-space-1) var(--o2h-space-2);
+  margin: var(--o2h-space-2) 0 0;
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+}
+.org-root .org-taxonomy-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--o2h-space-0);
+}
+.org-root .org-taxonomy-group::before {
+  content: attr(data-label);
+  color: var(--o2h-dim);
+  letter-spacing: var(--o2h-band-track);
+  text-transform: uppercase;
+  margin-right: var(--o2h-space-0);
+}
+.org-root .org-taxonomy-group--category::before { content: "Filed"; }
+.org-root .org-taxonomy-group--tags::before { content: "Tagged"; }
+.org-root .org-category {
+  display: inline-flex;
+  align-items: center;
+  height: var(--o2h-flag-height);
+  padding: var(--o2h-flag-pad);
+  border: 1px solid var(--o2h-accent);
+  background: color-mix(in srgb, var(--o2h-accent) 8%, transparent);
+  color: var(--o2h-accent);
+  letter-spacing: var(--o2h-label-track);
+  text-transform: uppercase;
+  line-height: 1;
+}
+/* A host that links its terms keeps the chip: the anchor inherits it whole. */
+.org-root .org-category a,
+.org-root .org-taxonomy .org-tag a { color: inherit; text-decoration: none; }
+
+/* ── The hero asset (P-06) ───────────────────────────────────────────────────────────────
+ * The article's own opening image or video, between the masthead and the contents. It
+ * reserves its ratio before the asset lands, wears the book's frame, and a video is a
+ * FACADE like every other video here — poster and play target, the player only on click. */
+.org-root .org-hero {
+  margin: 0 0 var(--o2h-space-4);
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.org-root .org-hero-stage {
+  position: relative;
+  aspect-ratio: var(--o2h-media-ratio);
+  border: var(--o2h-border);
+  background: var(--o2h-well);
+  background-image: var(--o2h-media-plate);
+  overflow: hidden;
+}
+.org-root .org-hero-image,
+.org-root .org-hero-stage > video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 0;
+  display: block;
+}
+.org-root .org-hero-caption {
+  margin-top: var(--o2h-space-1);
+  padding: 0;
+  border: 0;
+  color: var(--o2h-mute);
+}
+
+/* ── §1.2 · Section rules ───────────────────────────────────────────────────────────────
+ * [A1] `.doc-block__title`: display face, hairline rule under it, sentence case, 8px of air
+ * below the text and 24px down to the prose (1.75rem rounded onto the grid [A4]).
+ * `.doc-block` owns 3rem (48px) between sections — the engine's row-gap already does. */
+.org-root .org-heading {
+  color: var(--o2h-ink);
+  font-family: var(--o2h-font-display);
+  letter-spacing: 0.02em;
+  text-transform: none;
+  /* A HEADING MUST BE ALLOWED TO BREAK A WORD. Display sizes and a narrow
+   * screen make this arithmetic, not style: one long word at heading size is
+   * simply wider than a phone, and `overflow-wrap: normal` has no legal place
+   * to break it, so it runs off the page and takes the whole document's
+   * scroll width with it. Measured on a Spanish article at 320px and 342px:
+   * the page scrolled 41px sideways, identically at both widths, because the
+   * offending word is a fixed size. Body text never hits this — its words are
+   * small enough to fit — which is why the rule belongs here and not on
+   * `.org-root`. */
+  overflow-wrap: anywhere;
+}
+.org-root .outline-1,
+.org-root .outline-2 {
+  border-bottom: var(--o2h-border);
+  padding-bottom: var(--o2h-space-1);
+  margin-bottom: var(--o2h-space-3);
+}
+/* THE CASE LAW: the engine uppercases its OWN labels, never the author's words.
+ * A label the SHEET writes ("Filed", "Tagged", "Clock", a callout intent, a component
+ * caption) is chrome, and chrome may shout. Anything the AUTHOR typed — a heading, a
+ * table header, a caption, a description term, a name, a channel — keeps the case they
+ * chose, because uppercasing a proper noun ("Cristian D. Moreno" → "CRISTIAN D. MORENO")
+ * is the sheet overruling the author about their own name. Tags and categories are the
+ * deliberate exception: they are a fixed controlled vocabulary, not prose.
+ *
+ * Levels 3-6 are sub-labels, not section rules: no border, one clear step each, and the
+ * two deepest turn to the machine voice so the ladder stays readable after the type scale
+ * runs out of room ([A1] `.doc-sub` is exactly this move). */
+.org-root .outline-3 { font-size: var(--o2h-fs-h3); margin-bottom: var(--o2h-space-2); }
+.org-root .outline-4 { font-size: calc(var(--o2h-fs-body) * 1.15); margin-bottom: var(--o2h-space-2); }
+.org-root .outline-5,
+.org-root .outline-6 {
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-fs-body);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--o2h-slate);
+  margin-bottom: var(--o2h-space-1);
+}
+.org-root .outline-6 { font-size: var(--o2h-fs-caption); }
+.org-root .org-heading-number { color: var(--o2h-mute); letter-spacing: var(--o2h-label-track); }
+
+/* ── The headline flag row (D-31) ────────────────────────────────────────────────────────
+ * State, rank and topic ride ABOVE the headline as ONE chip row, so the title keeps the
+ * full measure and never wraps around a floated tag. The chips already share one height
+ * and one padding (§7), so the row reads as a single instrument strip rather than three
+ * unrelated marks. Order is the order a reader asks the questions in: what state is this
+ * in, how much does it matter, what is it about. */
+.org-root .org-heading--flagged {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--o2h-space-1);
+}
+.org-root .org-headline-flags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--o2h-space-1);
+  /* The strip is CHROME standing next to a display title, so it must not inherit the
+   * headline's face, size, weight or tracking — otherwise the chips grow with the
+   * heading level and an h1's flags come out twice the size of an h3's. */
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  font-weight: 400;
+  letter-spacing: var(--o2h-label-track);
+  line-height: 1;
+}
+.org-root .org-headline-flags .org-tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--o2h-space-1);
+  float: none;
+  margin: 0;
+}
+.org-root .org-heading-text { display: block; }
+
+/* AUDIT — divergence 2: `.doc-block__title` declares no line-height, so both document pages
+ * inherit the body's, putting a 36px heading in 57.6px of leading. The engine sets its own;
+ * this keeps the title in the same discipline rather than copying the defect across. */
+
+/* O2H's registration-corner brackets are OFF across this book — title, pull-quote and
+ * figure alike. The hero is the type itself; the only corner furniture the book keeps is
+ * the page-level HUD marks. (.org-figure--bracket stays: that one is an authored variant a
+ * document asks for by name, not default chrome.) */
+.org-root .org-heading--title::before,
+.org-root .org-heading--title::after,
+.org-root .org-quote--pull::before,
+.org-root .org-quote--pull::after,
+.org-root .org-figure::before,
+.org-root .org-figure::after { content: none; }
+
+/* ── §1.3 · Prose rhythm [A1 .doc-prose / .doc-list] ────────────────────────────────────
+ * 1.4rem between paragraphs, rounded onto the grid at 24px. */
+.org-root .org-paragraph { margin: 0 0 var(--o2h-space-3); }
+/* ...but NOT on a paragraph the grid already spaces. styles.css states the law —
+ * `.org-root > * { margin-block: 0 }`, "outer block margins are dropped so row-gap owns the
+ * vertical rhythm" — and loses it, because that selector is (0,1,0) and the rule above is
+ * (0,2,0). So every TOP-LEVEL paragraph added its 24px to the 48px row-gap and sat in 72px.
+ * The margin is still right for a paragraph INSIDE `.org-section`, where no row-gap reaches
+ * it; this hands the direct children back to the grid, which is what the book says owns them. */
+.org-root > .org-paragraph { margin-block: 0; }
+
+/* ── §1.4 · The SIGN-OFF unit [A1 .doc__signoff] ────────────────────────────────────────
+ * "Replaces the site footer on document pages — these routes render no landing chrome below
+ * the sheet." Mono, quiet, over a hairline, 48px down from the body. The engine emits it
+ * from `#+SIGNOFF:`; the footnotes section wears the same closing vocabulary so a document
+ * that ends in notes still ends on a rule rather than trailing off. */
+.org-root .org-signoff {
+  margin: var(--o2h-space-5) 0 0;
+  padding-top: var(--o2h-space-3);
+  border-top: var(--o2h-border);
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-fs-caption);
+  letter-spacing: var(--o2h-label-track);
+  color: var(--o2h-mute);
+}
+.org-root .org-footnotes {
+  /* No margin-top here either — the base sheet dropped its own and row-gap owns
+   * the space above a top-level block. What this book adds is the hairline and
+   * the air between it and the notes. */
+  padding-top: var(--o2h-space-3);
+  border-top: var(--o2h-border);
+  font-size: var(--o2h-fs-caption);
+  color: var(--o2h-mute);
+}
+/* The engine draws its own <hr> above the notes; with a rule on the section it would be
+ * two rules for one boundary. */
+.org-root .org-footnotes > hr { display: none; }
+.org-root .org-footnote-back { color: var(--o2h-slate); }
+
+/* ── §1.5 · Table of contents ───────────────────────────────────────────────────────────
+ * A TOC is chrome, not content: hairline frame, mono label, ink links. It is the document's
+ * index, so it does not spend the accent — the active mark does, and only when there is one. */
+.org-root .org-toc {
+  border: var(--o2h-border);
+  background: transparent;
+  padding: var(--o2h-space-3);
+}
+.org-root .org-toc-label,
+.org-root .org-toc-title {
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-band-track);
+  text-transform: uppercase;
+  color: var(--o2h-mute);
+}
+.org-root .org-toc-link { color: var(--o2h-slate); text-decoration: none; }
+/* The index does not spend the accent on a passing cursor. A 2px accent bar under the
+ * pointer put a SECOND accent on a page that is allowed one, and it hung a full space-2
+ * off the text, so it read as a detached slab rather than a margin mark. Hover now does
+ * what a prose link does — lifts the ink — and draws a hairline tight against the row.
+ * The accent is kept for [aria-current]: the ONE mark that says "you are here", and only
+ * when a host actually sets it. */
+.org-root .org-toc-link {
+  border-left-width: 1px;
+  padding-left: var(--o2h-space-1);
+  margin-left: calc(-1 * var(--o2h-space-1));
+  transition: color var(--o2h-motion-hover) var(--o2h-ease),
+              border-left-color var(--o2h-motion-hover) var(--o2h-ease);
+}
+.org-root .org-toc-link:hover,
+.org-root .org-toc-link:focus-visible {
+  color: var(--o2h-ink);
+  border-left-color: var(--o2h-line-firm);
+}
+.org-root .org-toc-link[aria-current] {
+  color: var(--o2h-ink);
+  border-left-color: var(--o2h-accent);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════════════
+ * §2 · EMPHASIS, LINKS, INLINE CODE [A1 .kyo-prose · A4 code-inline]
+ * ════════════════════════════════════════════════════════════════════════════════════════ */
+
+/* `.kyo-prose strong` and `.kyo-prose a` both switch family. That contrast between a
+ * Geomanist reading face and a monospace accent IS the design [A1]. */
+.org-root strong {
+  font-family: var(--o2h-font-mono);
+  font-weight: 700;
+  color: var(--o2h-ink);
+  letter-spacing: 0;
+}
+/* A link is INK with an underline; the accent arrives on hover only [A1 .kyo-prose a].
+ * This is the single biggest reason a document page reads as a document.
+ *
+ * THE BARE ELEMENT IS IN THE LIST ON PURPOSE. The renderer classes every link
+ * IT emits, but an <a> written by hand inside a `#+BEGIN_EXPORT html` block
+ * passes through verbatim with no class, so it fell through to the browser's
+ * own default — cyan and underlined, in the middle of a document that never
+ * uses that anywhere else. `.org-root a` is (0,1,1), below every classed rule
+ * in this book, so a toc link, a footnote backref, an embed byline and a tag
+ * link all keep winning; only genuinely unclassed anchors change. */
+.org-root a,
+.org-root .org-link {
+  font-family: var(--o2h-font-mono);
+  font-weight: 700;
+  color: var(--o2h-ink);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  letter-spacing: 0;
+  transition: color var(--o2h-motion-hover) var(--o2h-ease);
+}
+.org-root a:hover,
+.org-root a:focus-visible,
+.org-root .org-link:hover,
+.org-root .org-link:focus-visible { color: var(--o2h-accent); }
+/* [A2] _theme.scss `.icon-mask--external`: an off-site link carries the Lucide
+ * external-link MARK, masked so it paints in currentColor — which means it travels with
+ * the link's own state (ink at rest, accent on hover) instead of introducing a second
+ * colour, and it reads as a mark rather than as a stray arrow character in the sentence.
+ * The engine writes "↗" into the span as its no-book fallback; the mask covers it and the
+ * character is pushed out of the box rather than deleted. */
+.org-root .org-link-external {
+  display: inline-block;
+  width: 0.78em;
+  height: 0.78em;
+  margin-left: 0.3em;
+  vertical-align: -0.02em;
+  overflow: hidden;
+  text-indent: 2em;
+  background-color: currentColor;
+  -webkit-mask: var(--o2h-icon-external) center / contain no-repeat;
+          mask: var(--o2h-icon-external) center / contain no-repeat;
+}
+/* An underline IS the mark; it does not also need the accent under it. */
+.org-root u { text-decoration-color: currentColor; }
+/* An author's <mark> means "I highlighted this" — the same act the reader performs by
+ * dragging over text. So it wears the SAME two colours as ::selection, from the same
+ * tokens: highlight the marked run by hand and it is indistinguishable. */
+.org-root mark {
+  background: var(--o2h-selection-bg);
+  color: var(--o2h-selection-fg);
+  padding: 0 var(--o2h-space-0);
+  border-radius: var(--o2h-radius);
+}
+
+/* Inline code — [A4] code-inline verbatim: accent ink, 6% accent wash, 35% accent hairline,
+ * square corners. The shared sheet keeps `~code~` on the accent but sends `=verbatim=` to
+ * ink, which is an O2H distinction (orange code vs black verbatim on paper). This book has
+ * ONE inline-code look, so both forms land on it. */
+.org-root .org-code,
+.org-root .org-verbatim,
+.org-root .org-inline-src {
+  font-family: var(--o2h-font-mono);
+  font-size: 0.88em;
+  color: var(--o2h-code-inline-fg);
+  background: var(--o2h-code-inline-bg);
+  border: 1px solid var(--o2h-code-inline-border);
+  border-radius: var(--o2h-radius);
+  padding: 1px var(--o2h-space-0);
+  letter-spacing: 0;
+}
+/* Nested code inside a link or strong drops its own chrome so the parent emphasis carries. */
+.org-root .org-link .org-code,
+.org-root .org-link .org-verbatim,
+.org-root strong .org-code,
+.org-root strong .org-verbatim {
+  background: transparent;
+  border-color: transparent;
+  color: inherit;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════════════
+ * §3 · LISTS [A4 list-dot / list-num / list-check / list-def]
+ *
+ * The Book's list is a stack of ROWS: a square marker, a 16px gap, and an l1 hairline under
+ * each row. Not a bullet glyph — a mark that measures.
+ * ════════════════════════════════════════════════════════════════════════════════════════ */
+.org-root .org-ul,
+.org-root .org-ol {
+  margin: 0 0 var(--o2h-space-3);
+  padding-left: var(--o2h-space-2);
+  list-style: none;
+}
+.org-root .org-ul > li,
+.org-root .org-ol > li {
+  position: relative;
+  padding: var(--o2h-space-1) 0 var(--o2h-space-1) var(--o2h-space-3);
+  margin: 0;
+  line-height: 1.6;
+  border-bottom: 1px solid var(--o2h-line-soft);
+}
+/* A nested list is inside its parent row, so the parent's rule already closed it. */
+.org-root .org-ul .org-ul,
+.org-root .org-ul .org-ol,
+.org-root .org-ol .org-ul,
+.org-root .org-ol .org-ol { margin: var(--o2h-space-1) 0 0; padding-left: var(--o2h-space-1); }
+.org-root li:last-child { border-bottom: 0; }
+
+/* [A4] list-dot — a 6px square at l4, not a typographic bullet. */
+.org-root .org-ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: calc(var(--o2h-space-1) + 0.6em);
+  width: 6px;
+  height: 6px;
+  border: 1px solid var(--o2h-line-firm);
+}
+/* Nested levels read by ALPHA and fill, never by a different glyph [A4 density-is-form]. */
+.org-root .org-ul .org-ul > li::before { background: var(--o2h-line-soft); }
+.org-root .org-ul .org-ul .org-ul > li::before { background: var(--o2h-line-firm); border-color: var(--o2h-line-firm); }
+
+/* [A4] list-num — a tabular mono index, quiet, in the machine voice. Styled through
+ * ::marker rather than a CSS counter: `[@7]` reaches the DOM as <li value="7">, and only
+ * the browser's own numbering honours that. A counter would silently renumber it. */
+.org-root .org-ol { list-style: decimal; padding-left: var(--o2h-space-3); }
+.org-root .org-ol > li { padding-left: var(--o2h-space-1); }
+.org-root .org-ol > li::marker {
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  color: var(--o2h-mute);
+}
+
+/* [A4] list-def — the term is a mono uppercase label, the definition is human prose. */
+.org-root .org-dl { margin: 0 0 var(--o2h-space-3); }
+.org-root .org-dt {
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  font-weight: 400;
+  letter-spacing: var(--o2h-label-track);
+  color: var(--o2h-slate);
+}
+.org-root .org-dd {
+  margin: var(--o2h-space-0) 0 var(--o2h-space-2) 0;
+  padding-bottom: var(--o2h-space-2);
+  border-bottom: 1px solid var(--o2h-line-soft);
+  color: var(--o2h-fg);
+}
+.org-root .org-dd:last-child { border-bottom: 0; }
+
+/* [A4] list-check — a 14px square, hairline at rest, accent once it carries a state.
+ *
+ * THE MARK IS DRAWN, NOT TYPESET. A "✓" character sits wherever its font decides to put
+ * it, which is why the tick looked cramped and off-centre inside a 14px box; two borders
+ * rotated 45° land on the pixel every time and scale with the box. The state is read from
+ * the LI's `data-checkbox`, not from the input's `:checked` — Org's PARTIAL state `[-]` has
+ * no HTML equivalent (`indeterminate` is JS-only), so keying off the input made a half-done
+ * item indistinguishable from an untouched one.
+ *
+ * The input stays a real (disabled) checkbox underneath: the box is the control, so screen
+ * readers still hear a checkbox and its state. */
+.org-root .org-li--checkbox { padding-left: var(--o2h-space-3); }
+/* The list-marker rule is `.org-root .org-ul > li::before` — (0,2,2) — so a plain
+ * `.org-li--checkbox::before` at (0,2,1) LOST to it, and every checkbox row painted the
+ * 6px list square inside the 14px box. Matching the marker's own shape wins the cascade
+ * outright instead of relying on source order. */
+.org-root .org-ul > li.org-li--checkbox::before,
+.org-root .org-ol > li.org-li--checkbox::before,
+.org-root .org-li--checkbox::before { content: none; }
+.org-root .org-li--checkbox input {
+  appearance: none;
+  -webkit-appearance: none;
+  position: absolute;
+  left: 0;
+  /* Centred on the FIRST line's box: half the line minus half the square. */
+  top: calc(var(--o2h-space-1) + (1em * var(--o2h-lh-body) - 14px) / 2);
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--o2h-line);
+  border-radius: var(--o2h-radius);
+  background: transparent;
+  display: block;
+}
+.org-root [data-checkbox="checked"] > input,
+.org-root [data-checkbox="partial"] > input { border-color: var(--o2h-accent); }
+/* The tick: a 4×8 box wearing two borders, turned 45°. */
+.org-root [data-checkbox="checked"] > input::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--o2h-accent);
+  border-width: 0 1px 1px 0;
+  transform: rotate(42deg);
+}
+/* Partial: the half-done bar Org means by `[-]`, which had no rendering at all before. */
+.org-root [data-checkbox="partial"] > input::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 6px;
+  width: 8px;
+  height: 1px;
+  background: var(--o2h-accent);
+}
+/* A done item's text steps back one tone [A4 list-check], so a finished list reads as
+ * finished without striking anything through. */
+.org-root [data-checkbox="checked"] { color: var(--o2h-mute); }
+
+/* ════════════════════════════════════════════════════════════════════════════════════════
+ * §4 · TABLES [A4 table-grid / table-ledger]
+ *
+ * A hairline frame at l3, a mono head that LABELS rather than fills, l1 seams between rows.
+ * The O2H inverted ink plate would be a glaring white band on a dark page.
+ * ════════════════════════════════════════════════════════════════════════════════════════ */
+.org-root .org-table {
+  background: transparent;
+  border: var(--o2h-border);
+  border-collapse: collapse;
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-fs-caption);
+}
+.org-root .org-table thead th {
+  background: transparent;
+  border-bottom: var(--o2h-border);
+  color: var(--o2h-mute);
+  font-weight: 400;
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-label-track);
+  text-align: left;
+  padding: var(--o2h-space-1) var(--o2h-space-2);
+}
+.org-root .org-table tbody td {
+  background: transparent;
+  border-bottom: 1px solid var(--o2h-line-soft);
+  color: var(--o2h-fg);
+  padding: var(--o2h-space-1) var(--o2h-space-2);
+}
+.org-root .org-table tbody tr:last-child td { border-bottom: 0; }
+/* Numbers line up or they are not data [A4 table-ledger]. */
+.org-root .org-table td[align="right"],
+.org-root .org-table th[align="right"] { font-variant-numeric: tabular-nums; }
+/* [A4] table-ledger's title bar is the accent's one spend in a table; a caption is exactly
+ * that bar, so it reads as a bar and not as centred prose. */
+.org-root .org-table-caption {
+  caption-side: top;
+  text-align: left;
+  padding: var(--o2h-space-1) var(--o2h-space-2);
+  border: var(--o2h-border);
+  border-bottom: 0;
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  font-weight: 700;
+  letter-spacing: var(--o2h-band-track);
+  color: var(--o2h-accent);
+}
+
+/* ── Highlighted rows and columns (#+ATTR_O2H) ───────────────────────────────────────────
+ * A comparison table exists to make ONE column or ONE row easy to find, and a reader
+ * should not have to count across the grid with a finger to do it. The mark is a wash
+ * plus a rule at the head of the column — the accent's one spend INSIDE the table, which
+ * is why the caption bar and the highlight never both appear at full strength. It is
+ * never colour alone: the highlighted head also steps up to ink and bold, so the column
+ * still reads as the featured one in a greyscale print or to a colour-blind reader
+ * [A4 content-legible]. */
+.org-root .org-table td.org-cell--highlight,
+.org-root .org-table th.org-cell--highlight {
+  background: color-mix(in srgb, var(--o2h-accent) 8%, transparent);
+}
+.org-root .org-table thead th.org-cell--highlight {
+  border-top: var(--o2h-stripe-thin) solid var(--o2h-accent);
+  color: var(--o2h-accent);
+  font-weight: 700;
+}
+.org-root .org-table tbody tr.org-row--highlight > td {
+  background: color-mix(in srgb, var(--o2h-accent) 6%, transparent);
+  color: var(--o2h-ink);
+}
+/* Where a highlighted row crosses a highlighted column the two washes would simply add
+ * up and the crossing would read as a THIRD state. Pin it to one deliberate value. */
+.org-root .org-table tbody tr.org-row--highlight > td.org-cell--highlight {
+  background: color-mix(in srgb, var(--o2h-accent) 15%, transparent);
+}
+
+/* ── Charts (#+ATTR_O2H: :chart bar) ─────────────────────────────────────────────────────
+ * A drawing made of the sheet's own tokens: hairline gridlines, the chrome voice on every
+ * label, and ONE accent — the highlighted bar, which is the whole reason the chart is on
+ * the page. Every other bar is a neutral firm hairline fill, so the comparison reads at a
+ * glance without the picture turning into a palette. The highlighted bar also lifts its
+ * value and category to ink, so the featured column survives a greyscale print exactly
+ * the way the highlighted table column does [A4 content-legible: never colour alone]. */
+.org-root .org-chart {
+  margin-block: var(--o2h-space-4);
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.org-root .org-chart-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.org-root .org-chart-grid { stroke: var(--o2h-line-soft); stroke-width: 1; }
+.org-root .org-chart-axis { stroke: var(--o2h-line); stroke-width: 1; }
+.org-root .org-chart-tick,
+.org-root .org-chart-label,
+.org-root .org-chart-axis-title {
+  fill: var(--o2h-mute);
+  font-family: var(--o2h-font-mono);
+  font-size: 14px;
+  letter-spacing: var(--o2h-label-track);
+}
+.org-root .org-chart-value {
+  fill: var(--o2h-slate);
+  font-family: var(--o2h-font-mono);
+  font-size: 14px;
+  font-weight: 700;
+}
+.org-root .org-chart-bar rect { fill: var(--o2h-line-firm); }
+.org-root .org-chart-bar.is-highlight rect { fill: var(--o2h-accent); }
+.org-root .org-chart-bar.is-highlight .org-chart-value,
+.org-root .org-chart-bar.is-highlight .org-chart-label { fill: var(--o2h-ink); }
+.org-root .org-chart-caption {
+  margin-top: var(--o2h-space-2);
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-label-track);
+  color: var(--o2h-mute);
+}
+
+/* ── Diagrams — authored SVG, styled by the book, driven by the viewer ────────────────────
+ * A CHART is generated from a table. A DIAGRAM is DRAWN, because a flow, an entity map or
+ * a set of lanes has no tabular source to compute it from. It is authored in a
+ * #+BEGIN_EXPORT html block, and the whole SVG vocabulary survives sanitisation — <defs>,
+ * <marker>, marker-end, class — so nothing here needs an escape hatch.
+ *
+ * THE BARGAIN, the same one .org-chart-bar makes: THE AUTHOR WRITES GEOMETRY AND A CLASS,
+ * AND NOTHING ELSE. Every fill, stroke, weight and face arrives from this sheet, so one
+ * authored diagram is correct in both books, follows the accent when the accent moves, and
+ * survives a greyscale print. An SVG that hard-codes #f9cd26 is a picture OF this book,
+ * rather than a diagram IN it.
+ *
+ * THE VOCABULARY (a flow is these seven things and no more):
+ *   .org-diagram          the <figure>
+ *   .org-diagram-scroll   the frame. Below its own width it SCROLLS rather than shrinks,
+ *                         and it is what the runtime upgrades into a pan/zoom stage.
+ *   .org-diagram-band     a phase behind a group of steps
+ *   .org-diagram-lane     a column header naming who acts ("THE DONOR", "ENGINE")
+ *   .org-diagram-node     a step box            + .is-highlight .is-muted .is-dashed .is-strong
+ *   .org-diagram-label    the text inside one   + .org-diagram-sub for its second line
+ *   .org-diagram-edge     an ORTHOGONAL connector (a path of V and H runs, never a diagonal)
+ *   .org-diagram-arrow    the marker path at its head
+ *   .org-diagram-plate    the small backing behind an edge label, so the label is readable
+ *                         where it crosses a line
+ *   .org-diagram-note / -caption
+ *
+ * WHY ORTHOGONAL: a flow is read as "this, then that". Diagonals cross each other and force
+ * the eye to trace; right-angle runs stack into columns a reader can follow with a finger. */
+.org-root .org-diagram {
+  /* A <figure> ships UA inline margins of 40px, which would inset the drawing from the prose
+   * it explains. Cleared here — the same defect still open on .org-chart. */
+  margin: var(--o2h-space-4) 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.org-root .org-diagram-scroll {
+  position: relative;
+  overflow-x: auto;
+  border: var(--o2h-border);
+  background: var(--o2h-well);
+  padding: var(--o2h-space-2);
+}
+.org-root .org-diagram-scroll > svg { display: block; width: 100%; height: auto; }
+/* THE DRAWN WIDTH IS A FLOOR, NOT A TARGET. A diagram is drawn for a viewBox width and its
+ * labels are sized for it; letting the SVG shrink to a phone would take them under the
+ * legible floor. Below that width the frame scrolls, and the runtime turns it into a stage
+ * that can be panned instead. */
+.org-root .org-diagram-scroll > svg { min-width: var(--o2h-diagram-w, 700px); }
+
+/* ── The viewer, added by templates/o2h.js ──────────────────────────────────────────────
+ * Everything below applies ONLY once the runtime has upgraded the frame, so a page with no
+ * JavaScript keeps a complete, readable, scrollable diagram and loses nothing but the pan. */
+.org-root .org-diagram-scroll.is-interactive {
+  overflow: hidden;
+  /* The controls get a strip of their own above the drawing so they never cover a label. */
+  padding: calc(var(--o2h-space-4) + var(--o2h-space-2)) var(--o2h-space-2) var(--o2h-space-2);
+  touch-action: none;
+}
+.org-root .org-diagram-stage {
+  overflow: hidden;
+  cursor: grab;
+  background: var(--o2h-well);
+}
+.org-root .org-diagram-scroll.is-panning .org-diagram-stage { cursor: grabbing; }
+.org-root .org-diagram-scroll.is-interactive svg {
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  -webkit-user-select: none;
+          user-select: none;
+}
+.org-root .org-diagram-stage:focus-visible { outline: var(--o2h-stripe-thin) solid var(--o2h-accent); outline-offset: -2px; }
+.org-root .org-diagram-tools {
+  position: absolute;
+  top: var(--o2h-space-1);
+  right: var(--o2h-space-2);
+  z-index: 2;
+  display: flex;
+  gap: var(--o2h-space-0);
+  align-items: center;
+  background: var(--o2h-paper);
+  border: var(--o2h-border);
+  padding: 3px 4px;
+}
+.org-root .org-diagram-tools button {
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-label-track);
+  color: var(--o2h-mute);
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 4px 7px;
+  min-width: 26px;
+  cursor: pointer;
+}
+.org-root .org-diagram-tools button:hover:not(:disabled),
+.org-root .org-diagram-tools button:focus-visible:not(:disabled) {
+  color: var(--o2h-accent);
+  border-color: var(--o2h-accent);
+}
+.org-root .org-diagram-tools button:disabled { opacity: 0.4; cursor: default; }
+.org-root .org-diagram-zoom {
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  color: var(--o2h-dim, var(--o2h-mute));
+  min-width: 40px;
+  text-align: center;
+}
+.org-root .org-diagram-hint {
+  margin: var(--o2h-space-0) 0 0;
+  font-family: var(--o2h-font-mono);
+  font-size: 11px;
+  color: var(--o2h-dim, var(--o2h-mute));
+}
+
+/* ── The drawing itself ──────────────────────────────────────────────────────────────── */
+.org-root .org-diagram-band { fill: var(--o2h-paper); stroke: var(--o2h-line-soft); stroke-width: 1; }
+.org-root .org-diagram-lane {
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-label-track);
+  font-weight: 700;
+  fill: var(--o2h-mute);
+}
+.org-root .org-diagram-node rect,
+.org-root .org-diagram-node circle {
+  fill: var(--o2h-well);
+  stroke: var(--o2h-line);
+  stroke-width: 1;
+}
+.org-root .org-diagram-label {
+  font-family: var(--o2h-font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  fill: var(--o2h-ink);
+}
+.org-root .org-diagram-sub {
+  font-family: var(--o2h-font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  fill: var(--o2h-mute);
+}
+/* THE ONE ACCENT. A diagram that highlights three things highlights nothing. It is never
+ * colour alone: the featured node steps its label to ink AND bold, so it stays the featured
+ * one in greyscale and to a reader who cannot separate the hue. */
+.org-root .org-diagram-node.is-highlight rect,
+.org-root .org-diagram-node.is-highlight circle {
+  fill: color-mix(in srgb, var(--o2h-accent) 12%, var(--o2h-well));
+  stroke: var(--o2h-accent);
+  stroke-width: var(--o2h-stripe-thin);
+}
+.org-root .org-diagram-node.is-highlight .org-diagram-label { fill: var(--o2h-ink); }
+.org-root .org-diagram-node.is-highlight .org-diagram-sub { fill: var(--o2h-fg); }
+/* .is-strong — a step that CREATES something rather than passing it along.
+ * IT IS A HAIRLINE WEIGHT, NOT A SECOND COLOUR. The first draft outlined these in the
+ * report ramp's --o2h-hold (#e0c052), which sits right beside the accent (#f9cd26): the
+ * page then had two yellows and the eye could not tell "look here" from "this one creates
+ * something". It also misused the ramp, whose own rule is that a state colour REPLACES the
+ * accent to encode state and is never spent on decoration — and "creates something" is
+ * structure, not state. So the mark is ink at the stripe weight: firmer than its
+ * neighbours, still monochrome, and the accent stays the one spend in the drawing. */
+.org-root .org-diagram-node.is-strong rect { stroke: var(--o2h-ink); stroke-width: var(--o2h-stripe-thin); }
+/* .is-dashed — described but not built yet. Dashed IS the signal; it needs no hue at all,
+ * and it survives greyscale exactly because it is a stroke pattern rather than a colour. */
+.org-root .org-diagram-node.is-dashed rect { fill: none; stroke: var(--o2h-mute); stroke-dasharray: 4 3; }
+.org-root .org-diagram-node.is-dashed .org-diagram-label { fill: var(--o2h-mute); }
+.org-root .org-diagram-node.is-dashed .org-diagram-sub { fill: var(--o2h-dim, var(--o2h-mute)); }
+/* .is-muted — context rather than argument. */
+.org-root .org-diagram-node.is-muted rect { fill: transparent; stroke: var(--o2h-line-soft); }
+.org-root .org-diagram-node.is-muted .org-diagram-label { fill: var(--o2h-mute); font-weight: 400; }
+
+/* ── STATE ON A NODE — the report ramp, not a new palette ────────────────────────────────
+ * A flow says "then what". A MAP says "and how is each of these doing" — delivered, ready,
+ * blocked, abandoned — and monochrome cannot answer that: with one accent every card is
+ * either THE card or an undifferentiated grey, so a reader counts instead of scanning.
+ *
+ * THE COLOURS ARE ALREADY IN THE BOOK. TOK-003's report ramp exists for exactly this and
+ * its rule permits exactly this: "a state colour REPLACES the accent to encode state; it is
+ * never spent on decoration". So a state card spends a ramp colour and NOT the accent, and
+ * the accent stays what it always was — the one thing the diagram argues for, which may sit
+ * on a card of any state.
+ *
+ *   .is-go       delivered, done, passing        .is-hold     blocked, waiting, caution
+ *   .is-info     ready, in progress, neutral     .is-stop     failed, removed, refused
+ *   .is-working  live, in flight                 .is-muted    parked on purpose
+ *
+ * NEVER COLOUR ALONE — AND THE CARD IS NOT WHERE THAT IS SETTLED. An earlier draft welded a
+ * coloured bar to every card's leading edge to carry it. That bar was the wrong instrument:
+ * it repeated on every card in a column that already said the same thing in words, it put a
+ * hard vertical rule beside type that has its own left edge, and eight of them turned a
+ * calm board into a fence.
+ *
+ * THE COLUMN HEADER CARRIES THE WORD; THE CARD ONLY REINFORCES IT. "DELIVERED" is written
+ * once, above the cards it governs, so a greyscale print and a reader who cannot separate
+ * green from amber both still read the state — from the heading, not from a swatch. The
+ * card then takes the state as a WASH and a hairline, which is the quietest pair that still
+ * groups a column at a glance, plus the id row in the same hue so the tie survives when a
+ * card is quoted away from its column. Colour is the second telling here, never the first. */
+.org-root .org-diagram-node.is-go      rect.org-diagram-card { fill: var(--o2h-go-wash);   stroke: color-mix(in srgb, var(--o2h-go) 45%, transparent); }
+.org-root .org-diagram-node.is-go      .org-diagram-id       { fill: var(--o2h-go); }
+.org-root .org-diagram-node.is-info    rect.org-diagram-card { fill: var(--o2h-info-wash); stroke: color-mix(in srgb, var(--o2h-info) 55%, transparent); }
+.org-root .org-diagram-node.is-info    .org-diagram-id       { fill: color-mix(in srgb, var(--o2h-info) 70%, var(--o2h-ink)); }
+.org-root .org-diagram-node.is-hold    rect.org-diagram-card { fill: var(--o2h-hold-wash); stroke: color-mix(in srgb, var(--o2h-hold) 45%, transparent); }
+.org-root .org-diagram-node.is-hold    .org-diagram-id       { fill: var(--o2h-hold); }
+.org-root .org-diagram-node.is-stop    rect.org-diagram-card { fill: var(--o2h-stop-wash); stroke: color-mix(in srgb, var(--o2h-stop) 45%, transparent); }
+.org-root .org-diagram-node.is-stop    .org-diagram-id       { fill: var(--o2h-stop); }
+.org-root .org-diagram-node.is-working rect.org-diagram-card { fill: color-mix(in srgb, var(--o2h-working) 10%, transparent); stroke: color-mix(in srgb, var(--o2h-working) 45%, transparent); }
+.org-root .org-diagram-node.is-working .org-diagram-id       { fill: var(--o2h-working); }
+/* Parked on purpose: no state, so no colour — the card is only its outline. */
+.org-root .org-diagram-node.is-muted rect.org-diagram-card { fill: transparent; stroke: var(--o2h-line-soft); }
+.org-root .org-diagram-node.is-muted .org-diagram-title { fill: var(--o2h-mute); }
+/* The accent still outranks every state: it is not a sixth colour, it is "look at this one". */
+.org-root .org-diagram-node.is-highlight rect.org-diagram-card {
+  fill: color-mix(in srgb, var(--o2h-accent) 12%, var(--o2h-well));
+  stroke: var(--o2h-accent);
+  stroke-width: var(--o2h-stripe-thin);
+}
+.org-root .org-diagram-node.is-highlight .org-diagram-id { fill: var(--o2h-accent); }
+
+/* ── CARD ANATOMY — three rows, three jobs ───────────────────────────────────────────────
+ * An identifier a reader searches for, a title they read, and a line of evidence that says
+ * why the card is in the column it is in. Three type sizes doing three jobs, not decoration:
+ * the id is chrome, the title is content, the sub-line is a footnote. */
+.org-root .org-diagram-id {
+  font-family: var(--o2h-font-mono);
+  font-size: 10px;
+  letter-spacing: var(--o2h-label-track);
+  fill: var(--o2h-mute);
+}
+.org-root .org-diagram-title {
+  font-family: var(--o2h-font-display, var(--o2h-font-editorial));
+  font-size: 13px;
+  font-weight: 700;
+  fill: var(--o2h-ink);
+}
+.org-root .org-diagram-meta {
+  font-family: var(--o2h-font-mono);
+  font-size: 10px;
+  fill: var(--o2h-mute);
+}
+
+/* ── COLUMNS — a lane the eye can find without a box around it ───────────────────────────
+ * The header names the column and a DASHED rule separates it from the next. Dashed rather
+ * than solid because it is a boundary, not an edge: nothing is contained by it, and a solid
+ * line would read as the side of a panel that is not there. */
+.org-root .org-diagram-col-title {
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-label-track);
+  font-weight: 700;
+  fill: var(--o2h-mute);
+}
+.org-root .org-diagram-col-rule {
+  stroke: var(--o2h-line-soft);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+  fill: none;
+}
+
+/* ── EDGES THAT CARRY STATE, AND EDGES THAT CURVE ────────────────────────────────────────
+ * Orthogonal is right for a pipeline, where the reading order IS the geometry. A map is not
+ * ordered, and a right-angle route across four columns has to jink around every card in the
+ * way; a curve goes over them and stays one gesture the eye can follow. So the flow keeps
+ * its elbows and the map may use `d` with a bezier — the class only supplies the paint. */
+.org-root .org-diagram-edge.is-go      { stroke: var(--o2h-go); }
+.org-root .org-diagram-edge.is-info    { stroke: var(--o2h-info); }
+.org-root .org-diagram-edge.is-hold    { stroke: var(--o2h-hold); }
+.org-root .org-diagram-edge.is-stop    { stroke: var(--o2h-stop); }
+.org-root .org-diagram-arrow.is-go     { fill: var(--o2h-go); }
+.org-root .org-diagram-arrow.is-info   { fill: var(--o2h-info); }
+.org-root .org-diagram-arrow.is-hold   { fill: var(--o2h-hold); }
+.org-root .org-diagram-arrow.is-stop   { fill: var(--o2h-stop); }
+/* A label ON a route, rather than beside it. It gets the plate underneath so the line does
+ * not run through the words. */
+.org-root .org-diagram-elabel {
+  font-family: var(--o2h-font-mono);
+  font-size: 10px;
+  fill: var(--o2h-mute);
+}
+.org-root .org-diagram-elabel.is-hold { fill: var(--o2h-hold); }
+.org-root .org-diagram-elabel.is-info { fill: var(--o2h-info); }
+.org-root .org-diagram-edge { stroke: var(--o2h-line-firm, var(--o2h-line)); stroke-width: 1.15; fill: none; }
+.org-root .org-diagram-edge.is-highlight { stroke: var(--o2h-accent); stroke-width: var(--o2h-stripe-thin); }
+.org-root .org-diagram-edge.is-dashed { stroke-dasharray: 5 4; }
+/* An arrowhead cannot inherit currentColor through marker-end in every engine, so each
+ * marker path is painted here by the token its edge uses. */
+.org-root .org-diagram-arrow { fill: var(--o2h-line-firm, var(--o2h-line)); stroke: none; }
+.org-root .org-diagram-arrow.is-highlight { fill: var(--o2h-accent); }
+/* A label sitting ON a connector needs its own ground or the line runs through the text. */
+.org-root .org-diagram-plate { fill: var(--o2h-well); stroke: none; }
+.org-root .org-diagram-note {
+  font-family: var(--o2h-font-mono);
+  font-size: 11px;
+  fill: var(--o2h-dim, var(--o2h-mute));
+}
+.org-root .org-diagram-caption {
+  margin-top: var(--o2h-space-2);
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-label-track);
+  color: var(--o2h-mute);
+}
+@media (prefers-reduced-motion: reduce) {
+  .org-root .org-diagram-stage { scroll-behavior: auto; }
+}
+/* ── Tabs (#+BEGIN_TABS) ─────────────────────────────────────────────────────────────────
+ * One slot, several alternatives. The tablist is chrome so it takes the chrome voice, and
+ * the SELECTED tab is the one accent in the group — a hover only lifts the ink and draws
+ * a firm hairline, the same bargain the table of contents makes. Every panel ships in the
+ * HTML: with the runtime absent they stack, which is the honest no-JS reading of "here
+ * are four charts", so nothing is hidden from a reader, a crawler or a printer. */
+.org-root .org-tabs { margin-block: var(--o2h-space-3); }
+.org-root .org-tablist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--o2h-space-1);
+  border-bottom: var(--o2h-border);
+  margin-bottom: var(--o2h-space-3);
+}
+.org-root .org-tab {
+  appearance: none;
+  border: 0;
+  border-bottom: var(--o2h-stripe-thin) solid transparent;
+  border-radius: 0;
+  background: transparent;
+  padding: var(--o2h-space-1) var(--o2h-space-2);
+  margin-bottom: -1px;
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-label-track);
+  color: var(--o2h-mute);
+  cursor: pointer;
+  transition: color var(--o2h-motion-hover) var(--o2h-ease),
+              border-bottom-color var(--o2h-motion-hover) var(--o2h-ease);
+}
+.org-root .org-tab:hover,
+.org-root .org-tab:focus-visible { color: var(--o2h-ink); border-bottom-color: var(--o2h-line-firm); }
+.org-root .org-tab[aria-selected="true"],
+.org-root .org-tab.is-active { color: var(--o2h-accent); border-bottom-color: var(--o2h-accent); }
+.org-root .org-tabpanel > :first-child { margin-block-start: 0; }
+
+/* ════════════════════════════════════════════════════════════════════════════════════════
+ * §5 · CODE [A4 code-block / code-diff / code-tokens]
+ *
+ * The well is the darkest plane on the page. The caption bar carries ONE 6px accent square
+ * and the filename in accent — not three macOS traffic lights, which encode nothing.
+ * ════════════════════════════════════════════════════════════════════════════════════════ */
+.org-root .org-src-block {
+  border: var(--o2h-border);
+  background: var(--o2h-well);
+}
+.org-root .org-src-header {
+  background: transparent;
+  border-bottom: 1px solid var(--o2h-line-soft);
+  padding: var(--o2h-space-1) var(--o2h-space-2);
+  font-size: var(--o2h-chip-size);
+  letter-spacing: 0.1em;
+}
+/* [A4] code-block: a single 6px accent square. The other two lights are decoration, and
+ * decoration that encodes nothing is a fail under every-mark-earns-its-place. */
+.org-root .org-src-lights { gap: 0; }
+.org-root .org-src-light { width: 6px; height: 6px; background: var(--o2h-accent); }
+.org-root .org-src-light:nth-child(1) { background: var(--o2h-accent); }
+.org-root .org-src-light:nth-child(2),
+.org-root .org-src-light:nth-child(3) { display: none; }
+.org-root .org-src-filename { color: var(--o2h-accent); font-weight: 700; }
+.org-root .org-src-lang { color: var(--o2h-dim); font-size: var(--o2h-chip-size); letter-spacing: var(--o2h-chip-track); }
+.org-root .org-src-copy {
+  border: 1px solid var(--o2h-line-soft);
+  border-radius: var(--o2h-radius);
+  color: var(--o2h-mute);
+  font-size: var(--o2h-chip-size);
+  letter-spacing: var(--o2h-chip-track);
+  padding: 2px var(--o2h-space-1);
+  transition: color var(--o2h-motion-hover) var(--o2h-ease), border-color var(--o2h-motion-hover) var(--o2h-ease);
+}
+.org-root .org-src { background: var(--o2h-well); }
+/* The highlighter's <code> and per-line <span>s carry the UA's generic `monospace`, which
+ * resolves to the SYSTEM mono and quietly breaks two-voices-split inside every code block.
+ * Inheriting pins them back to SpaceMono. */
+.org-root pre code,
+.org-root .org-src .line,
+.org-root .org-src .line span { font-family: inherit; }
+.org-root .org-src code { font-size: var(--o2h-fs-code); line-height: 1.7; }
+.org-root .org-src--numbered .line::before { color: var(--o2h-code-gutter); }
+/* A code block that overflows says so: the well fades at its right edge instead of cutting
+ * a word in half with no affordance. Compositor-only, and it never covers the first column. */
+.org-root .org-src {
+  background-image: linear-gradient(to right, transparent calc(100% - 40px), var(--o2h-well));
+  background-attachment: local, scroll;
+}
+
+/* [A4] code-diff — a 10% state wash and a 2px state stripe; context stays neutral. */
+.org-root .org-diff .org-diff-hunk { color: var(--o2h-dim); }
+
+/* Machine OUTPUT sits in the well with an ok-stripe [A3 report ramp]. */
+.org-root .org-results,
+.org-root .org-example,
+.org-root .org-fixed-width {
+  background: var(--o2h-well);
+  border: var(--o2h-border);
+  font-size: var(--o2h-fs-code);
+  color: var(--o2h-slate);
+}
+.org-root .org-results { border-left: var(--o2h-rail) solid var(--o2h-go); }
+
+/* Verse is human writing that happens to keep its line breaks — it must not read as code. */
+.org-root .org-verse {
+  background: transparent;
+  border: 0;
+  border-left: var(--o2h-rail) solid var(--o2h-line);
+  padding-left: var(--o2h-space-3);
+  font-family: var(--o2h-font-display);
+  font-size: var(--o2h-fs-body);
+  color: var(--o2h-slate);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════════════
+ * §6 · CALLOUTS [A4 callout-band]
+ *
+ * A band, not a box of colour: a 1px l2 frame, a 1.5% white wash, and a 4px state stripe.
+ * The title is the state's ONE spend of colour; the message stays human prose in ink.
+ * ════════════════════════════════════════════════════════════════════════════════════════ */
+/* The intent is carried by ONE inherited custom property, so every part of the band that
+ * should agree about the state — the stripe, the frame on the other three sides, and the
+ * label — reads the same value instead of being restated four times per intent. The frame
+ * used to stay a neutral grey hairline while only the stripe took the state, which read as
+ * a coloured band sitting inside an unrelated grey box; it now takes the state at a
+ * reduced alpha, so the whole object is one thing. Alpha, not a second hue, is what
+ * separates the frame from the stripe [A4 hairlines-only: weight is ALPHA]. */
+.org-root .org-callout {
+  --o2h-callout-ink: var(--o2h-mute);
+  position: relative;
+  margin-block: var(--o2h-space-3);
+  padding: var(--o2h-space-2) var(--o2h-space-2) var(--o2h-space-2) var(--o2h-space-3);
+  border: 1px solid color-mix(in srgb, var(--o2h-callout-ink) 40%, transparent);
+  border-left: var(--o2h-stripe) solid var(--o2h-callout-ink);
+  background: var(--o2h-band);
+}
+.org-root .org-callout-label {
+  margin: 0 0 var(--o2h-space-1);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-band-track);
+  color: var(--o2h-callout-ink);
+}
+.org-root .org-callout-body { color: var(--o2h-fg); }
+.org-root .org-callout--note    { --o2h-callout-ink: var(--o2h-info); background: var(--o2h-info-wash); }
+.org-root .org-callout--tip     { --o2h-callout-ink: var(--o2h-go);   background: var(--o2h-go-wash); }
+.org-root .org-callout--warning { --o2h-callout-ink: var(--o2h-hold); background: var(--o2h-hold-wash); }
+.org-root .org-callout--danger  { --o2h-callout-ink: var(--o2h-stop); background: var(--o2h-stop-wash); }
+
+/* A quote is a quote, not a callout: hairline rail, human face, quieter ink. */
+.org-root .org-quote {
+  border-left: var(--o2h-rail) solid var(--o2h-line);
+  background: transparent;
+  color: var(--o2h-slate);
+}
+.org-root .org-quote--pull {
+  border-left: 0;
+  color: var(--o2h-ink);
+  font-family: var(--o2h-font-display);
+}
+
+/* Drawers + inline tasks are machine furniture: hairline frame, mono summary. */
+.org-root .org-drawer,
+.org-root .org-logbook {
+  border: var(--o2h-border-soft);
+  background: transparent;
+  font-size: var(--o2h-fs-caption);
+  color: var(--o2h-mute);
+}
+.org-root .org-drawer-summary {
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-band-track);
+  text-transform: uppercase;
+  color: var(--o2h-slate);
+}
+/* An inline task is a boxed aside that happens to carry a keyword — so the KEYWORD is what
+ * says which state it is in, and the box stays neutral. It used to wear a magenta rail
+ * (--o2h-working), the one hue on the page that appears nowhere else and encodes nothing
+ * on its own: two colours for one state, and an off-palette one at that. The token stays
+ * for a host that has a live/in-flight state to encode; the book stops spending it. */
+.org-root .org-inlinetask {
+  border: var(--o2h-border);
+  border-left: var(--o2h-rail) solid var(--o2h-line-firm);
+  background: var(--o2h-band);
+  padding: var(--o2h-space-2) var(--o2h-space-2);
+}
+/* The heading is a ROW: flags lead, the title takes the middle, tags close it on the
+ * right. Laid out inline they wrapped onto a second line and collided with the frame. */
+.org-root .org-inlinetask-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--o2h-space-1);
+  margin: 0;
+  font-family: var(--o2h-font-display);
+  font-size: var(--o2h-fs-body);
+  color: var(--o2h-ink);
+}
+.org-root .org-inlinetask-heading .org-tags { margin-left: auto; }
+/* ── Headline telemetry: planning + clock ────────────────────────────────────────────────
+ * SCHEDULED / DEADLINE / CLOSED and the CLOCK line describe the SAME headline, so they
+ * are one vocabulary — but they used to disagree about it. Planning was bare text with a
+ * bold ink keyword; the logbook wore a dashed frame that made a two-stamp measurement
+ * look like a quoted block, and the `--` between the stamps floated in the gap. Both are
+ * now chip rows on the shared flag geometry: a dim mono label, then the stamps. The
+ * logbook drops its frame, because a row of bounded chips is already a bounded object.
+ * The DURATION is the number the line exists to report, so it is the single value that
+ * steps up to ink and tabular figures. */
+.org-root .org-clock,
+.org-root .org-planning {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--o2h-space-1);
+  margin: 0;
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-label-track);
+  color: var(--o2h-mute);
+}
+/* The headline's own bottom margin is the gap to PROSE, and planning is not prose — it
+ * belongs to the headline it describes, so it is pulled up against it and the two rows
+ * sit a label-step apart rather than a sibling-step. The gap BELOW the block is left at
+ * the prose distance, because that one is the gap to the body and it was already right.
+ * `:has()` keeps this deterministic at every heading level (outline-1..6 each carry a
+ * different bottom margin), with no negative margins to unwind; the sheet already
+ * requires `color-mix`, which is younger than `:has()`. */
+.org-root .org-heading:has(+ .org-planning),
+.org-root .org-heading:has(+ .org-logbook) { margin-bottom: var(--o2h-space-1); }
+.org-root .org-planning { margin-block: 0 var(--o2h-space-3); }
+.org-root .org-planning:has(+ .org-logbook) { margin-block-end: var(--o2h-space-0); }
+.org-root .org-planning-keyword,
+.org-root .org-clock-label {
+  color: var(--o2h-dim);
+  font-weight: 400;
+  letter-spacing: var(--o2h-band-track);
+}
+.org-root .org-logbook {
+  display: flex;
+  flex-direction: column;
+  gap: var(--o2h-space-0);
+  border: 0;
+  padding: 0;
+  margin-block: 0 var(--o2h-space-3);
+}
+.org-root .org-clock-sep { color: var(--o2h-dim); }
+.org-root .org-clock-duration {
+  color: var(--o2h-ink);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════════════
+ * §7 · SEALS — tags, status, priority, cookies, timestamps [A4 seal-* · A3 report ramp]
+ *
+ * [A4] seal-tag: 1px accent frame, 8% accent wash, mono 11px at 0.12em, uppercase, square.
+ * ONE accent per composition, so only the TAG wears it; status keywords take their state
+ * colour, and everything else is a neutral hairline chip.
+ * ════════════════════════════════════════════════════════════════════════════════════════ */
+.org-root .org-tag,
+.org-root .org-todo,
+.org-root .org-priority,
+.org-root .org-statistics-cookie,
+.org-root .org-timestamp,
+.org-root .org-cite {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--o2h-space-0);
+  /* ONE height and ONE padding for the whole family: these ride the same line inside a
+     heading, and a chip that sizes itself off its own text is what makes a row of flags
+     look ragged. box-sizing is inherited from the sheet's border-box reset. */
+  height: var(--o2h-flag-height);
+  padding: var(--o2h-flag-pad);
+  border: 1px solid var(--o2h-line);
+  border-radius: var(--o2h-radius);
+  background: transparent;
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-label-track);
+  text-transform: uppercase;
+  line-height: 1;
+  vertical-align: middle;
+  color: var(--o2h-mute);
+}
+/* The status dot is the flag's OWN colour. It used to be pinned to the accent, so a green
+   DONE carried a yellow dot — two colours encoding one state, which is exactly what
+   one-accent-per-composition forbids. */
+.org-root .org-todo::before {
+  width: var(--o2h-flag-dot);
+  height: var(--o2h-flag-dot);
+  margin-right: var(--o2h-space-0);
+  background: currentColor;
+  vertical-align: baseline;
+}
+.org-root .org-tag {
+  border-color: var(--o2h-accent);
+  background: color-mix(in srgb, var(--o2h-accent) 8%, transparent);
+  color: var(--o2h-accent);
+}
+/* A workflow keyword IS a state, so it takes the report ramp — never the accent [A4]. */
+.org-root .org-todo {
+  border-color: var(--o2h-hold);
+  background: var(--o2h-hold-wash);
+  color: var(--o2h-hold);
+}
+.org-root .org-todo.org-done,
+.org-root .org-done {
+  border-color: var(--o2h-go);
+  background: var(--o2h-go-wash);
+  color: var(--o2h-go);
+}
+/* Priority is a RANK, and a rank has to be READABLE as one: [#A] takes the stop colour and
+ * a filled wash, [#B] the hold colour, [#C] stays a quiet hairline. Colour AND weight AND
+ * fill all step together, so the order survives a greyscale print or a colour-blind reader
+ * ([A4] content-legible: never colour alone). The engine writes the letter into the chip's
+ * text, so the attribute selector below is matched on that text via :has-free CSS — the
+ * renderer also mirrors it to data-priority for hosts that want to key on it. */
+/* A chip's BOX must not encode anything — every flag in the row is the same object, and
+ * the rank is carried by the letter, the ink and the fill. [#C] used to draw its frame at
+ * the l3 alpha while its neighbours drew theirs in a solid state colour, and a 1px border
+ * at 20% white against this paper nearly disappears at the top and bottom edges — so the
+ * box read as SHORTER than the chips beside it even though every one of them measures the
+ * same 20px. Every priority now frames at l4 or a state colour, and none of them drops
+ * its weight, so the row reads as one strip. */
+.org-root .org-priority {
+  border-color: var(--o2h-line-firm);
+  color: var(--o2h-slate);
+  font-weight: 700;
+}
+.org-root .org-priority[data-priority="A"] {
+  border-color: var(--o2h-stop);
+  background: var(--o2h-stop-wash);
+  color: var(--o2h-stop);
+}
+.org-root .org-priority[data-priority="B"] {
+  border-color: var(--o2h-hold);
+  color: var(--o2h-hold);
+}
+.org-root .org-priority[data-priority="C"] {
+  border-color: var(--o2h-line-firm);
+  color: var(--o2h-mute);
+}
+.org-root .org-statistics-cookie {
+  border-color: var(--o2h-line-soft);
+  color: var(--o2h-dim);
+  font-variant-numeric: tabular-nums;
+}
+.org-root .org-timestamp { border-color: var(--o2h-line-soft); color: var(--o2h-mute); text-transform: none; }
+.org-root .org-timestamp--inactive { color: var(--o2h-dim); border-style: dashed; }
+.org-root .org-cite { border-color: var(--o2h-line-soft); color: var(--o2h-slate); text-transform: none; }
+/* A coderef names a line of machine output: chrome voice, no accent. */
+.org-root .org-coderef {
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-chip-size);
+  letter-spacing: var(--o2h-chip-track);
+  color: var(--o2h-dim);
+  border: 1px solid var(--o2h-line-soft);
+  padding: 0 var(--o2h-space-0);
+  background: transparent;
+}
+/* A demoted headline is still a headline: it keeps the display voice, not a bullet's. */
+.org-root .org-low-level > li { border-bottom: 0; }
+.org-root .org-low-level-title {
+  font-family: var(--o2h-font-display);
+  font-weight: 700;
+  color: var(--o2h-slate);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════════════
+ * §8 · MEDIA [A2 ui/image.vue + ui/youtube-facade.vue · A4 media-image / media-video]
+ *
+ * THE MEDIA LAW, from both: a media box RESERVES its space before the asset lands, paints a
+ * grain plate while it is empty, wears a hairline frame with a small inset, and fades the
+ * asset in over it. A caption is a telemetry chip, not a sentence in the middle of the page.
+ * ════════════════════════════════════════════════════════════════════════════════════════ */
+.org-root .org-figure {
+  /* margin-BLOCK, never the shorthand: a figure is breakout-capable, and the shorthand
+     would reset the inline margin .org-full-bleed / .org-wide depend on. */
+  margin-block: var(--o2h-space-4);
+  padding: var(--o2h-media-inset);          /* [A2] .ui-image--framed inset */
+  border: var(--o2h-border);
+  background: var(--o2h-paper);
+}
+.org-root .org-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 0;                                 /* the FRAME is the figure's, not the image's */
+  background: var(--o2h-media-plate);        /* the plate shows until the asset paints      */
+  background-size: cover;
+}
+/* An image that carries its own dimensions gets its box reserved by the browser; one that
+ * does not still reserves the book's default ratio, so a document never reflows on load. */
+.org-root .org-figure > .org-image:not([width]) { aspect-ratio: var(--o2h-media-ratio); object-fit: cover; }
+.org-root .org-figcaption {
+  display: block;
+  margin-block: var(--o2h-media-inset) 0;
+  padding: var(--o2h-space-1);
+  border-top: 1px solid var(--o2h-line-soft);
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-fs-caption);
+  letter-spacing: var(--o2h-label-track);
+  color: var(--o2h-mute);
+}
+/* A bare inline image inside a paragraph keeps the frame discipline at a smaller scale. */
+.org-root .org-paragraph .org-image {
+  display: inline-block;
+  width: auto;
+  max-height: 1.4em;
+  vertical-align: text-bottom;
+  border: 1px solid var(--o2h-line-soft);
+  background: transparent;
+}
+
+/* ── §8.1 · Video [A2 youtube-facade · A4 media-video] ──────────────────────────────────
+ * A native <video> cannot be restyled inside its shadow controls — so the book TAKES THEM
+ * OVER. `templates/o2h.js` strips `controls` and builds a bar out of real elements, which
+ * these rules then dress like every other piece of chrome on the page: SpaceMono at the
+ * label size, hairlines from the alpha ladder, no radius, and ONE accent.
+ *
+ * The order matters and is progressive: an authored <video> ships WITH `controls`, so a
+ * reader with no JavaScript keeps a working player; the attribute comes off only once the
+ * bar is built. If the upgrade throws, the runtime puts `controls` back. */
+/* A VIDEO WEARS NO FRAME, PLAYING OR NOT (owner ruling). Footage brings its own edge —
+ * it is a lit rectangle against the page, which is already a boundary — so a hairline drawn
+ * around it is a second edge competing with whatever the picture does at its margins, and
+ * with `object-fit: contain` it becomes a line ruled around a black letterbox band. The
+ * plate and the well stay: they are what RESERVES and fills the box before the first frame
+ * paints, which is a different job from framing it. */
+.org-root video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: var(--o2h-media-ratio);
+  object-fit: contain;
+  border: 0;
+  background: var(--o2h-well);
+  background-image: var(--o2h-media-plate);
+}
+/* Inside the player shell the picture is flush against the bar, so the plate goes too —
+ * a texture showing through a letterbox reads as a rendering fault rather than a surface. */
+.org-root .org-player video { background-image: none; }
+
+.org-root .org-player {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--o2h-well);
+  line-height: 0;                     /* no descender gap under the video */
+}
+.org-root .org-player:focus-visible { outline: var(--o2h-stripe-thin) solid var(--o2h-accent); outline-offset: -2px; }
+.org-root .org-player video { cursor: pointer; }
+
+/* THE BAR. It sits ON the picture rather than under it, because a strip below the frame
+ * would push the caption away and change the figure's height the moment the player
+ * upgrades. A scrim carries it: a gradient, not a panel, so it reads as chrome over the
+ * image rather than a second surface. */
+.org-root .org-player-bar {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--o2h-space-1);
+  padding: var(--o2h-space-1) var(--o2h-space-2);
+  line-height: 1;
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  color: var(--o2h-fg);
+  background: linear-gradient(to top, color-mix(in srgb, #000 82%, transparent), transparent);
+  transition: opacity var(--o2h-motion-hover) var(--o2h-ease),
+              transform var(--o2h-motion-hover) var(--o2h-ease);
+}
+/* The bar retreats only while PLAYING, and never while the pointer or focus is on it. */
+.org-root .org-player[data-idle="true"][data-state="playing"] .org-player-bar {
+  opacity: 0;
+  transform: translateY(100%);
+  pointer-events: none;
+}
+.org-root .org-player:hover .org-player-bar,
+.org-root .org-player:focus-within .org-player-bar {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.org-root .org-player-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--o2h-radius);
+  background: transparent;
+  color: var(--o2h-ink);
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  cursor: pointer;
+}
+.org-root .org-player-btn:hover,
+.org-root .org-player-btn:focus-visible {
+  color: var(--o2h-accent);
+  border-color: var(--o2h-accent);
+}
+.org-root .org-player-icon { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+/* The play/pause glyph is ONE button showing one of two paths, so the control never moves
+ * or changes width as it flips. Same for the fullscreen pair. */
+.org-root .org-player-icon.is-play,
+.org-root .org-player-icon.is-pause,
+.org-root .org-player-icon.is-on,
+.org-root .org-player-icon.is-off,
+.org-root .org-player-icon.is-in,
+.org-root .org-player-icon.is-out { display: none; }
+.org-root .org-player[data-state="paused"] .org-player-icon.is-play,
+.org-root .org-player[data-state="playing"] .org-player-icon.is-pause,
+.org-root .org-player[data-muted="false"] .org-player-icon.is-on,
+.org-root .org-player[data-muted="true"] .org-player-icon.is-off,
+.org-root .org-player:not([data-full="true"]) .org-player-icon.is-in,
+.org-root .org-player[data-full="true"] .org-player-icon.is-out { display: block; }
+/* A filled triangle and filled bars read better than outlines at 15px. */
+.org-root .org-player-icon.is-play,
+.org-root .org-player-icon.is-pause { fill: currentColor; stroke: none; }
+
+/* THE TRACK — three layers on one 3px rule: the unplayed hairline, what has BUFFERED, and
+ * what has PLAYED. Buffered is drawn because a ten-minute file over a slow line is a
+ * different experience if the reader can see it arriving. */
+.org-root .org-player-track {
+  position: relative;
+  flex: 1 1 auto;
+  height: 3px;
+  min-width: 40px;
+  background: var(--o2h-line);
+}
+.org-root .org-player-buffered,
+.org-root .org-player-played {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 0;
+  pointer-events: none;
+}
+.org-root .org-player-buffered { background: var(--o2h-line-firm, oklch(100% 0 0 / 0.35)); }
+.org-root .org-player-played { background: var(--o2h-accent); }
+/* The real <input type="range"> lies invisible ON the track: it arrives keyboard-operable
+ * and announced as a slider, which a div with pointer handlers never is. */
+.org-root .org-player-seek {
+  position: absolute;
+  inset: -7px 0;
+  width: 100%;
+  height: 17px;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+  -webkit-appearance: none;
+          appearance: none;
+  background: transparent;
+}
+.org-root .org-player-seek:focus-visible { outline: none; }
+.org-root .org-player-track:has(.org-player-seek:focus-visible) {
+  outline: 1px solid var(--o2h-accent);
+  outline-offset: 3px;
+}
+
+.org-root .org-player-time {
+  flex: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  /* Tabular figures, or the bar twitches every second as the digits change width. */
+  font-variant-numeric: tabular-nums;
+  color: var(--o2h-ink);
+}
+.org-root .org-player-sep { color: var(--o2h-dim, var(--o2h-mute)); }
+.org-root .org-player-dur { color: var(--o2h-mute); }
+
+.org-root .org-player-vol {
+  flex: none;
+  width: 0;
+  height: 3px;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+  -webkit-appearance: none;
+          appearance: none;
+  background: var(--o2h-line);
+  accent-color: var(--o2h-accent);
+  transition: width var(--o2h-motion-hover) var(--o2h-ease),
+              opacity var(--o2h-motion-hover) var(--o2h-ease);
+}
+/* The slider is spent space until it is wanted: it opens on hover or focus of the volume
+ * pair, and a keyboard reaching it opens it too. */
+.org-root .org-player-bar:hover .org-player-vol,
+.org-root .org-player-vol:focus-visible,
+.org-root .org-player-mute:focus-visible + .org-player-vol { width: 56px; opacity: 1; }
+.org-root .org-player-vol::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 9px; height: 9px;
+  background: var(--o2h-accent);
+  border: 0;
+}
+.org-root .org-player-vol::-moz-range-thumb {
+  width: 9px; height: 9px;
+  background: var(--o2h-accent);
+  border: 0;
+  border-radius: 0;
+}
+.org-root .org-player-rate { width: auto; padding-inline: 5px; letter-spacing: var(--o2h-label-track); }
+
+/* THE BIG TARGET. A paused video should be startable by aiming at the picture, not at a
+ * 22px glyph in the corner. It shares the facade's seal geometry so the player and the
+ * embed that mounted it look like the same instrument. */
+.org-root .org-player-big {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 1px solid var(--o2h-accent);
+  border-radius: var(--o2h-radius);
+  background: color-mix(in srgb, #000 70%, transparent);
+  backdrop-filter: blur(var(--o2h-badge-blur));
+  color: var(--o2h-ink);
+  cursor: pointer;
+  transition: background var(--o2h-motion-hover) var(--o2h-ease);
+}
+.org-root .org-player-big .org-player-icon { width: 20px; height: 20px; fill: currentColor; stroke: none; }
+/* HOVER DOES NOT MOVE OR RESIZE IT — the same rule the facade and the carousel follow. */
+.org-root .org-player-big:hover,
+.org-root .org-player-big:focus-visible {
+  background: color-mix(in srgb, var(--o2h-accent) 18%, color-mix(in srgb, #000 70%, transparent));
+}
+.org-root .org-player[data-state="playing"] .org-player-big { display: none; }
+
+.org-root .org-player[data-full="true"] { background: #000; }
+.org-root .org-player[data-full="true"] video { height: 100vh; aspect-ratio: auto; object-fit: contain; }
+
+@media (prefers-reduced-motion: reduce) {
+  .org-root .org-player-bar,
+  .org-root .org-player-vol,
+  .org-root .org-player-big { transition: none; }
+  /* Motion-averse readers keep the bar: a control that fades is a control that surprises. */
+  .org-root .org-player[data-idle="true"][data-state="playing"] .org-player-bar {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+}
+/* The embed is a STACK — the picture, then the source line under it — so the outer box
+ * carries no plate and no background of its own; the stage does. Neither carries a border. */
+.org-root .org-embed {
+  display: block;
+  border: 0;
+  background: transparent;
+  margin-block: var(--o2h-space-4);   /* breakout-capable — block axis only */
+}
+/* THE STAGE CARRIES NO FRAME EITHER. It used to wear a hairline until the moment of the
+ * click, on the argument that a POSTER needs an edge to read as a placed object rather than
+ * a loose image. That is true of a still — but it made the frame a piece of state: the box
+ * changed its outline the instant a reader pressed play, which is a flicker they did not ask
+ * for and cannot undo. One appearance in both states is worth more than the edge was. */
+.org-root .org-embed-stage {
+  border: 0;
+  background: var(--o2h-well);
+  background-image: var(--o2h-media-plate);
+  overflow: hidden;
+}
+.org-root .org-embed--youtube iframe,
+.org-root .org-embed-stage > iframe { border: 0; }
+/* An X embed mounts X's VIDEO-ONLY player, so the stage keeps the 16:9 every other embed
+ * uses and needs no special case. The earlier rule here relaxed the stage to a 34rem
+ * min-height once playing, because the frame was then /embed/Tweet.html — the whole post,
+ * avatar and prose and reply chrome included, with the video as one element inside it. That
+ * is a picture of a post that happens to contain a video, which is not what "embed this
+ * video" means. */
+
+/* ONCE IT IS PLAYING, THE PLATE GETS OUT OF THE WAY. The frame is gone in both states now,
+ * so only the plate is left to retract: a grain texture is a placeholder for an asset that
+ * has not landed, and once one has, a letterboxed band showing it reads as a rendering
+ * fault. The runtime stamps data-embed-state="playing" at the moment of the click, which is
+ * exactly the moment the placeholder stops being one. Every embed — youtube, x, local. */
+.org-root .org-embed-stage[data-embed-state="playing"] {
+  background-image: none;
+}
+
+/* D-05 — the facade: a poster the reader can see, and a play target they must ask for. */
+.org-root .org-embed-facade {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  isolation: isolate;
+  cursor: pointer;
+  text-decoration: none;
+}
+.org-root .org-embed-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border: 0;
+}
+/* [A2] the play target: a 3.5rem square on a blurred near-black plate behind an ACCENT
+ * hairline, its glyph drawn from borders so nothing has to be fetched to paint it. */
+.org-root .org-embed-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3.5rem;
+  height: 3.5rem;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--o2h-accent);
+  background: color-mix(in srgb, #000 70%, transparent);
+  backdrop-filter: blur(var(--o2h-badge-blur));
+  transition: background var(--o2h-motion-hover) var(--o2h-ease);
+  pointer-events: none;
+}
+.org-root .org-embed-play::before {
+  content: "";
+  width: 0;
+  height: 0;
+  margin-left: 3px;
+  border-left: 12px solid var(--o2h-ink);
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+/* HOVER DOES NOT MOVE OR RESIZE ANYTHING HERE. The poster used to scale(1.02) and the play
+ * badge scale(1.06) — a zoom on a still frame reads as the picture itself reacting, which is
+ * a promise the facade cannot keep: nothing plays until the click. The affordance is carried
+ * by COLOUR alone, so the frame holds still and only the badge warms toward the accent. The
+ * play badge keeps its translate(-50%, -50%) because that is its CENTERING, not a motion —
+ * dropping it from the hover state would make the badge jump to the corner. */
+.org-root .org-embed-facade:hover .org-embed-play,
+.org-root .org-embed-facade:focus-visible .org-embed-play {
+  background: color-mix(in srgb, var(--o2h-accent) 18%, color-mix(in srgb, #000 70%, transparent));
+}
+.org-root .org-embed-facade:focus-visible { outline: 2px solid var(--o2h-accent); outline-offset: -2px; }
+
+/* ── §8.2 · Carousel [A2 now-projects-section.vue] ──────────────────────────────────────
+ * THE REFERENCE CAROUSEL IS NOT A SCROLLING SHELF. It is ONE 16:9 frame with an accent
+ * hairline, showing one image at a time, and it is navigated by DOTS — prev · dots · next —
+ * with the scrollbar out of sight entirely. The engine's strip is CSS scroll-snap (so it
+ * still works by swipe with no JS), so the book gives it the reference's SHAPE: every tile
+ * is exactly one frame wide, snaps to centre, and the runtime's dot rail rides underneath. */
+.org-root .org-carousel { position: relative; margin-block: var(--o2h-space-4); }
+.org-root .org-carousel-strip {
+  gap: 0;
+  padding: 0;
+  margin-block: 0;
+  border: 1px solid var(--o2h-accent);   /* the accent frame IS the reference's signature */
+  background: var(--o2h-paper);
+  aspect-ratio: var(--o2h-media-ratio);
+  overflow: hidden;
+  overflow-x: auto;
+  isolation: isolate;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;                 /* the dots are the affordance */
+}
+.org-root .org-carousel-strip::-webkit-scrollbar { display: none; }
+.org-root .org-carousel-strip > * {
+  flex: 0 0 100%;
+  width: 100%;
+  max-width: 100%;
+  scroll-snap-align: center;
+}
+.org-root .org-carousel-strip img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 0;
+  background: var(--o2h-media-plate);
+  cursor: zoom-in;                        /* it opens the viewer, and it says so */
+}
+.org-root .org-carousel-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--o2h-accent);
+  border-radius: var(--o2h-radius);
+  background: var(--o2h-paper);
+  color: var(--o2h-accent);
+  font-family: var(--o2h-font-mono);
+  transition: background var(--o2h-motion-hover) var(--o2h-ease);
+}
+/* The base sheet's hover is the O2H bargain — a solid accent fill with an accent-fg
+ * (near-black) glyph on top. This book only tints the FILL, so it must restate the
+ * colour: without it the base's near-black glyph landed on a 12% tint and the arrow
+ * simply went black.
+ *
+ * THE ARROW DOES NOT MOVE. It used to lift translateY(-2px) on hover, which nudged the
+ * control away from the cursor already pointing at it — and an arrow that shifts is one a
+ * reader has to re-aim at mid-click. The state is carried by fill and border alone. */
+.org-root .org-carousel-btn:hover,
+.org-root .org-carousel-btn:focus-visible {
+  background: color-mix(in srgb, var(--o2h-accent) 12%, var(--o2h-paper));
+  border-color: var(--o2h-accent);
+  color: var(--o2h-accent);
+}
+.org-root .org-carousel-rail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--o2h-space-1);
+  margin-top: var(--o2h-space-1);
+}
+.org-root .org-carousel-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  padding: 0;
+  border: 1px solid var(--o2h-accent);
+  border-radius: var(--o2h-radius);
+  background: transparent;
+  cursor: pointer;
+  transition: transform var(--o2h-motion-hover) var(--o2h-ease), background var(--o2h-motion-hover) var(--o2h-ease);
+}
+.org-root .org-carousel-dot.is-active { background: var(--o2h-accent); transform: scale(1.15); }
+.org-root .org-carousel-dot:hover,
+.org-root .org-carousel-dot:focus-visible { background: color-mix(in srgb, var(--o2h-accent) 40%, transparent); }
+
+/* ── §8.3 · The lightbox ────────────────────────────────────────────────────────────────── */
+.org-lightbox-overlay { background: color-mix(in srgb, #000 88%, transparent); }
+.org-lightbox-overlay img { border: 1px solid var(--o2h-accent); }
+
+/* ── §8.4 · The embed source line [A2 brand-icon.vue · A4 never colour alone] ────────────
+ * An embed NAMES its platform, and the name is a LINK BACK TO IT — attribution the reader
+ * can follow, sitting UNDER the frame rather than floating over the picture. The platform
+ * is identified by its own MARK, masked in and painted by currentColor, exactly as
+ * ui/brand-icon.vue draws it (`fill: currentColor`, the shape carries the identity): a
+ * colour swatch identifies nothing to a reader who cannot see the colour, and the mark
+ * survives a greyscale print. The line follows the book's link rule — ink, underlined,
+ * accent on hover — so it reads as every other link on the page. */
+.org-root .org-embed-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--o2h-space-0);
+  margin-top: var(--o2h-space-1);
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  color: var(--o2h-mute);
+  text-decoration: none;
+  transition: color var(--o2h-motion-hover) var(--o2h-ease);
+}
+.org-root .org-embed-badge:hover,
+.org-root .org-embed-badge:focus-visible { color: var(--o2h-accent); }
+.org-root .org-embed-badge:hover .org-embed-source,
+.org-root .org-embed-badge:hover .org-embed-channel,
+.org-root .org-embed-badge:focus-visible .org-embed-source,
+.org-root .org-embed-badge:focus-visible .org-embed-channel { color: inherit; }
+.org-root .org-embed-brand {
+  width: 1.1em;
+  height: 1.1em;
+  flex: none;
+  background-color: currentColor;
+  -webkit-mask: var(--o2h-icon-youtube) center / contain no-repeat;
+          mask: var(--o2h-icon-youtube) center / contain no-repeat;
+}
+.org-root .org-embed-brand[data-brand="vimeo"] {
+  -webkit-mask-image: var(--o2h-icon-vimeo);
+          mask-image: var(--o2h-icon-vimeo);
+}
+.org-root .org-embed-brand[data-brand="x"] {
+  -webkit-mask-image: var(--o2h-icon-x);
+          mask-image: var(--o2h-icon-x);
+}
+.org-root .org-embed-source { color: var(--o2h-slate); }
+/* X IS ITS LOGO. The mark alone carries the platform — the wordmark IS the letter, so
+ * printing "X" beside it says the same thing twice, and next to a handle it reads as a
+ * stray character rather than a name. YouTube keeps its word, because its mark is a shape
+ * rather than a letter.
+ *
+ * The span is HIDDEN, NOT REMOVED. The mark is aria-hidden (it is a decorative glyph), so
+ * deleting the text would leave the link announced as just "@kyonax_on_tech" with no
+ * platform at all. This is the same bargain .org-chart-data makes: out of sight, still in
+ * the accessibility tree, and still there for a crawler and a printed page.
+ *
+ * ONLY THE WORD GOES. The separator is left exactly as it is: the mark still names the
+ * platform and the handle still names the account, so they are two things and want a dot
+ * between them — butted together they read as one token. Clipping the span rather than
+ * removing it also keeps the flex gap honest, because an absolutely-positioned flex child
+ * contributes no gap of its own; the badge keeps the 4px rhythm it has under YouTube. */
+.org-root .org-embed--x .org-embed-source {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.org-root .org-embed-divider { color: var(--o2h-dim); }
+.org-root .org-embed-channel {
+  font-family: var(--o2h-font-display);
+  font-size: 1.15em;
+  letter-spacing: var(--o2h-prose-track);
+  text-transform: none;
+  color: var(--o2h-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+/* Off-site, so it carries the same mark every off-site link in the book carries. */
+.org-root .org-embed-go {
+  width: 0.85em;
+  height: 0.85em;
+  flex: none;
+  margin-left: var(--o2h-space-0);
+  background-color: currentColor;
+  -webkit-mask: var(--o2h-icon-external) center / contain no-repeat;
+          mask: var(--o2h-icon-external) center / contain no-repeat;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════════════
+ * §9 · RULES + DECORATIONS [A4 hairlines-only]
+ *
+ * A rule is a STROKE, so it is 1px and reads by alpha. The accent bar the O2H book paints
+ * across the page is a decoration that encodes nothing.
+ * ════════════════════════════════════════════════════════════════════════════════════════ */
+.org-root .org-hr,
+.org-root hr {
+  border-top: var(--o2h-rule);
+  margin-block: var(--o2h-space-5);
+}
+.org-root .org-hr--dashed { border-top-style: dashed; }
+/* D-06 — a TICK rule is a measured rule: it carries end caps, which is the whole
+ * difference from the plain one. Alpha alone left two named variants rendering the same
+ * line. Still hairlines — the weight comes from two more marks, not a thicker stroke. */
+.org-root .org-hr--tick {
+  position: relative;
+  border-top-color: var(--o2h-line-firm);
+  overflow: visible;
+}
+.org-root .org-hr--tick::before,
+.org-root .org-hr--tick::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  width: 1px;
+  height: 9px;
+  background: var(--o2h-line-firm);
+}
+.org-root .org-hr--tick::before { left: 0; }
+.org-root .org-hr--tick::after { right: 0; }
+.org-root .org-hr--boxed-x::after { color: var(--o2h-mute); background: var(--o2h-paper); }
+/* D-01 — NO AMBIENT CHROME. [A1]'s document colour law is explicit: a document page "opts
+ * out of the yellow accent, HUD decorations and flare", and the engine's crosshair
+ * pseudo-elements are exactly the HUD decoration it names. They belong to a landing
+ * section. The hooks stay in the sheet, so a host that wants them attaches its own. */
+.org-root::before,
+.org-root::after { content: none; }
+/* D-07 — [A4] small-things-build-big: the ribbon shipped as a solid accent slab, the
+ * "big flat fill" the first law rejects outright and the largest unbroken block of accent
+ * in the book. It reads as a mark now — accent ink inside an accent hairline over an 8%
+ * wash — the same recipe as every other chip. */
+.org-root .org-deco-ribbon {
+  background: color-mix(in srgb, var(--o2h-accent) 8%, transparent);
+  border: 1px solid var(--o2h-accent);
+  color: var(--o2h-accent);
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-band-track);
+}
+.org-root .org-deco-vlabel { color: var(--o2h-chrome); }
+
+/* ── Math ────────────────────────────────────────────────────────────────────────────────
+ * Fragments are typeset to MathML at build time, so the browser draws real mathematics and
+ * the page needs no library and no webfont for it. The book only has to size and colour it:
+ * ink, a hair larger than the prose it interrupts, and a display block that centres and
+ * scrolls rather than overflowing the column. Per the matrix, math never takes the accent.
+ *
+ * When a fragment could not be typeset the engine falls back to the source WITH its
+ * delimiters (data-math="raw") — that form keeps the machine voice, because that is what
+ * it is: unrendered source, and a host running KaTeX/MathJax scans for exactly it. */
+.org-root .org-math { color: var(--o2h-ink); }
+.org-root .org-math math { font-size: 1.05em; }
+.org-root .org-math-display {
+  display: block;
+  margin-block: var(--o2h-space-3);
+  /* A long equation scrolls SIDEWAYS; it must never grow a vertical scrollbar.
+   * `overflow-x: auto` alone does not say that — per CSS Overflow 3, once one
+   * axis is not `visible` the other computes from `visible` to `auto` too. The
+   * rendered <math> box lands on a fractional height (60.6px inside a 61px
+   * line), so those two stray pixels were enough to lay out a real vertical
+   * scrollbar, 6px wide, down the right of every display equation. Naming both
+   * axes is the whole fix. */
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.org-root .org-math-display math {
+  display: block;
+  margin-inline: auto;
+  font-size: 1.25em;
+}
+.org-root .org-math[data-math="raw"] {
+  font-family: var(--o2h-font-mono);
+  font-size: 0.92em;
+  color: var(--o2h-slate);
+  letter-spacing: 0;
+}
+
+/* A target is an anchor, not a mark: it must occupy no space and paint nothing. */
+.org-root .org-target { display: inline; }
+
+/* ════════════════════════════════════════════════════════════════════════════════════════
+ * §10 · COMPONENT SKINS [A4 blade-* / port-* / seal-* / signal-* · A3 dashboard]
+ *
+ * THE LAW THAT CHANGES THE MOST HERE: a control NEVER fills [A4 blade-cut / blade-line] —
+ * the accent is a 1px frame and the label, and hover is a 12% tint. A solid accent slab is
+ * the "big flat fill" small-things-build-big rejects. Nothing has a radius; every plate is
+ * a dark surface, never a white card on a dark page.
+ * ════════════════════════════════════════════════════════════════════════════════════════ */
+.org-root [data-component] {
+  font-family: var(--o2h-font-mono);
+  border-radius: var(--o2h-radius);
+}
+/* Siblings need air: the shared sheet lays components out inline with no gap of their own.
+ * The bottom margin is what keeps a WRAPPED row of controls from colliding with the next. */
+.org-root [data-component] { vertical-align: middle; margin-bottom: var(--o2h-space-1); }
+.org-root [data-component] + [data-component] { margin-left: var(--o2h-space-2); }
+.org-root [data-component="card"] + [data-component="card"],
+.org-root [data-component="stat-grid"],
+.org-root [data-component="input"],
+.org-root [data-component="search"],
+.org-root [data-component="select"],
+.org-root [data-component="textarea"],
+.org-root [data-component="newsletter"],
+.org-root [data-component="tabs"],
+.org-root [data-component="modal"],
+.org-root [data-component="empty"],
+.org-root [data-component="error"],
+.org-root [data-component="skeleton"] { display: block; margin-left: 0; margin-top: var(--o2h-space-2); }
+
+/* ── Buttons [A4 blade-cut primary · blade-line ghost] ──────────────────────────────────── */
+.org-root [data-component="button"] {
+  min-height: 40px;
+  padding: var(--o2h-space-1) var(--o2h-space-3);
+  border: 1px solid var(--o2h-accent);
+  background: transparent;
+  color: var(--o2h-accent);
+  font-size: var(--o2h-fs-caption);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background var(--o2h-motion-hover) var(--o2h-ease), color var(--o2h-motion-hover) var(--o2h-ease);
+}
+.org-root [data-component="button"]:hover { background: color-mix(in srgb, var(--o2h-accent) 12%, transparent); }
+.org-root [data-component="button"][data-variant="outline"],
+.org-root [data-component="button"][data-variant="ghost"] { border-color: var(--o2h-line); color: var(--o2h-slate); }
+.org-root [data-component="button"][data-variant="ink"] { border-color: var(--o2h-ink); background: transparent; color: var(--o2h-ink); }
+.org-root [data-component="button"][data-variant="ghost"] { border-color: transparent; }
+.org-root [data-component="button"][data-variant="bracketed"] { border-color: var(--o2h-line); color: var(--o2h-accent); }
+/* The blade cut: a chamfer on the two opposite corners, the Book's primary silhouette. */
+.org-root [data-component="button"][data-variant="primary"] {
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+
+/* ── Surfaces: cards, stat grids, ledgers ───────────────────────────────────────────────── */
+.org-root [data-component="card"],
+.org-root [data-component="stat-grid"],
+.org-root [data-component="terminal"],
+.org-root [data-component="file-tree"],
+.org-root [data-component="diagram"],
+.org-root [data-component="command"],
+.org-root [data-component="accordion"],
+.org-root [data-component="pagination"] {
+  border: var(--o2h-border);
+  background: transparent;
+  color: var(--o2h-slate);
+}
+.org-root [data-component="card"]::before,
+.org-root [data-component="stat-grid"]::before {
+  color: var(--o2h-accent);
+  font-family: var(--o2h-font-mono);
+  font-size: var(--o2h-label-size);
+  letter-spacing: var(--o2h-band-track);
+  text-transform: uppercase;
+}
+.org-root [data-component="stat-grid"] { background: var(--o2h-line-soft); }
+.org-root [data-component="stat-grid"]::before { background: var(--o2h-paper); }
+.org-root [data-component="command"],
+.org-root [data-component="terminal"] { background: var(--o2h-well); color: var(--o2h-ink); }
+.org-root [data-component="kbd"] {
+  border: 1px solid var(--o2h-line-firm);
+  border-bottom-width: var(--o2h-stripe-thin);
+  background: transparent;
+  color: var(--o2h-ink);
+  font-size: var(--o2h-label-size);
+}
+
+/* ── Form controls [A4 port-*] ──────────────────────────────────────────────────────────── */
+.org-root [data-component="input"],
+.org-root [data-component="search"],
+.org-root [data-component="select"],
+.org-root [data-component="textarea"] {
+  border: var(--o2h-border);
+  background: transparent;
+  color: var(--o2h-mute);
+  font-size: var(--o2h-fs-caption);
+}
+.org-root [data-component="input"][data-state="error"] { border-color: var(--o2h-stop); background: var(--o2h-stop-wash); }
+.org-root [data-component="toggle"] { border: 1px solid var(--o2h-line-firm); background: transparent; }
+.org-root [data-component="toggle"]::before { background: var(--o2h-slate); }
+.org-root [data-component="toggle"][data-state="on"] { background: transparent; border-color: var(--o2h-accent); }
+.org-root [data-component="toggle"][data-state="on"]::before { background: var(--o2h-accent); }
+/* A newsletter band is a document surface, not a white slab on a dark page. */
+.org-root [data-component="newsletter"] {
+  border: var(--o2h-border);
+  background: var(--o2h-band);
+  color: var(--o2h-slate);
+}
+.org-root [data-component="tabs"] { border: var(--o2h-border); background: transparent; color: var(--o2h-slate); }
+
+/* ── Overlays + feedback ────────────────────────────────────────────────────────────────── */
+.org-root [data-component="modal"],
+.org-root [data-component="toast"],
+.org-root [data-component="tooltip"] {
+  border: var(--o2h-border);
+  background: var(--o2h-card);
+  color: var(--o2h-ink);
+}
+.org-root [data-component="tooltip"] { border-radius: var(--o2h-radius-tip); }  /* the law's one exception */
+.org-root [data-component="modal"][data-variant="alert"] { border-color: var(--o2h-stop); }
+.org-root [data-component="modal"][data-variant="alert"]::before { color: var(--o2h-stop); }
+
+/* ── States [A3 report ramp] ────────────────────────────────────────────────────────────── */
+.org-root [data-component="progress"] { border: 1px solid var(--o2h-line); background: transparent; }
+.org-root [data-component="progress"]::before { background: var(--o2h-accent); }
+/* The Book's spinner is SQUARE (SB-122) — a rotating ring with a radius is the one piece of
+ * component chrome that still broke no-radius. The dots variant keeps its dots. */
+.org-root [data-component="spinner"] {
+  border-color: var(--o2h-line-firm);
+  border-top-color: var(--o2h-accent);
+  border-radius: var(--o2h-radius);
+}
+.org-root [data-component="skeleton"] { background: var(--o2h-band); border: 1px solid var(--o2h-line-soft); }
+.org-root [data-component="empty"] { border: var(--o2h-border-dashed); background: transparent; color: var(--o2h-dim); }
+/* An error plate is the darkest surface on the page with a state frame — not an inverted
+ * white card, which is the O2H book reading its own paper ground. */
+.org-root [data-component="error"] {
+  border: 1px solid var(--o2h-stop);
+  background: var(--o2h-well);
+  color: var(--o2h-slate);
+}
+.org-root [data-component="error"][data-code="404"] { border-color: var(--o2h-line); }
+.org-root [data-component="error"][data-code="404"]::before { color: var(--o2h-accent); }
+.org-root [data-component="error"][data-variant="offline"]::before { background: var(--o2h-stop); }
+.org-root [data-component="badge"] {
+  min-width: 18px;
+  height: 18px;
+  border: 1px solid var(--o2h-accent);
+  background: color-mix(in srgb, var(--o2h-accent) 8%, transparent);
+  color: var(--o2h-accent);
+  font-size: var(--o2h-chip-size);
+}
+.org-root [data-component="avatar-group"] > * { border: 1px solid var(--o2h-line); background: var(--o2h-card); }
+.org-root [data-component="back-to-top"],
+.org-root [data-component="read-progress"] { border-color: var(--o2h-line); color: var(--o2h-slate); }
+
+/* Page chrome the runtime injects — same vocabulary as the rest of the instrument. */
+.org-back-to-top {
+  border: 1px solid var(--o2h-line);
+  border-radius: var(--o2h-radius);
+  background: color-mix(in srgb, var(--o2h-paper) 85%, transparent);
+  color: var(--o2h-slate);
+}
+.org-back-to-top:hover,
+.org-back-to-top:focus-visible { color: var(--o2h-accent); border-color: var(--o2h-accent); }
+/* The TRACK stays transparent and only the `<i>` fill carries the accent — the
+ * base sheet already says so. Painting the track accent here (which this rule
+ * used to do) is not a themed progress bar, it is a permanent full-width band
+ * that reads 100% before the reader has scrolled anything. The fill is what
+ * this book had a right to colour. */
+.org-read-progress > i { background: var(--o2h-accent); }
+
+/* ════════════════════════════════════════════════════════════════════════════════════════
+ * §11 · LIGHT INVERSE
+ * Dark-first, so the engine's `--theme light` opts INTO the inverse (the mirror of how the
+ * O2H book treats [data-theme="dark"]). Explicit build-time choice only — never inferred
+ * from the visitor's environment.
+ * ════════════════════════════════════════════════════════════════════════════════════════ */
+.org-root[data-theme="light"] {
+  --o2h-paper: oklch(98.5% 0 0);
+  --o2h-card: oklch(100% 0 0);
+  --o2h-card-2: oklch(96% 0 0);
+  --o2h-well: oklch(96.5% 0 0);
+  --o2h-line: oklch(0% 0 0 / 0.16);
+  --o2h-line-soft: oklch(0% 0 0 / 0.08);
+  --o2h-line-firm: oklch(0% 0 0 / 0.32);
+  --o2h-ink: oklch(18% 0 0);
+  --o2h-fg: oklch(32% 0 0);
+  --o2h-mute: oklch(45% 0.012 285.9);
+  --o2h-slate: oklch(38% 0.012 286.4);
+  --o2h-dim: oklch(58% 0 0);
+  --o2h-chrome: oklch(0% 0 0 / 0.42);
+  --o2h-signal-500: oklch(57.9% 0.1183 91.2);
+  --o2h-accent-fg: oklch(98.5% 0 0);
+  --o2h-selection-fg: oklch(98.5% 0 0);
+  --o2h-code-inline-fg: oklch(45% 0.1 91.2);
+  --o2h-band: oklch(0% 0 0 / 0.02);
+  --o2h-syn-plain: oklch(22% 0 0);
+  --o2h-syn-function: oklch(22% 0 0);
+  --o2h-syn-comment: oklch(52% 0 0);
+  --o2h-syn-punct: oklch(40% 0 0);
+  --o2h-media-plate: repeating-linear-gradient(45deg, oklch(92% 0 0) 0 9px, oklch(96% 0 0) 9px 18px);
+}

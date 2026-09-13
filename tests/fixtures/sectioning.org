@@ -1,0 +1,12 @@
+#+TITLE: Sectioning Demo
+
+Preamble paragraph before any headline stays at the document root.
+
+* First Section
+Intro paragraph owned by the first section.
+
+** Nested Subsection
+Content owned by the subsection, nested inside the first section.
+
+* Second Section
+This paragraph belongs to the second section, not the first.

@@ -1,0 +1,37 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-3.0-only — see LICENSE.
+
+#  ________ ______  ___  __________ __
+# /_  __/ // / __/ / _ \/ __/ __/ //_/
+#  / / / _  / _/  / // / _/_\ \/ ,<
+# /_/ /_//_/___/ /____/___/___/_/|_|
+#
+# .editorconfig — Editor-agnostic formatting baseline
+# 2026-05-21
+#
+# Aligns every editor to whitespace + EOL rules before ESLint runs.
+# Lockstep with eslint.config.mts (2-space indent, LF, UTF-8).
+#
+# Guidelines:
+#   Changes MUST be mirrored in eslint.config.mts
+#   max_line_length = 80 is prose default; org / html / css opt out
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length = 80
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{org,html,css}]
+max_line_length = off
+
+[Makefile]
+indent_style = tab

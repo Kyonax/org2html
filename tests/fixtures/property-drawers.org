@@ -1,0 +1,16 @@
+#+TITLE: Property Drawers Demo
+
+* Introduction
+:PROPERTIES:
+:CUSTOM_ID: intro
+:AUTHOR: Kyo
+:END:
+Content under a heading that carries a custom id.
+
+A link back to [[#intro][the intro]].
+
+* Generic Drawer
+:LOGBOOK:
+some log content
+:END:
+Body after a generic drawer.

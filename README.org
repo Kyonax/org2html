@@ -1,0 +1,1027 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-3.0-only — see LICENSE.
+
+#  ________ ______  ___  _______  _________  _  __
+# /_  __/ // / __/ / _ )/ __/ _ |/ ___/ __ \/ |/ /
+#  / / / _  / _/  / _  / _// __ / /__/ /_/ /    /
+# /_/ /_//_/___/ /____/___/_/ |_\___/\____/_/|_/
+#
+# README.org — GitHub landing page
+# 2026-05-21
+#
+# Visitor entry point: ASCII logo, tagline, badges, what / setup /
+# CLI / library / contributing pointer. Minimal — no verbose docs.
+#
+# Guidelines:
+#   ASCII source-of-truth: kyo-web-online/src/assets/ascii/org2html.txt
+#   Centering: <table align="center"> inside <div align="left">
+#   #+VERSION:, logo footer, and version badge MUST match
+
+#+AUTHOR: [[https://orcid.org/0009-0006-4459-5538][Cristian D. Moreno - Kyonax]]
+#+EMAIL: kyonax.corp@gmail.com
+#+DATE: May 21, 2026
+#+FILETAGS: :KYO:ORG_2_HTML:ENGINE:CCS:
+#+VERSION: v1.2.0
+#+LAST_UPDATE: September 04, 2026
+
+#+BEGIN_HTML
+<div align="left">
+<table align="center"><tr><td>
+<pre>
+                              ▒▒
+      ░░░░░░░░░░░░░ ░        ▓▓░
+     ░░▒▓██▓██▓█▓▒░░ ░      ▓▒▒
+           ░░░▒▓█▓▒░       ▒▒█░
+     ░      ░░▒▓█▓▒░   ░░ ▓▒▒▒
+      ░░▒▓█▓██▓█▓▒░░ ░▓░▓▓░░▒
+     ░░▒▓█▓▒░░       ▓██▓░░▒░  ░
+      ░▒▓█▓▒░░░░░░░  ▓█▓██▒▒▒▒▒
+      ░▒▓██▓██▓██▓▒░     ░░   ▒█▒░░
+     ░░░░░░░░░░░░░░     ░▓▒░       ░░░░░░▓
+   ░▒▓█████▓███▒░     ░             ░░   ▒▒
+  ░████▓▓█▓▓███░    ░              ░░░ ░▒▒
+ ░▒▒▓█████▓▒███░░   ░▒▒             ░▓▓▒▒
+ ░█████▓▓██▒███▒░  ░██▒▒██▓▓▒▓░░░░░▒▓▓▒░
+░███▒▒▓████░███▓░  ███▒▓░▒▒░
+░█▓▒██████░▒███▒░ ░██▓▓
+░█▒████▒▒▒████▓░░ ░██▓▓
+ ░▓██▒▓██████░░    ░██▓▓░
+  ░██▓█▓░░  ░    ░  ░███▓▓▒░
+  ░██▓░     ░   ░    ░▓████▓▓░
+    ░▓░░   ░     ░   ░ ░█████▒▓
+     ░▒▒░   ░           ░█████▓▓░
+      ░░▒▓        ░▒▓████▓▒░▓███▒▒
+     ░   ░ ░▒▒▒▒░░  ░   ░   ░▓▒▓█▒░
+          ░    ░░░   ░     ░   ░▒▒▓░
+                ░          ░     ░▒░     v1.2.0
+</pre>
+</td></tr></table>
+</div>
+
+<div align="center">
+<strong>O</strong>rg-mode &middot; <strong>R</strong>enderer &middot; <strong>G</strong>enerator &middot; <strong>2</strong> &middot; <strong>H</strong>ypertext &middot; <strong>T</strong>emplated &middot; <strong>M</strong>odular &middot; <strong>L</strong>ibrary
+<br>
+<br>
+</div>
+
+<div align="center">
+<a href="https://www.npmjs.com/package/@kyonax/org2html"><img src="https://img.shields.io/npm/v/@kyonax/org2html?labelColor=FFD400&color=FFE564" alt="npm version"></a>
+<a href="#"><img src="https://img.shields.io/github/languages/top/Kyonax/org2html?labelColor=FFD400&color=FFE564" alt="Top language"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-9A51C0?labelColor=7409AA" alt="GPL-3.0-only"></a>
+<a href="#"><img src="https://img.shields.io/badge/version-v1.2.0-755AC4?labelColor=3B14AF" alt="v1.2.0"></a>
+<a href="https://github.com/ccs-devhub"><img src="https://img.shields.io/badge/CCS_Member-FFE564?&logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIj48cGF0aCBmaWxsPSIjOUI4MjAwIiBkPSJNIDI3IDIwMCBsIDAgMTczIDE3MyAwIDE3MyAwIDAgLTE3MyAwIC0xNzMgLTE3MyAwIC0xNzMgMCAwIDE3MyB6IG0gMzMyIDAgbCAwIDE1OSAtMTU5LjUgMCAtMTU5LjUgMCAwIC0xNTkgMCAtMTU5IDE1OS41IDAgMTU5LjUgMCAwIDE1OSB6IE0gNTIgMTIwIGwgMCA2OCA0OCAwIDQ4IDAgMCAtMjAgMCAtMjAgNTEuNSAwIDUxLjUgMCAwIDIwIDAgMjAgMjEuNSAwIDIxLjUgMCAwIC00MS41IDAgLTQxLjUgLTk0LjUgMCAtOTQuNSAwIDAgMjAgMCAyMCAtNSAwIC01IDAgMCAtMjUgMCAtMjUgMTA1IDAgMTA1IDAgMCA1MS41IDAgNTEuNSAtMTI2LjUgMCAtMTI2LjUgMCAwIDQ4IDAgNDggMTI2LjMgMC4yIDEyNi4yIDAuMyAwLjMgNS4zIDAuMyA1LjIgLTEyNi41IDAgLTEyNi42IDAgMCAyMS41IDAgMjEuNSAxNDggMCAxNDggMCAwIC00OCAwIC00OCAtMTI2LjIgLTAuMiAtMTI2LjMgLTAuMyAtMC4zIC01LjMgLTAuMyAtNS4yIDEyNi41IDAgMTI2LjYgMCAwIC05NC41IDAgLTk0LjUgLTE0OCAwIC0xNDggMCAwIDY4IHogTSAxNTkgMTczLjUgbCAwIDE0LjUgNDEgMCA0MSAwIDAgLTE0LjUgMCAtMTQuNSAtNDEgMCAtNDEgMCAwIDE0LjUgeiIvPjwvc3ZnPg==&labelColor=FFD400&style=flat-square" alt="Cyber Code Syndicate"></a>
+<br>
+<a href="https://github.com/sponsors/kyonax"><img src="https://img.shields.io/github/sponsors/kyonax?labelColor=EA4AAA&color=FF6BBA" alt="GitHub Sponsors"></a>
+<a href="https://x.com/kyonax_on_tech">
+  <img src="https://img.shields.io/twitter/follow/kyonax_on_tech" alt="X followers">
+</a>
+<a href="#"><img src="https://img.shields.io/github/followers/Kyonax" alt="GitHub followers"></a>
+<a href="#"><img src="https://img.shields.io/github/stars/Kyonax/org2html" alt="GitHub Repo stars"></a>
+</div>
+#+END_HTML
+
+* WHAT IS @kyonax/org2html?
+A TypeScript engine that transforms Org-mode (=.org=) files into static HTML or Vue 3 single-file components. Sanitize-first by default, plugin-aware, framework-agnostic. Designed as the *engine layer* beneath the future =kyo-blog= site, which composes engine output inside a Vue 3 + Vite + SCSS 7-1 shell that mirrors the visual language of the sibling [[https://github.com/Kyonax/kyo-web-online][kyo-web-online]] project.
+
+#+BEGIN_EXAMPLE
+org2html/
+  src/
+    index.ts                     public library API (parse + renderToHtml + applyTemplate + org2html())
+    types.ts                     public type system (OrgMetadata / RenderOptions / AstNode / OrgPlugin / ...)
+    cli/                         commander surface
+      index.ts                   build / watch / test / help
+      commands/                  { build, watch, test }.ts
+      vue-generator.ts           Vue 3 SFC emission helpers
+    parser/                      lexer + parser + ast factories + metadata extraction
+    renderer/                    html-renderer + template (mustache) + sanitizer (DOMPurify + jsdom)
+    plugins/                     code-highlight (Shiki) + toc
+  templates/                     ships in npm tarball
+    default.html                 full SEO surface (OG + Twitter + JSON-LD slot + manifest + RSS)
+    styles.css                   engine-default CSS (consumer overrides via --template-dir)
+    manifest.json / favicon.svg / robots.txt
+  scripts/                       _lib.mjs + precheck.mjs + check-license-headers.mjs
+  .github/                       CODEOWNERS + SECURITY.org + PULL_REQUEST_TEMPLATE.md + workflows/
+#+END_EXAMPLE
+
+#+BEGIN_QUOTE
+*STATUS:* Feature-complete for the CLI-only converter scope. The parse / render / template pipeline, the CLI (=build= / =watch= / =test= / filter), the O2H Style Book + =--style-book= swap, ADA/WCAG output, the plugin API (=--plugin=), the component bridge (=--components=), asset dimensions, the full O2H Style Book conformance surface (native constructs,
+decorations, 35 component looks, 8 layouts, template chrome), and the 260+-test
+harness are all in place. Deferred to the downstream *website project* ([D-22]): Vue hydration, data-source resolvers, and the =kyo-blog= — see [[file:CHANGELOG.org][CHANGELOG.org]] §TODO.
+#+END_QUOTE
+
+* PREREQUISITES
+
+** Required
+- *Node.js* =>= 18.13.0=, enforced by the =engines.node= field in =package.json=. That is the floor
+  the dependency tree already required — =temml= declares =>=18.13.0=, so an =--engine-strict= install
+  refused 18.0–18.12 while the field still claimed 18.0.0. Verified on real 18.13, 20.x and 22.x binaries.
+- *npm* =>= 9.x= (bundled with Node 18+).
+- *Git* =>= 2.30= for cloning and CI hooks.
+
+** Optional
+- *sharp* =^0.33= is an =optionalDependencies= entry. With it installed, the asset pipeline can probe image dimensions / convert formats. Without it, image-metadata features degrade gracefully.
+
+** Shipped with =npm install=
+- =commander ^11= (CLI surface), =chokidar ^3= (watch mode), =fast-glob ^3= (input discovery), =chalk ^5= (CLI output).
+- =shiki ^0.14= (code highlighting), =dompurify ^3= + =jsdom ^23= (server-side sanitization), =probe-image-size ^7= (asset metadata), =slugify ^1= (URL slugs).
+- =tsup ^8= (bundler), =typescript ^5= + =typescript-eslint ^8= + =eslint ^9= (lint + types), =vitest ^4= (tests).
+
+* SETUP
+
+#+BEGIN_SRC sh
+git clone https://github.com/Kyonax/org2html.git
+cd org2html
+nvm use         # picks the version pinned in .nvmrc
+npm ci
+npm run build
+node dist/cli/index.mjs help
+#+END_SRC
+
+Install globally as a CLI:
+
+#+BEGIN_SRC sh
+npm install -g @kyonax/org2html
+org2html help
+#+END_SRC
+
+Use as a library in another project:
+
+#+BEGIN_SRC sh
+npm install --save-dev @kyonax/org2html
+#+END_SRC
+
+* CLI SURFACE
+
+| Command                                    | What it does                                                              |
+|--------------------------------------------+---------------------------------------------------------------------------|
+| =org2html build <input> [options]=         | Build Org files to static HTML. Default output dir =dist=.                |
+| =org2html watch <input> [options]=         | Chokidar-driven dev loop; rebuilds on every change.                        |
+| =org2html test <file>=                     | Single-file parser + render preview.                                       |
+| =org2html comments <action> <built-dir>=   | Fetch and moderate the X replies to documents carrying =#+POST_URL=.       |
+| =org2html help [command]=                  | Top-level or per-command help.                                             |
+
+*=comments= is never part of =build=.* The engine makes NO build-time network call, so a build
+stays offline and reproducible; this subcommand is the only thing in the package that reaches X,
+and it is run on a schedule rather than per deploy. Actions:
+=fetch= · =sample= · =clear= · =review= · =rejudge= · =approve <id>=.
+
+| Flag                 | Effect                                                                       |
+|----------------------+------------------------------------------------------------------------------|
+| =--cache <dir>=      | Published thread cache; this directory is SERVED (default =comments=).       |
+| =--held <dir>=       | Quarantine for withheld replies (default =comments-held=).                    |
+| =--slug <slug>=      | Only the built document directory with this name.                             |
+| =--blocklist <file>= | Policy file supplying the project's own terms and limits.                     |
+| =-n, --dry-run=      | Fetch and report, write nothing.                                              |
+| =-f, --force=        | Re-download avatars, rebuild the sprite, permit a destructive action.         |
+
+*=--held= must resolve OUTSIDE =--cache=, and org2html refuses to run otherwise.* The cache is
+served, so a withheld reply placed inside it would be published — which is the one thing holding a
+reply exists to prevent.
+
+*The cache is a RECORD, not a mirror.* X's reply endpoint only reaches back seven days, so a reply
+removed from the cache can never be fetched again; =clear= and =sample= refuse a real thread
+without =--force=, and a corrupt cache file is set aside rather than overwritten.
+
+=X_BEARER_TOKEN= supplies the app-only token. Without it =fetch= is a no-op rather than a failure,
+because a build must never depend on a secret being set.
+
+*=sharp= is an OPTIONAL install* (=npm i sharp=) that enables the one-request avatar sprite. It is
+NOT a dependency of this package — it appears nowhere in the shipped bundles. Without it the
+individual avatars still work and the command says so rather than failing quietly.
+
+** Build / watch options
+| Flag                          | Effect                                                          |
+|-------------------------------+-----------------------------------------------------------------|
+| =-o, --output <dir>=          | Output directory (default =dist=).                              |
+| =-t, --template <file>=       | Custom HTML template path.                                      |
+| =--template-dir <dir>=        | Directory with =default.html=, =styles.css=, =manifest.json=, etc. |
+| =--no-sanitize=               | Disable DOMPurify sanitization.                                 |
+| =--no-highlight=              | Disable Shiki code highlighting.                                |
+| =--theme <name>=              | Color theme on the root (=light= / =dark=) → =data-theme=.      |
+| =--code-theme <name>=         | Shiki theme for code (default =css-variables= → O2H tokens).    |
+| =--class-prefix <prefix>=     | Re-namespace every =.org-*= hook (default =org-=).              |
+| =--font <stack>=              | Body font-family stack (sets =--host-font-editorial=).         |
+| =--css-var <name=value>=      | Custom-property override (repeatable).                          |
+| =--css <file>=                | Inline a CSS file, replacing the default stylesheet.           |
+| =--css-append <file>=         | Inline a CSS file, appended after the default stylesheet.      |
+| =--link-css <href>=           | Reference an external stylesheet via =<link>= (repeatable).    |
+| =--no-default-styles=         | Emit zero engine CSS (bring your own).                          |
+| =--style-book <ref>=          | Swap the whole look via a Style Book (dir / npm / URL).        |
+| =--asset-base <path>=         | Prefix every root-absolute asset ref — for a non-root deploy.   |
+| =--font-dir <dir>=            | Directory of =.woff2= faces to copy and preload.                |
+| =--plugin <file>=             | Load a conversion-time plugin (repeatable).                    |
+| =--components <file>=         | JSON map of component name → import source.                    |
+| =--strict=                    | Error on an unknown component instead of an inert placeholder. |
+| =--fetch-assets <mode>=       | Resolve remote image dims: =none= (default) / =metadata= / =full=. |
+| =--include-root <dir>=        | Allow =#+SETUPFILE= / =#+INCLUDE= to read from =<dir>= (repeatable). |
+| =--no-resolve-includes=       | Leave =#+SETUPFILE= / =#+INCLUDE= / =#+STARTUP= unresolved.     |
+| =-q, --quiet=                 | Suppress non-error output.                                     |
+| =-v, --verbose=               | Extra diagnostic output.                                       |
+
+Run =org2html help <command>= for the full, always-accurate flag list (driven
+from Commander, so it never drifts from the real options).
+
+** Exit codes
+| Code | Meaning                                                                      |
+|------+------------------------------------------------------------------------------|
+|    0 | Success.                                                                      |
+|    1 | A file failed, an empty input glob, a missing input, an unknown component or an unresolved =#+INCLUDE=/=#+SETUPFILE= under =--strict=, a =routes.js= or template-asset write that failed, or a bad flag value. |
+
+=--quiet= silences progress output only. Warnings and failures go to stderr, which =--quiet= never
+suppresses, and a build that could not write something it links to exits 1 rather than reporting
+success. A document over 10,000 lines gets one line naming its size and =--no-highlight=, because
+highlighting a file that big has been measured at over 1 GB of resident memory.
+
+** The output manifest, and what a rebuild deletes
+
+Each build writes =.o2h-manifest.json= at the root of =--output=: the version, the resolved
+input directory, and every route it produced. The next build reads it to find pages whose
+source is gone and clean them up, so renaming or deleting an =.org= file does not leave an
+orphan page behind.
+
+It deletes conservatively, because deleting is the one thing a build does that building
+again cannot undo.
+
+| Rule                                   | Behavior |
+|----------------------------------------+----------|
+| Only the engine's own artefacts        | =index.html=, =index.vue=, =metadata.json=, =og-metadata.json=, =structured-data.json=, =relations.json= are unlinked from a stale page, and the directory goes only if nothing else is left. A file you placed inside a page directory stays; so does a live page nested under a stale page's path. |
+| A build with failures prunes nothing   | The manifest is left as it was. It still describes what a redeploy would serve, and the page that failed to rebuild is exactly the one that must not disappear. |
+| A shared =--output= is refused         | Two corpora built into one directory would each read the other's pages as stale. The manifest records the input it came from; a mismatch prints one line to stderr and removes nothing. |
+| An interrupted build leaves no manifest| Nothing to prune from, so the next build simply rebuilds. |
+
+Nothing outside the recorded routes is ever touched: =CNAME=, =assets/= and anything else
+kept in the output directory are not the engine's to remove.
+
+** Dates in the sidecars
+
+Every sidecar a crawler reads — =structured-data.json=, =og-metadata.json=, =feed.json=,
+=sitemap.json= — carries an ISO =YYYY-MM-DD= date, or omits the field when the document
+declares no date. An Org timestamp such as =<2026-03-01 Sun>= is normalised, never passed
+through, and no field is ever filled from the wall clock: two builds of the same sources
+produce the same bytes whatever day they run. =metadata.json= is the exception by design and
+keeps both =date= (as authored) and =dateIso=; it is data for the host, not a crawler surface.
+The visible byline reads exactly as the author wrote it, inside =<time datetime="...">=.
+
+** robots.txt names no sitemap
+
+The built =robots.txt= is =User-agent: *= and =Allow: /=. The engine writes =sitemap.json=,
+a site-relative data sidecar, and never =sitemap.xml= — so it does not advertise one. A host
+that composes a real =sitemap.xml= owns =robots.txt= through =--template-dir=.
+
+=manifest.json= is composed rather than copied: its =theme_color= is the resolved Style Book
+token, the same value the page head publishes, and its =name= comes from =#+SITE_NAME= when
+the corpus declares one.
+
+** Page weight and =--link-styles=
+
+Styles are *inlined by default*, and for a page that is the right trade: one file renders
+with no second request, and NOTHING THE READER PAYS FOR means nobody waits on a stylesheet
+to see text. For a large corpus the arithmetic turns. Measured on this engine with the
+default Style Book:
+
+| Mode                | Per page | Shared                      | 500 pages |
+|---------------------+----------+-----------------------------+-----------|
+| default (inlined)   | ~203 KB  | —                           | ~102 MB   |
+| =--link-styles=     | ~3.9 KB  | one ~200 KB =styles.css=    | ~2.1 MB   |
+
+A build of more than 50 pages prints a one-line reminder carrying those numbers for the
+corpus it just built. It is a hint, not a change: the default does not move.
+
+* FILE-LAYER KEYWORDS
+
+Three Org keywords need the filesystem. org2html resolves all three *before*
+parsing, in the CLI layer — the parser itself never touches disk.
+
+| Keyword                     | Behavior                                                                    |
+|-----------------------------+-----------------------------------------------------------------------------|
+| =#+SETUPFILE: path=         | Imports another file's in-buffer settings (=#+MACRO=, =#+LINK=, =#+OPTIONS=, ...). Chains; the DOCUMENT always wins on a conflict. |
+| =#+INCLUDE: "path"=         | Splices content. Supports =src <lang>= / =example= / =export <backend>=, =:lines "5-10"= (exclusive end), =:only-contents t=, =:minlevel N=, and =path::*Heading= / =path::#custom-id= / =path::NAME=. |
+| =#+STARTUP: ...=            | Switches with a rendered meaning map onto =#+OPTIONS= (=nonum= → =num:nil=); editor-visibility switches are recognized and ignored. |
+
+** Document keywords the shell reads
+
+Beyond the SEO head keywords, the document shell reads:
+
+| Keyword         | Behavior |
+|-----------------+----------|
+| =#+SIGNOFF: text= | Closes the document with a sign-off unit — a mono line over a hairline rule, the document shell's replacement for a site footer. Author-driven, exactly as the reference shell renders one only when the page passes a =signoff= string: no keyword, no sign-off, and the engine never invents a colophon. |
+
+*This matters more than it looks.* Setup files are where =#+MACRO:= definitions
+usually live, so a document whose =#+AUTHOR:= is built from ={{{person(...)}}}=
+renders the raw braces into its byline if the setup file is never read.
+
+** Security — root confinement
+A document may only read files inside *its own directory*. Anything else is
+refused with a warning naming the file, because otherwise an =.org= you did not
+write could say =#+INCLUDE: "/etc/passwd"= and have the contents published into
+your rendered HTML. Resolution goes through =realpath=, so a symlink cannot step
+outside a root either.
+
+#+begin_src bash
+org2html build notes/ -o site --include-root ~/org/shared-setup
+#+end_src
+
+=--include-root= is repeatable; =--no-resolve-includes= turns resolution off
+entirely. Both work on =build=, =watch=, and filter mode.
+
+** Failure behavior
+Nothing throws. A missing, refused, cyclic, or too-deep target produces a
+one-line stderr warning and the directive is dropped; the rest of the document
+still renders. Guards: an ancestor stack (cycles impossible), a depth cap of 16,
+an 8 MB per-file cap, and root confinement.
+
+Keywords inside =#+BEGIN_.../#+END_= are DATA — a guide showing readers how to
+write =#+INCLUDE= is not itself including anything.
+
+Full guide: =docs/includes-and-setupfiles.md=.
+
+* TABLE OF CONTENTS & EXPORT TAGS
+
+The TOC is *author-driven — the engine never volunteers one*:
+
+| Document says                     | Result                                                    |
+|-----------------------------------+-----------------------------------------------------------|
+| =#+OPTIONS: toc:t= / =toc:N=      | The generated =.org-toc= card, after the masthead.        |
+| a headline tagged =:toc:=         | Same card. The headline is a *slot* (the toc-org convention): its hand-written link list is for raw-file readers and is replaced wholesale. |
+| =#+OPTIONS: toc:nil=              | No TOC, ever — wins over a slot.                          |
+| a headline tagged =:toc:noexport:= | No TOC — the author silenced the slot.                   |
+| none of the above                 | No TOC.                                                   |
+
+A =:noexport:=-tagged subtree is excluded from *every* output surface — body,
+TOC, anchors — exactly as Emacs's exporter treats =org-export-exclude-tags=.
+Both tags match case-insensitively (=:TOC:= works).
+
+* EXPORT OPTIONS (#+OPTIONS)
+
+Every =#+OPTIONS= item a document (or its =#+SETUPFILE=) sets behaves exactly as
+Emacs's exporter treats it. *Four defaults deviate on purpose* — each because the
+web is not paper — and everything else keeps the ox.el default:
+
+| Item        | Default   | Meaning                                                              |
+|-------------+-----------+----------------------------------------------------------------------|
+| =toc=       | *off*     | Author-driven (deviation): =toc:t= / =toc:N=, or a =:toc:= slot headline. =toc:nil= wins. |
+| =num=       | *nil*     | (deviation — Emacs numbers by default) =num:t= / =num:N= numbers headings. |
+| =^=         | *={}=*    | (deviation — Emacs =t= subscripts snake_case) governs BOTH =_= and =^=; =nil= off, ={}= braces only, =t= adds the bare form. |
+| =H=         | *6*       | (deviation — Emacs 3) headlines deeper than N render as list items, out of the TOC. |
+| =title=     | t         | =title:nil= drops the article header (h1 + subtitle + byline); the =<head>= title stays. |
+| =author=    | t         | Author in the byline.                                                |
+| =date=      | t         | Date in the byline.                                                  |
+| =email=     | nil       | =email:t= adds a mailto link to the byline.                          |
+| =todo=      | t         | TODO keywords on headlines.                                          |
+| =pri=       | nil       | =pri:t= shows =[#A]= priority cookies (hidden by default, as Emacs). |
+| =tags=      | t         | Tag chips on headlines (=not-in-toc= behaves as t — the TOC never carries tags). |
+| =tasks=     | t         | =nil= drops every task headline; =todo= keeps open ones; =done= keeps closed ones. |
+| =arch=      | headline  | Archived trees (=:ARCHIVE:=): bare headline only; =nil= drops, =t= exports fully. |
+| =inline=    | t         | Inlinetasks (15+ star headlines).                                    |
+| =f=         | t         | Footnotes — =f:nil= removes references and the footnotes section.    |
+| =e=         | t         | Entities (=\alpha= → α); =e:nil= leaves the text verbatim.           |
+| =tex=       | t         | Math fragments; =nil= drops them, =verbatim= shows the raw source.   |
+| =*=         | t         | Emphasis; =*:nil= leaves =*bold*= literal (=~code~= / ==verbatim== stay live). |
+| =<=         | t         | Timestamps; =<:nil= removes them.                                    |
+| =stat=      | t         | Statistics cookies =[1/2]= / =[50%]=.                                |
+| =|=         | t         | Tables; =|:nil= drops them.                                          |
+| =:=         | t         | Fixed-width (=: line=) sections; =::nil= drops them.                 |
+| =d=         | t         | Drawers (per-name list forms behave as t).                           |
+| =p=         | nil       | Planning lines (SCHEDULED / DEADLINE / CLOSED).                      |
+| =c=         | nil       | CLOCK lines.                                                         |
+| =-=         | t         | Special strings: =\-= → soft hyphen, =---= → —, =--= → –, =...= → …. Code spans untouched. |
+| ='=         | nil       | =':t= applies English smart quotes.                                  |
+| =\n=        | nil       | =\n:t= preserves in-paragraph line breaks as =<br>=.                 |
+
+Not applicable to this backend (no postamble exists): =timestamp:=, =creator:=,
+=broken-links:=. =prop:= is recognized but property drawers are never emitted.
+
+* ORG SYNTAX COVERAGE
+
+The full Org element/object surface was audited against ox.el (2026-08-24) and is
+covered: headlines (states, priorities, tags, COMMENT, inlinetasks, archived
+trees), *custom =#+TODO= / =#+SEQ_TODO= / =#+TYP_TODO= sequences* (they REPLACE
+the built-in pair, done states after the =|=), planning/clock lines, drawers +
+property drawers, all list forms (ordered/unordered/descriptive, checkboxes,
+=[@n]= counters, alphabetical bullets), tables (header rules, alignment + width
+cookies, column-group rows, =#+TBLFM= consumed), every block family (src /
+example / verse / center / quote / export / comment / dynamic / special), fixed
+width, horizontal rules, footnotes (labeled, inline, anonymous), links (bracket,
+angle, plain, abbreviated via =#+LINK=, =file:=, =id:= passthrough, =*Headline=,
+=#custom-id=), *fuzzy links with Emacs precedence* — =<<dedicated target>>= (a
+=target-<slug>= anchor) > =#+NAME= (an id on the named block) > headline title —
+*coderefs* (=(ref:name)= labels stripped, =[[(name)]]= renders its line number),
+=#+CAPTION= (=<caption>= on tables, =<figcaption>= on figures), timestamps
+(active/inactive, ranges, repeaters, warnings, times), diary sexps (consumed,
+never exported), macros, entities, sub/superscripts, LaTeX fragments, export
+snippets, targets, radio targets, statistics cookies, emphasis, line breaks,
+citations, and inline src/babel calls.
+
+Named non-goals: radio targets anchor but do NOT auto-link their plain-text
+occurrences; coderef links carry no per-line anchor (the highlighted block has
+no line ids); =prop:t= property-drawer emission.
+
+* STYLING & THEMING
+
+org2html ships the *kyo-web-online Style Book* as its default look — a dark
+surface (=oklch(14.5% 0 0)=), Geomanist for reading, SpaceMono for signal, a
+single brand yellow (=#f9cd26=) as the only accent, and a 68ch measure. Fonts are
+self-hosted subset WOFF2; nothing is fetched from a third party.
+
+** What the default look answers to
+
+The book is not a taste; it is a translation of four sources, in this precedence
+order (owner ruling, 2026-08-24). Each is cited inline in
+=templates/style-book/kwo-tokens.css= and =kwo.css= as =[A1]= .. =[A4]=.
+
+| # | Authority | What it rules |
+|---+-----------+---------------|
+| [A1] | kyo-web-online =/resume= + =/privacy= (=views/components/document-page.vue=) | THE MAIN STYLE. The sheet, the masthead, the section rules, the prose rhythm and the SIGN-OFF. Its colour law, quoted: "grayscale only. A document reads as a document, so it opts out of the yellow accent, HUD decorations and flare." |
+| [A2] | kyo-web-online media (=ui/image.vue=, =ui/youtube-facade.vue=) | Images and video: a hairline frame with an inset, a ratio-locked well that reserves the space before the asset lands, a placeholder plate, a fade-in. Video is a facade, never a raw autoplaying frame. |
+| [A3] | nano-core dashboard (=web/client/src/styles/tokens.scss=) | The REPORT ramp — ok =#52e0a3=, warn =#e0c052=, danger =#e05252= — and the surface depth ladder. |
+| [A4] | book-kyonax canon v6 (=tokens/tokens.css=, =rules/kyonax.rules.json=) | The LAWS: hairlines-only (1px, weight is alpha), one-accent-per-composition, the 8px grid, no radius / no emoji / no gradient, two-voices-split, content-legible (>=14px), annotated-edges. |
+
+Where they disagree, the ruling is recorded in the token sheet: the display face
+is Geomanist ([A1] is the main style and the face the engine ships) rather than
+[A4]'s Poppins, prose reads sans while every label / chrome / code surface reads
+mono, and the state ramp is [A3]'s dashboard triad so a DONE badge and a TIP
+callout cannot disagree with each other.
+
+*What this means in practice.* Links are ink with an underline and take the accent
+only on hover, and an off-site link carries the external mark painted in its own
+colour. A rule is 1px. A control never fills — the accent is its frame and its
+label. Lists are rows with square markers and hairline seams. A code block is a
+black well with ONE accent square, a filename, and a six-role syntax palette
+(keyword / string / number / comment / function / punctuation). A table is a
+hairline grid with a mono head, not an inverted plate. Every media box reserves its
+own space. Nothing has a border radius except a tooltip. A document page carries no
+ambient HUD marks and starts its masthead flush with the prose.
+
+** Video embeds are facades
+
+=\{\{< youtube id="…" >\}\}= does *not* put a player in the page. It renders a poster
+and a play target; the privacy-mode frame mounts only when the reader clicks, and the
+runtime re-checks the URL against the same pattern the sanitizer enforces before it
+does. With JavaScript off the poster stays a plain link to the video. A document with
+five embeds therefore ships zero players until someone asks for one.
+
+*The poster itself is still a request to the video host* (=i.ytimg.com=) — the facade
+removes the player, not every third-party byte. A project that cannot make that request
+should not use the shortcode.
+
+Below the frame the embed names its source as a *link back to it*: the platform's own
+mark (masked in and painted with =currentColor=, never a colour swatch — colour alone
+identifies nothing to a reader who cannot see it), the platform name, and the channel
+when =channel="…"= gives one.
+
+#+begin_src org
+,{{< youtube id="dQw4w9WgXcQ" channel="Kyonax" title="How the engine converts" >}}
+#+end_src
+
+** Math is typeset at build time
+
+LaTeX fragments — =\(…\)=, =\[…\]=, =$…$=, =$$…$$= — are converted to *MathML during the
+build*, so the browser draws real mathematics and the published page carries no math
+library, no webfont and no scanner. It is the same bargain the code highlighter makes with
+Shiki: the cost is paid by whoever runs the build, never by whoever reads the page.
+
+A fragment the typesetter refuses (an unknown macro, a malformed expression) falls back to
+its *source with the delimiters intact* and is marked =data-math="raw"=. Nothing is ever
+lost to a rendering error, and that fallback is exactly the form a host running KaTeX or
+MathJax scans for. Pass =math: false= (or =--no-math=) to keep every fragment in that raw
+form deliberately.
+
+| Form | Rendered |
+|------+----------|
+| =\(E = mc^2\)= | inline MathML inside =.org-math= |
+| =\[ \sum_{i=1}^{n} x_i \]= | block MathML inside =.org-math .org-math-display= |
+| =#+OPTIONS: tex:verbatim= | the source, unrendered (an Emacs switch, unchanged) |
+
+Typesetting is =temml=, a build-time dependency. MathML needs no stylesheet from the
+engine — the book only sizes and colours it.
+
+** SEO: what a document declares, and what the build computes
+
+Every SEO surface is driven from the document. The head carries the canonical, Open Graph
+and Twitter cards, =article:*= (one =article:tag= PER tag), =og:locale=, =og:site_name= and
+both dates; the JSON-LD carries the article node plus anything else the page declares.
+
+*Structured data refuses to publish a half-answer.* =url= and =mainEntityOfPage= are
+IDENTITIES, so they appear only when the canonical is absolute — pass =--base-url
+https://example.com= and both arrive. A =BreadcrumbList= is emitted only when every crumb
+resolves; when a category has no route the engine knows, the trail travels in
+=relations.json= for the site to render instead. A relative =@id= names nothing, and
+publishing one looks like an answer. *The other half of that handshake belongs to the host*
+=[P-01]=: publish a =/category/<slug>= archive, and the crumb the engine declined to route
+resolves there so the trail is complete end to end. The engine hands you the terms and the
+partial trail in =relations.json=; only your site knows which of them are routes.
+
+*** Deploying somewhere that is not a domain root
+
+Every asset org2html references is ROOT-ABSOLUTE — =/styles.css=, =/o2h.js=, =/favicon.svg=,
+=/manifest.json=, and =url('/fonts/…')= inside the stylesheet — so a site served from a
+subdirectory (a GitHub Pages project site, a preview URL, a docs path) 404s on all of them.
+
+#+BEGIN_SRC bash
+org2html build docs/ -o site --base-url https://example.com/my-project --asset-base /my-project
+#+END_SRC
+
+=--asset-base= prefixes the ASSETS; =--base-url= makes the page's IDENTITIES absolute — the
+canonical, the JSON-LD =@id=, and the =rel=prev= / =rel=next= links. Pass both for a sub-path
+deploy: the first stops the 404s, the second stops a crawler resolving your pages to the wrong
+origin. =relations.json= deliberately stays site-relative either way, because it is data for
+the host to route =[P-00]=.
+
+*=--asset-base= defaults to empty and the default is byte-identical output.* An existing build
+cannot change by upgrading into this flag.
+
+*** Fonts: org2html ships none, and that is deliberate
+
+The default book names Geomanist and a Nerd-patched Space Mono. *Neither is redistributed* —
+their licensing is the consuming project's call, so the published tarball contains zero
+=.woff2=. The token layer declares a full system fallback for every family, so a build without
+them renders correctly, just not in Geomanist.
+
+Point =--font-dir= at your licensed files and they are copied to =<output>/fonts/= and
+preloaded:
+
+#+BEGIN_SRC bash
+org2html build docs/ -o site --font-dir ./brand/fonts
+#+END_SRC
+
+*The engine only ever references a face it actually copied.* Supply none and the page carries
+no =<link rel=preload>= and no =@font-face= for a file that is not there — so a fontless
+install emits *zero* font requests rather than failing ones. A Style Book chooses which of its
+faces are worth preloading through =preload= in =stylebook.json=; name only the faces that
+paint first, since preloading every weight fetches the bold before anything needs it.
+
+*** JSON-LD as configuration, never as content
+
+A =#+BEGIN_JSONLD= block is configuration: it is captured for the page's structured data
+and *never reaches the body*. Declare as many as the page has things to say.
+
+#+begin_src org
+,#+BEGIN_JSONLD
+{ "@type": "FAQPage",
+  "mainEntity": [{ "@type": "Question", "name": "Why Trilium?" }] }
+,#+END_JSONLD
+
+,#+BEGIN_JSONLD
+{ "timeRequired": "PT12M" }
+,#+END_JSONLD
+#+end_src
+
+A block carrying an =@type= becomes its own node in the page's =@graph=; a block WITHOUT one
+merges into the computed article node, which is how you add a field too long for a keyword
+line. A block may also hold an ARRAY to declare several entities at once. Malformed JSON is
+ignored with a warning naming the block — the computed node always ships ([D-26]).
+
+The one-line =#+JSONLD: {…}= keyword still shallow-merges into the article node.
+
+*** The SEO keyword surface
+
+| Keyword | Effect |
+|---------+--------|
+| =#+DESCRIPTION= / =#+KEYWORDS= | meta description, keywords, and the JSON-LD |
+| =#+CANONICAL= | =<link rel=canonical>=, =og:url=, and the JSON-LD identity when absolute |
+| =#+SITE_NAME= | =og:site_name= and the JSON-LD publisher (NOT the article title) |
+| =#+LOCALE= (else =#+LANGUAGE=) | =og:locale=, =inLanguage= |
+| =#+DATE_MODIFIED= / =#+LAST_UPDATE= | =article:modified_time=, =dateModified= |
+| =#+CATEGORY= | =article:section=, =articleSection= (first term) + the taxonomy row |
+| =#+FILETAGS= | one =article:tag= per tag + the taxonomy row |
+| =#+OG_IMAGE= / =#+OG_IMAGE_ALT= | the social card and its alt text |
+| =#+SCHEMA_TYPE= | the article node's =@type= (default =BlogPosting=) |
+| =#+ROBOTS= | the robots directive |
+
+** Blog features: the corpus the document cannot see
+
+A single =.org= file has no idea what else exists, so series, related reading and
+previous/next are computed by the BUILD from an index it collects before rendering, and
+*delivered as data* — a =relations.json= sidecar beside =metadata.json=. Navigation belongs
+to the site shell: its routes, its wording, its language. The engine says which posts are
+related; the shell decides what the heading above them reads.
+
+#+begin_src org
+,#+SERIES: Trilium Notes
+,#+SERIES_INDEX: 2          ; optional — else the series orders by #+DATE
+,#+RELATED: gnome-vs-kde    ; optional — else computed from shared tags
+,#+PREV: some-slug          ; optional — else the timeline decides
+,#+NEXT: other-slug
+#+end_src
+
+*Related* is scored on what the documents already declare: a shared tag weighs most (filing
+is deliberate), then a keyword, then a category. Posts already in this article's series are
+excluded — the series block sits right above. *Previous/next* follow publication date
+across the blog, and the series order inside a series, because there "next" means the next
+part. A series post also gains =isPartOf= in its structured data, and =rel=prev= / =rel=next=
+in its head.
+
+** The hero asset
+
+=#+HERO_*= is the asset shown at the top of the ARTICLE, deliberately separate from
+=#+COVER_IMAGE= / =#+OG_IMAGE=, which is the asset shared to a social card — a page can want
+a wide video on the page and a still, cropped frame on the card.
+
+#+begin_src org
+,#+HERO_VIDEO: /media/launch.mp4
+,#+HERO_POSTER: /media/launch.jpg
+,#+HERO_ALT: The engine converting a document
+,#+HERO_CAPTION: org2html converting the corpus, August 2026
+#+end_src
+
+It renders between the masthead and the contents, reserves its ratio before the asset lands,
+and a hero video is a *facade* like every other video here: poster and play target, the
+player only when the reader asks.
+
+** Media hooks
+
+Every construct the engine emits carries a stable =.org-*= class. A =<video>= or
+=<audio>= can only arrive through an export block, so the renderer tags those on the way
+out as =.org-video= / =.org-audio= — a host restyles media through a class, never through
+an element selector. A class the author already wrote is kept.
+
+The previous default, the *O2H Style Book* (paper/ink with Signal Orange), is
+preserved verbatim and stays one flag away:
+
+#+begin_src bash
+org2html build src/ -o out --style-book node_modules/@kyonax/org2html/templates/style-book/o2h
+#+end_src
+
+Both books share ONE per-construct stylesheet that reads =--o2h-*= and nothing
+else, so a book is a VALUE layer plus a small construct delta — not a second copy
+of the engine's CSS. (The =--o2h-= prefix is the engine's token namespace, named
+after the first book that filled it; it does not indicate which book is loaded.)
+
+*Fonts are not redistributed.* The published package ships the =@font-face= rules
+but no font files — licensing is the consuming project's call. Every family
+declares a full system fallback, so an install renders correctly without them; drop
+the WOFF2 into =<output>/fonts/= (or point =--host-font-editorial= /
+=--host-font-mono= at faces you license) for the exact design. See
+=templates/style-book/README.md= §Fonts and licensing.
+
+Every project can re-skin the output without touching the engine. There are four
+override surfaces, smallest-blast-radius first.
+
+** 1. The class-hook contract
+
+Every construct emits a stable =.org-*= class and the whole body is wrapped in
+=<div class="org-root">= — that wrapper is the styling anchor (all default rules
+are scoped under =.org-root=). A host targets these hooks from its own CSS:
+=.org-root=, =.org-heading.outline-N=, =.org-paragraph=, =.org-code= /
+=.org-verbatim=, =.org-src= (code blocks), =.org-quote=, =.org-table=, =.org-link=,
+=.org-figure= / =.org-figcaption=, =.org-ul= / =.org-ol= / =.org-dl=,
+=.org-toc=, =.org-footnotes=, plus the headline-meta chips (=.org-todo=,
+=.org-priority=, =.org-tag=, =.org-timestamp=). =--class-prefix mysite-= renames
+them all (e.g. =mysite-heading=) when =org-= would clash.
+
+** 2. Token overrides (recommended re-skin)
+
+The default CSS reads a =--o2h-*= design-token layer, and every token resolves
+=var(--host-X, <o2h-default>)= — so defining a =--host-*= property re-skins O2H
+while keeping its structure. Override tokens with =--css-var= (repeatable) or a
+=:root{}= block in your own CSS:
+
+#+BEGIN_SRC bash
+org2html build post.org -o site \
+  --css-var "--host-signal-500=#0aa" \
+  --css-var "--host-ink=#111" \
+  --css-var "--host-measure=64ch" \
+  --font "Inter, system-ui, sans-serif"
+#+END_SRC
+
+Common tokens: palette =--host-signal-500= / =--host-paper= / =--host-ink= /
+=--host-line=; type =--host-fs-h1= / =--host-measure= / =--host-lh-body=; fonts
+=--host-font-display= / =--host-font-editorial= / =--host-font-mono=; structure
+=--host-radius= / =--host-border=. The emitted =:root{}= override block is placed
+*after* the default stylesheet, so a direct =--o2h-*= override also wins.
+
+** 3. Your own CSS
+
+- =--css <file>= inlines your stylesheet *instead of* the default (=styleMode:
+  'replace'=).
+- =--css-append <file>= inlines it *after* the default (=styleMode: 'append'=) —
+  keep O2H and layer on top.
+- =--link-css <href>= references an external sheet via =<link>= (reference,
+  don't inline — repeatable). Pair with =--no-default-styles= to ship a page that
+  carries *only* semantic =.org-*= hooks and your linked CSS.
+- *SASS/SCSS:* the engine never compiles — compile to CSS in your build, then
+  pass the result via =--css= / =--css-append= / =--link-css=.
+
+** 4. Full swap via a Style Book
+
+Point =--style-book <ref>= at a Style Book — a =stylebook.json= manifest plus its
+=tokens.css= / =styles.css= / optional =template= — as a *local dir*, an
+*npm package* (files read, never imported), or a *remote URL* (fetched +
+content-hash cached). The selected book REPLACES the default wholesale; pieces it
+omits degrade to bare semantic output with a validation warning. Granular flags
+(=--css=, =--link-css=, =--css-var=, =--class-prefix=) OVERRIDE the active book.
+See [[file:docs/authoring-style-books.md][docs/authoring-style-books.md]] for the
+full authoring guide, the manifest reference, and the =.org-*= hook catalog.
+
+Alternatively =--template-dir <dir>= swaps just the =default.html= + =styles.css=
+(+ =manifest.json=, favicon). Resolution is per-file: a custom =default.html= is
+used even if =styles.css= is absent (the default sheet fills in).
+
+** Style Book objects (default look)
+
+The default output CONFORMS to the O2H Style Book coverage matrix — every native
+construct, decoration, component, and layout has a =.org-*= / =[data-component]=
+hook and a shipped default look. How to author the newer ones:
+
+- *Code chrome* — a =#+BEGIN_SRC lang :tangle path/file.ts= block renders inside a
+  header bar (traffic-light squares · filename + language · =COPY= · a line-number
+  gutter); a =diff= block tints =+= / =-= lines; a =#+RESULTS:= block becomes a
+  green-bordered output panel.
+- *Pull-quote / figure variants* — prefix a block with
+  =#+ATTR_HTML: :class org-quote--pull= (or =org-figure--bracket= /
+  =org-figure--hatch=) to opt into the variant. Only =:class= is honored and each
+  token is sanitized to =[A-Za-z0-9_-]=.
+- *Inlinetask* — an Org headline at =>= 15 stars renders as a boxed
+  =.org-inlinetask=; =:LOGBOOK:= drawers collapse into a =<details>= accordion.
+- *Components* — author with an inline shortcode on its own line, e.g.
+  ={{< button variant="primary" label="Save" >}}=, or the block form
+  =#+BEGIN_COMPONENT Name :key val=. Each emits an inert
+  =<div data-component="…">= with a recognizable default STATIC shell (button /
+  card / stat-grid / kbd / command / terminal / toggle / tabs / accordion / badge
+  / spinner / progress / modal / error / … — 35 in all); a downstream app can
+  hydrate them (=--components=). Styling attrs (=variant=/=size=/=state=/=label=)
+  are mirrored to =data-*= so the look survives sanitization.
+- *Page layout* — =#+HTML_LAYOUT: magazine= (or =archive= / =editorial= / =feed= /
+  =author= / =article= / =category= / =newsletter=) adds an =org-layout--<slug>=
+  hook that retunes the measure, rhythm, and masthead.
+- *Template chrome* — reusable classes (=.org-nav= / =.org-brand= / =.org-breadcrumb=
+  / =.org-footer= + =.org-footer-bar= barcode / =.org-cover=) and decoration
+  utilities (=.org-deco-{reticle,boxed-x,dot-matrix,scanline,barcode,vlabel,ribbon,
+  connector}=) are shipped for a template or =#+BEGIN_EXPORT html= block to place.
+
+** Comparison content: highlights, tabs and charts
+
+These three share one affiliated keyword, =#+ATTR_O2H:= — the engine's OWN
+presentation channel for the element that follows. It is deliberately separate
+from =#+ATTR_HTML= (that keyword belongs to =ox-html= and may already carry an
+author's Emacs export settings). Values are restricted to =[\w .,%+-]=, so the
+channel names intent and can never carry markup into an attribute.
+
+*Highlight the column, the row, or the single cell a table argues for.* Indices
+are 1-based over the table AS WRITTEN: columns count every column including the
+leading label column; rows count BODY rows only, so a header is not row 1 and
+=|---|= rules are not rows. =:highlight-cell= takes =<col>.<row>= coordinates —
+the same order as the two keys beside it — and accepts a comma-separated list,
+for when the argument turns on ONE number rather than a whole column or row. A
+coordinate that is not a =digits.digits= pair is dropped rather than guessed at,
+and one cell never claims its column's header rule. Individual best-in-row values
+can also just be =*bold*=, because Org already says that. The mark is never
+colour alone — a highlighted header also steps to ink and bold, so it survives a
+greyscale print.
+
+#+BEGIN_SRC org
+,#+CAPTION: Evals
+,#+ATTR_O2H: :highlight-col 2 :highlight-row 2
+| Benchmark   | Grok 4.6 | Fable 5 |
+|-------------+----------+---------|
+| AA Index    |       61 |    *62* |
+| GDPVal-AA   |   *1753* |    1741 |
+
+,#+ATTR_O2H: :highlight-cell 2.1,3.3
+| Model       | Score | Elo  |
+|-------------+-------+------|
+| Grok 4.6    |    61 | 1753 |
+| Fable 5 Max |    62 | 1741 |
+| GPT-5.6 Sol |    61 | 1728 |
+#+END_SRC
+
+*Every table ships inside a scroll frame* (=.org-table-scroll=), and it is the ENGINE
+that emits it, not the runtime — so a reader with no JavaScript gets one too, and a
+prerendered page reserves the right box instead of reflowing when a script arrives. A
+table cannot be laid out below its own min-content width, so without a frame a narrow
+screen leaves only two outcomes: the table pushes the whole PAGE sideways, or its columns
+are squeezed until the words wrap a character at a time. Inside the frame the table takes
+its NATURAL width and the frame scrolls. The bar is deliberately thin, a finger swipes it
+natively, a mouse can grab and drag it, and the frame takes keyboard focus when — and only
+when — it actually has somewhere to go. A breakout class (=org-wide= / =org-full-bleed=)
+moves onto the frame, because the breakout sizes the BOX and the frame is now the box.
+
+*Put several tables or charts in one slot.* Every panel ships in the served
+HTML; the runtime only hides the ones that are not selected, so a reader with no
+JavaScript, a crawler and a printed page all get the whole content. A panel is
+parsed as a FULL body, so it holds any construct the engine emits.
+
+#+BEGIN_SRC org
+,#+BEGIN_TABS
+,#+TAB: AA Intelligence
+| Model | Score |
+|-------+-------|
+| Grok  |    61 |
+
+,#+TAB: Notes
+Any construct works here — prose, lists, callouts, code, media.
+,#+END_TABS
+#+END_SRC
+
+*Draw the table.* =:chart bar= renders an SVG bar chart at BUILD time — the same
+bargain =shiki= makes for code and =temml= for math: no library, no canvas, no
+runtime cost to the reader, and it prints. The chart is a picture OF the table,
+never a replacement: the source table travels inside the figure for a screen
+reader, a crawler and print, which is why the =<svg>= is =aria-hidden=. A cell
+holding no number is DROPPED rather than plotted as zero — a missing measurement
+and a measurement of zero are different claims. Options: =:chart-label-col N=
+(default 1), =:chart-value-col N= (default 2), =:chart-axis <title>=, and
+=:highlight-row N= to put the accent on one bar.
+
+#+BEGIN_SRC org
+,#+CAPTION: GDPVal-AA Elo
+,#+ATTR_O2H: :chart bar :highlight-row 1 :chart-axis GDPVal-AA Elo
+| Model       |  Elo |
+|-------------+------|
+| Grok 4.6    | 1753 |
+| Fable 5 Max | 1741 |
+#+END_SRC
+
+Only =bar= is drawn. No pies, no stacked series, no dual axes — one category
+column, one value column, bars from a zero baseline, the chart shape that cannot
+lie about a comparison. Anything richer belongs to a host with a real charting
+stack, reached through the =relations.json= sidecar.
+
+** The main image: the one picture that stands for a document
+
+A document names the picture that represents it by MARKING one image in its body,
+on the same =#+ATTR_O2H= channel as the table and chart keys above:
+
+#+BEGIN_SRC org
+,#+ATTR_O2H: :main t
+,#+CAPTION: The cross-section the whole piece is about.
+[[/media/cross-section.svg]]
+#+END_SRC
+
+*A mark, and not another keyword, because the picture that represents an article is
+almost always one already inside it* — and naming it twice in a header is how a share
+card and a page drift apart. A bare =:main= means the same as =:main t=; only an
+explicit negative turns it off. If a document marks two images the FIRST one wins, so
+the choice can never depend on how far a reader has scrolled, and a document that marks
+nothing gets NO main image rather than a guessed one.
+
+From there it reaches, all resolved once in =resolveSeo()=:
+
+| Where | What it becomes |
+|-------+-----------------|
+| the head (HTML and =.vue=) | =og:image=, =og:image:alt=, =twitter:image= |
+| the article's JSON-LD | =image= |
+| =metadata.json= | =mainImage= (as authored) + =cardImage= (resolved) |
+| =og-metadata.json= | =image= + =imageAlt= |
+| =feed.json= | =image= + =imageAlt= — what an index builds its cards from |
+| the rendered page | =.org-image--main= on the =<img>= itself |
+
+*=#+OG_IMAGE= and =#+COVER_IMAGE= still win where a document sets them.* The social
+image ranks =#+OG_IMAGE= > =#+COVER_IMAGE= > the mark; a LISTING card ranks
+=#+COVER_IMAGE= > the mark > =#+OG_IMAGE=, because an index wants a document's own
+cover before a picture cropped for a share card. Both end at the same mark.
+
+*THE SOCIAL IMAGE IS MADE ABSOLUTE, THE CARD IMAGE IS NOT.* A crawler reads =og:image=
+out of the head and goes to fetch it with no idea which page it came from, so a
+root-relative path is resolved against the canonical whenever the canonical is absolute
+— give the build a =--base-url= and it appears. A card is rendered by the site itself,
+so it keeps the site-relative path and stays portable. *A =data:= URI is refused for the
+social slot* and left alone for the card: it renders perfectly in the page, which is
+exactly the trap, because every social consumer wants a URL it can request and an inline
+blob yields a share card with no picture and no error.
+
+One limit, stated rather than hidden: =relations.json= carries an =image= on each link
+too, but from the HEADER only. That index is built by a metadata-only pre-pass that never
+tokenises bodies — which is what keeps a corpus of hundreds cheap — so it can see
+=#+COVER_IMAGE= and =#+OG_IMAGE= and not a body mark.
+
+** Case in the default book
+
+The engine uppercases its OWN labels, never the author's words. Tags, categories,
+callout intents, the contents label and component captions are a controlled
+vocabulary the sheet writes, so they stay upper. A byline, a heading at any
+level, a table header, a caption, a description term and an embed's channel name
+keep the case they were typed in.
+
+** Dark mode
+
+The default sheet is dual-driver: it honors =@media (prefers-color-scheme: dark)=
+automatically, and a host can force a mode with =--theme dark= / =--theme light=
+(written as =data-theme= on =.org-root=; an explicit =light= opts out of the OS
+preference).
+
+** Vue output
+
+Emitted =.vue= SFCs are *class-only* — they ship no =<style>= block and inherit
+the host app. Import the engine's =styles.css= (or your own Style Book) in the app
+and the =.org-*= hooks pick it up.
+
+* DOCS
+
+- [[file:docs/authoring-style-books.md][docs/authoring-style-books.md]] — build a Style Book, the manifest reference, the =.org-*= hook + token catalog, and the bring-your-own-styling override surface.
+- [[file:docs/components-and-data.md][docs/components-and-data.md]] — component invocation forms (inline / block / JSON props), the =--components= map, image dimensions.
+- [[file:docs/front-matter-and-seo.md][docs/front-matter-and-seo.md]] — every config keyword + the social-image / JSON-LD / =#+HTML_HEAD= recipes.
+- [[file:docs/includes-and-setupfiles.md][docs/includes-and-setupfiles.md]] — =#+SETUPFILE= / =#+INCLUDE= / =#+STARTUP= resolution, every =#+INCLUDE= parameter, precedence, and the root-confinement security model.
+
+*Programmatic use.* *The CLI is the product* ([D-22]): everything documented here is driven
+through the =org2html= command (or =--stdin= filter mode), extended with a =--plugin= file
+(see [[file:docs/authoring-style-books.md][the docs]]), and that is where new surface lands first.
+
+A typed ESM entry *is* exported, shipped with =dist/index.d.ts= and covered by the install
+smoke test. *The contract is one sentence:* =parse=, =renderToHtml=, =applyTemplate=,
+=org2html= and the exported types are semver-stable; every other export is incidental and
+may move without a major. =tests/public-api.test.ts= pins the entire export list, so adding
+to it or removing from it is a decision somebody makes on purpose rather than a side effect.
+
+* DEV AND BUILD COMMANDS
+
+| Command                          | What it does                                                              |
+|----------------------------------+---------------------------------------------------------------------------|
+| =npm run dev=                    | =tsup --watch=. Live rebuilds into =dist/= on every save.                |
+| =npm run build=                  | =tsup= production build into =dist/=.                                    |
+| =npm run lint=                   | ESLint flat config over the source tree.                                  |
+| =npm test=                       | Vitest single-run (=vitest run=) across the whole harness.                |
+| =npm run typecheck=              | =tsc --noEmit=.                                                          |
+| =npm run test:coverage=          | Vitest with v8 coverage (engine core gated at ≥80%).                     |
+| =npm run smoke=                  | Pack + install the tarball into a clean ESM consumer and assert it runs.  |
+| =node scripts/precheck.mjs=      | Composite local gate (=check-license-headers=).                          |
+| =npm run scan:corpus=            | Render a whole directory of real =.org= files and report anomalies (crashes, unexpanded macros, content loss, unresolved file keywords). Read-only; defaults to =$BRAIN_DIR= / =~/.brain.d=. Not a CI gate — it needs a corpus. |
+
+** Validation gates
+Run on every PR via =.github/workflows/ci.yml=. Seven jobs:
+
+1. *ESLint* :: =npm run lint=.
+2. *Precheck* :: =node scripts/precheck.mjs= (composite local gate).
+3. *Vitest* :: =npm test=. Tolerant of an empty =tests/= directory.
+4. *Production build* :: =npm run build=. Uploads =dist/= as a 7-day artifact.
+5. *Security Scan* :: inline grep for =eval=, =Function()=, =innerHTML=, =document.write=, string-arg timers, hardcoded secrets, insecure =http://= URLs.
+6. *Protected Files* :: advisory PR comment on edits to legal / governance / supply-chain / CI / build / release files. Never blocks merge.
+7. *Pre-Check Label* :: aggregator. Applies / removes the =Pre-Check Failed= label.
+
+* REPOSITORY LAYOUT
+
+#+BEGIN_EXAMPLE
+org2html/
+├── src/                          TypeScript source (all files carry the GPL-3.0-only preamble)
+│   ├── index.ts                  public entry (parse / renderToHtml / applyTemplate / org2html + engine exports)
+│   ├── types.ts                  OrgMetadata / RenderOptions / StyleOptions / OrgPlugin / BuildConfig
+│   ├── paths.ts                  depth-independent templates/ resolver
+│   ├── globals.d.ts              build-define + probe-image-size shims
+│   ├── parser/                   lexer.ts / parser.ts / metadata.ts / ast.ts / slug.ts
+│   ├── renderer/                 html-renderer.ts / template.ts / sanitizer.ts / seo.ts / style-book.ts
+│   ├── plugins/                  code-highlight.ts / toc.ts / plugin-api.ts / shortcode.ts / asset-fetcher.ts
+│   ├── assets/                   asset-handler.ts (image dimension probe)
+│   ├── comments/                 types.ts / thread.ts / policy.ts / jsonld.ts / sprite.ts (data, never markup — [P-00])
+│   └── cli/                      index.ts / vue-generator.ts / style-flags.ts / plugin-loader.ts / relations.ts / org-resolve.ts / fs-safe.ts / commands/
+├── templates/                    npm-tarball assets (default.html / styles.css / o2h.js / manifest / favicon / robots)
+│   ├── style-book/               kwo (default) + o2h books: tokens, styles, stylebook.json, README.md
+│   └── fonts/                    LOCAL ONLY — excluded from the tarball; org2html redistributes no webfont ([#41])
+├── tests/                        Vitest harness
+│   ├── fixtures/                 one .org per construct, the goldens, and fixtures/corpus/ for the integration build
+│   ├── comments/                 the comment surface (thread / policy / jsonld / the CLI command)
+│   └── integration/              cli-build.test.ts — a real build, every emitted .vue compiled by @vue/compiler-sfc
+├── docs/                         authoring-style-books.md / components-and-data.md / front-matter-and-seo.md / includes-and-setupfiles.md
+├── scripts/                      _lib.mjs / precheck.mjs / check-license-headers.mjs / smoke-install.mjs / corpus-scan.mjs
+├── .github/
+│   ├── CODEOWNERS
+│   ├── SECURITY.org
+│   ├── PULL_REQUEST_TEMPLATE.md
+│   └── workflows/ci.yml + publish.yml
+├── .shipwright/                  contract.toml — the unattended-run contract (fingerprinted)
+├── package.json
+├── tsconfig.json / tsup.config.ts / vitest.config.ts / eslint.config.mts
+├── .editorconfig / .gitattributes / .gitignore / .nvmrc
+├── AGENTS.md                     code-review rules
+├── LICENSE / COPYING             GPL-3.0-only
+├── LICENSE-EXCEPTION.txt         output/runtime permission ([D-23])
+├── LICENSING.org                 license guide + header conventions
+├── NOTICE                        attribution
+├── CONTRIBUTING.org              contributor onboarding
+├── CHANGELOG.org                 release history + backlog
+├── README.org                    this file
+└── README.md                    npm-registry mirror (Markdown)
+#+END_EXAMPLE
+
+=client/hydrate.ts= (Vue hydration) is deferred to the website project — see [[file:CHANGELOG.org][CHANGELOG.org]] §TODO.
+
+*Two directories are deliberately absent.* =examples/= held a demo Vue site that proved the
+=.org= → =.vue= → prerendered-HTML round trip; it was 162 MB, it was never tracked by git, and
+what it actually guaranteed is now =tests/integration/cli-build.test.ts=, which compiles every
+emitted SFC with =@vue/compiler-sfc=. And =templates/fonts/= exists here but is excluded from
+the tarball — the faces are licensed to their owners, not to this project, so supply your own
+with =--font-dir= (see §Fonts). Nothing else in the tree is optional: everything above ships,
+runs a gate, or explains one.
+
+* DESIGN SYSTEM CONTRACT
+
+org2html is the engine; the visual identity belongs downstream. The canonical look-and-feel contract lives in the sibling [[https://github.com/Kyonax/kyo-web-online][kyo-web-online]] project — 8-family OKLCH palette, 7 UI primitives (=UiCard=, =UiLink=, =UiButton=, =UiImage=, =UiIcon=, =UiSectionHeading=, =BrandIcon=), cyberpunk HUD ornaments (=.hud-deco=, =.element-flare=, =.state-grid=, =.icon-glyph=, =.ccs-glyph=, =.heart-glyph=), accessibility floor, and the image pipeline rules. When emitting Vue SFCs that consume those primitives, the engine's =src/cli/vue-generator.ts= helpers produce output that drops into a kyo-web-online-shaped Vite + vue-i18n shell.
+
+* CONTRIBUTING
+
+See [[file:CONTRIBUTING.org][CONTRIBUTING.org]] for the full guide: prerequisites, code conventions, branch workflow, CI pipeline, and PR process.
+
+Quick summary:
+
+- Code style follows [[https://github.com/ccs-devhub][CCS]] standards, enforced via [[file:eslint.config.mts][eslint.config.mts]].
+- *No comments in TypeScript source* (per [[file:AGENTS.md][AGENTS.md]]) except the GPL preamble + filename block + JSDoc on exported helpers that documents non-obvious WHY.
+- Vue 3 Composition API with =<script setup>= only (when emitting SFC output via =vue-generator.ts=).
+- Every source file needs the GPL-3.0-only license header, verified by =scripts/check-license-headers.mjs=.
+- All changes require review from =@Kyonax= ([[file:.github/CODEOWNERS][CODEOWNERS]]).
+- Branch model: =master= ← =feat-*= / =fix-*=.
+- All PRs must pass 7 CI checks before merge.
+
+* LICENSE
+
+Distributed under [[file:LICENSE][GPL-3.0-only]]. Every committed =.ts=, =.tsx=, =.js=, =.mjs= file carries the CCS license preamble (verified by =node scripts/precheck.mjs=). Version history at [[file:CHANGELOG.org][CHANGELOG.org]]. License posture and per-file header templates at [[file:LICENSING.org][LICENSING.org]]. Security disclosures at [[file:.github/SECURITY.org][SECURITY.org]] (=kyonax.corp@gmail.com= with =[SECURITY]= subject prefix, 90-day coordinated disclosure window).
+
+This is a personal-but-published library. External contributions are welcome via PR; the maintainer reviews and merges. There are no plans to widen scope beyond the engine + =kyo-blog= consumer.

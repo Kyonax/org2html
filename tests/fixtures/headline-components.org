@@ -1,0 +1,17 @@
+#+TITLE: Headline Components Demo
+#+OPTIONS: pri:t
+
+* TODO [#A] Ship the release :work:@office:
+A task headline carrying a TODO keyword, a priority cookie, and two tags.
+
+* DONE Write the tests :done:
+A completed task; DONE is the done-state keyword.
+
+* COMMENT Internal Notes
+This whole subtree is a COMMENT and must not appear in the output.
+
+** Buried Detail
+Even this nested content under the COMMENT headline is dropped.
+
+* Plain Heading
+This ordinary section survives and is not swallowed by the COMMENT above it.

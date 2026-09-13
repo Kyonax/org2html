@@ -1,0 +1,9 @@
+#+TITLE: A Note In A Folder
+#+DATE: 2026-07-14
+#+CATEGORY: notes
+#+DESCRIPTION: Lives one directory down, so the built route carries a folder segment.
+
+* Note
+
+This document exists to prove the route is =<folder>/<date>-<slug>= and that the
+sidecars agree with it.
