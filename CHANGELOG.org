@@ -21,7 +21,7 @@
 #+EMAIL: kyonax.corp@gmail.com
 #+DATE: May 21, 2026
 #+FILETAGS: :ORG_2_HTML:CHANGELOG:
-#+LAST_UPDATE: September 09, 2026
+#+LAST_UPDATE: September 12, 2026
 #+OPTIONS: toc:nil num:nil H:4
 
 * [TODO]
@@ -42,7 +42,10 @@ components / hydration / multi-document site concerns are out of scope here.
 
 * [Unreleased]
 
-* [v1.2.0] — 2026-09-09
+* [v1.2.0] — 2026-09-12 :: The Host Control Release
+** Security — the test runner could be steered to read files outside the project (2026-09-12)
+- =vitest= and =@vitest/coverage-v8= move from 4.1.9 to 4.1.11 ([[https://github.com/Kyonax/org2html/pull/16][#16]]), the first 4.x release that closes the =@vitest/mocker= redirect-mock path traversal. =npm audit= on this line went from three moderate findings to zero. Dev tooling only: the published package's runtime dependencies are unchanged. The lock is written by npm 10.9.9, because npm 11 drops vitest's nested =esbuild@0.28.2= and =scripts/check-lockfile.mjs= rejects that lock. The seven Dependabot PRs open against =master= were closed as superseded: every bump they proposed was already on this line at an equal or higher version.
+
 ** Changed — every version literal states 1.2.0 (2026-09-11)
 - =README.org= (=#+VERSION=, the figlet banner, the shields badge) and both Style Book manifests (=templates/style-book/stylebook.json= for kwo, =templates/style-book/o2h/stylebook.json= for o2h) said 1.1.0 while =package.json= said 1.2.0; =scripts/check-version.mjs= was red on all five and is green now ("every version literal agrees on 1.2.0"). =npm run typecheck= clean and =npm test= 768 of 768 after the change.
 
