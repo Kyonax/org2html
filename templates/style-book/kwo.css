@@ -717,6 +717,13 @@
   font-size: 14px;
   font-weight: 700;
 }
+/* A chart whose category labels would not fit their slots at 14px draws them DENSE:
+ * the renderer wraps each one onto up to three lines sized for 12px untracked mono
+ * (src/plugins/chart.ts), so the book has to set exactly that. */
+.org-root .org-chart-svg--dense .org-chart-label {
+  font-size: 12px;
+  letter-spacing: 0;
+}
 .org-root .org-chart-bar rect { fill: var(--o2h-line-firm); }
 .org-root .org-chart-bar.is-highlight rect { fill: var(--o2h-accent); }
 .org-root .org-chart-bar.is-highlight .org-chart-value,
