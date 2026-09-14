@@ -105,6 +105,87 @@ function tickText(v: number, unit: string): string {
   return `${n}${unit}`
 }
 
+/*
+ * THE CATEGORY LABELS FIT THEIR SLOT — and a chart whose labels already fit draws
+ * exactly as it always did.
+ *
+ * A label used to be one <text> centred under its bar, whatever its length. Six bars
+ * leave about eight characters a slot at the book's 14px tracked label, so the
+ * kitchen-sink's 24–27 character labels ran into each other: five overlaps in six,
+ * "not readable at all" (reported 2026-09-12). The layout now has two modes:
+ *
+ *   PLAIN — every label fits on one line at the book's size. The markup is the same,
+ *           byte for byte, so no existing chart moves.
+ *   DENSE — one label would not. Every label then drops to the dense size (the class
+ *           on the <svg>; the book sets the size and drops the tracking), wraps at
+ *           spaces and after hyphens onto at most LABEL_MAX_LINES lines, and the
+ *           drawing grows downward by the lines it gained. The plot keeps its size.
+ *
+ * A word is cut only when it alone is longer than a line, and a label that would need
+ * more lines ends in an ellipsis with its full text in a <title>. The widths are
+ * ESTIMATES of the book's mono face — the engine draws at build time and never loads
+ * the font — and they err wide: PLAIN is SpaceMono's 0.612em advance plus the label
+ * tracking (measured at 10.46 units a character at 14px), DENSE the bare advance.
+ */
+const LABEL_PX = 14
+const LABEL_PX_DENSE = 12
+const LABEL_EM = 0.76
+const LABEL_EM_DENSE = 0.62
+const LABEL_MAX_LINES = 3
+/* Baseline to baseline for a wrapped label, in viewBox units. */
+const LABEL_PITCH = 15
+/* The air a wrapped label keeps from its neighbour's slot, in viewBox units. */
+const LABEL_GAP = 6
+
+/**
+ * How many characters of a label fit a slot. Plain keeps only 2 units of air, so a
+ * chart that has always fitted keeps drawing the way it always has.
+ */
+export function labelCapacity(slot: number, dense: boolean): number {
+  const glyph = dense ? LABEL_PX_DENSE * LABEL_EM_DENSE : LABEL_PX * LABEL_EM
+  return Math.max(4, Math.floor((slot - (dense ? LABEL_GAP : 2)) / glyph))
+}
+
+/**
+ * Wrap a label into at most `maxLines` lines of at most `width` characters, breaking at
+ * spaces and after hyphens, and cutting a word only when it alone is longer than a line.
+ * `clipped` says the last line ends in an ellipsis.
+ */
+export function wrapChartLabel(
+  label: string,
+  width: number,
+  maxLines = LABEL_MAX_LINES,
+): { lines: string[]; clipped: boolean } {
+  /* The pieces a line may end after: each word keeps its trailing space, and a
+   * hyphenated word splits after each hyphen. */
+  const units = String(label ?? '').trim().split(/\s+/).filter(Boolean)
+    .flatMap((word) => word.split(/(?<=-)/).map((part, i, all) => (i === all.length - 1 ? `${part} ` : part)))
+  const lines: string[] = []
+  let line = ''
+  for (let unit of units) {
+    while (unit.trimEnd().length > width) {
+      if (line.trim()) {
+        lines.push(line.trimEnd())
+        line = ''
+      }
+      lines.push(unit.slice(0, width))
+      unit = unit.slice(width)
+    }
+    if ((line + unit).trimEnd().length <= width) {
+      line += unit
+    } else {
+      lines.push(line.trimEnd())
+      line = unit
+    }
+  }
+  if (line.trim()) lines.push(line.trimEnd())
+  if (lines.length <= maxLines) return { lines, clipped: false }
+  const kept = lines.slice(0, maxLines)
+  const last = kept[maxLines - 1]
+  kept[maxLines - 1] = `${last.length >= width ? last.slice(0, width - 1) : last}…`
+  return { lines: kept, clipped: true }
+}
+
 /**
  * Draw the bars. Geometry is fixed in a viewBox and the element is sized by CSS, so the
  * chart is responsive without a resize observer and identical in print. Every colour is
@@ -134,17 +215,32 @@ export function renderBarChart(data: ChartDatum[], spec: ChartSpec, unit: string
     )
   }
 
+  /* PLAIN or DENSE — see the note above labelCapacity. The first label that would not
+   * fit makes the whole chart dense, so the labels under one chart share one size. */
+  const dense = data.some((d) => d.label.trim().length > labelCapacity(slot, false))
+  const capacity = labelCapacity(slot, dense)
+  const labels = data.map((d) => (dense ? wrapChartLabel(d.label, capacity) : { lines: [d.label], clipped: false }))
+  const extra = (Math.max(...labels.map((l) => l.lines.length)) - 1) * LABEL_PITCH
+  const labelY = (VIEW_H - PAD_B + 22).toFixed(1)
+
   const bars = data.map((d, i) => {
     const h = top > 0 ? (d.value / top) * plotH : 0
     const x = PAD_L + slot * i + (slot - barW) / 2
     const y = PAD_T + plotH - h
     const on = spec.highlight.has(i + 1)
     const cx = (x + barW / 2).toFixed(1)
+    const { lines, clipped } = labels[i]
+    /* One line stays a bare <text>, the markup a plain chart always had; more lines
+     * are <tspan>s stepped down from the same baseline, each re-anchored on the bar. */
+    const text = lines.length === 1
+      ? esc(lines[0])
+      : lines.map((line, n) => `<tspan x="${cx}" dy="${n === 0 ? 0 : LABEL_PITCH}">${esc(line)}</tspan>`).join('')
+    const title = clipped ? `<title>${esc(d.label)}</title>` : ''
     return (
       `<g class="org-chart-bar${on ? ' is-highlight' : ''}">` +
       `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(0, h).toFixed(1)}" />` +
       `<text class="org-chart-value" x="${cx}" y="${(y - 9).toFixed(1)}" text-anchor="middle">${esc(d.display)}</text>` +
-      `<text class="org-chart-label" x="${cx}" y="${(VIEW_H - PAD_B + 22).toFixed(1)}" text-anchor="middle">${esc(d.label)}</text>` +
+      `<text class="org-chart-label" x="${cx}" y="${labelY}" text-anchor="middle">${title}${text}</text>` +
       `</g>`
     )
   })
@@ -154,7 +250,7 @@ export function renderBarChart(data: ChartDatum[], spec: ChartSpec, unit: string
     : ''
 
   return (
-    `<svg class="org-chart-svg" viewBox="0 0 ${VIEW_W} ${VIEW_H}" role="presentation" aria-hidden="true" ` +
+    `<svg class="org-chart-svg${dense ? ' org-chart-svg--dense' : ''}" viewBox="0 0 ${VIEW_W} ${VIEW_H + extra}" role="presentation" aria-hidden="true" ` +
     `preserveAspectRatio="xMidYMid meet">` +
     `${ticks.join('')}${axisTitle}` +
     `<line class="org-chart-axis" x1="${PAD_L}" y1="${PAD_T}" x2="${PAD_L}" y2="${PAD_T + plotH}" />` +
