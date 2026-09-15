@@ -1,0 +1,5 @@
+#+TITLE: Sub/Superscript Demo
+
+Water is H_{2}O and Einstein wrote E = mc^{2}.
+
+An identifier like snake_case must stay literal, not become a subscript.

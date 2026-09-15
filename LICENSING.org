@@ -1,0 +1,183 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-3.0-only — see LICENSE.
+
+#  ________ ______  ___  ___  ___________
+# /_  __/ // / __/ / _ \/ _ |/ ___/_  __/
+#  / / / _  / _/  / ___/ __ / /__  / /
+# /_/ /_//_/___/ /_/  /_/ |_\___/ /_/
+#
+# LICENSING.org — Single-license guide + header conventions
+# 2026-05-21
+#
+# GPL-3.0-only posture, per-extension header templates, and the
+# Tier 1 file-header convention (root config + governance only).
+#
+# Guidelines:
+#   Single-license is non-negotiable (no permissive escape hatch)
+#   scripts/check-license-headers.mjs gates this on every PR
+#   Tier 1 root files MUST carry the figlet banner + header block
+
+#+TITLE: org-2-html Licensing Guide
+#+SUBTITLE: GPL-3.0-only posture and per-file header conventions
+#+AUTHOR: [[https://orcid.org/0009-0006-4459-5538][Cristian D. Moreno - Kyonax]]
+#+EMAIL: kyonax.corp@gmail.com
+#+DATE: May 21, 2026
+#+FILETAGS: :ORG_2_HTML:LICENSING:
+#+LAST_UPDATE: May 21, 2026
+#+OPTIONS: toc:nil num:nil H:4
+
+* How it works
+Every file in this project is licensed under *GPL-3.0-only*, declared by
+its header. The project is single-license: there is no permissive escape
+hatch. Modifications and derivative works must be released under the
+same license and must preserve attribution to
+=Cristian D. Moreno — @Kyonax=.
+
+* License summary
+| Property              | Value                                |
+|-----------------------+--------------------------------------|
+| SPDX identifier       | =GPL-3.0-only=                         |
+| Copyleft              | Yes (strong)                         |
+| Distribution license  | Same (GPL-3.0-only)                  |
+| Patent grant          | Explicit (GPLv3 §11)                 |
+| Attribution required  | Yes                                  |
+| Source disclosure     | Required for any distributed binary  |
+| Tivoization clause    | Yes (GPLv3 §3, anti-DRM provision)   |
+
+Full license text lives at =LICENSE= (or =COPYING= for the full GNU text).
+Attribution lives at =NOTICE=.
+
+* File headers
+Every committed =.ts=, =.tsx=, =.js=, =.mjs=, =.html=, =.css=, =.svg=
+file must carry the header below in its first five lines. The CI gate
+=scripts/check-license-headers.mjs= asserts this on every PR.
+
+** TypeScript / JavaScript / Vue config / ESLint config
+Add at the top of the file:
+
+#+BEGIN_EXAMPLE
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+#+END_EXAMPLE
+
+Then a blank line, then the filename + one-line description block:
+
+#+BEGIN_EXAMPLE
+/*
+ * <filename> — <one-line description>
+ *
+ * <optional context paragraph>
+ */
+#+END_EXAMPLE
+
+The AGENTS.md "no comments in TypeScript" rule has *one explicit
+exception*: this license preamble + filename block. Every other comment
+in TypeScript source files is forbidden.
+
+** HTML / SVG / XML
+Add at the top of the file:
+
+#+BEGIN_EXAMPLE
+<!--
+  Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+  Distributed under the terms of GPL-3.0-only — see LICENSE.
+-->
+#+END_EXAMPLE
+
+** CSS / SCSS
+Add at the top of the file:
+
+#+BEGIN_EXAMPLE
+/*
+ * Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+ * Distributed under the terms of GPL-3.0-only — see LICENSE.
+ */
+#+END_EXAMPLE
+
+** YAML / shell / Python / org-mode / Makefile / Dockerfile / .gitignore
+Lines starting with =#=. Add at the top:
+
+#+BEGIN_EXAMPLE
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-3.0-only — see LICENSE.
+#+END_EXAMPLE
+
+** JSON
+JSON does not support comments. Files like =package.json=,
+=tsconfig.json=, =manifest.json= are exempt — license posture comes from
+the surrounding repo (=LICENSE= + this file).
+
+* No header? (default applies)
+A file without an explicit license notice is still licensed
+*GPL-3.0-only* by default — the =LICENSE= file at the repo root governs
+everything. The header convention exists so a single file copied out of
+the tree continues to carry its license. CI rejects PRs that leave
+=src/=, =scripts/=, =templates/= files without the preamble.
+
+* Third-party code
+Vendored third-party code must:
+1. Live under a clearly-marked directory (=vendor/= or =third_party/=).
+2. Carry its original license header verbatim.
+3. Have its license recorded in =NOTICE=.
+4. Be compatible with GPL-3.0-only.
+
+* Tier 1 file headers (root config only)
+"Tier 1" files — root-level config, governance, and release-tracking —
+carry an *extended header* that includes:
+
+1. The two-line copyright + license notice.
+2. A blank line.
+3. A figlet-rendered ASCII banner (font: =smslant=) showing an
+   evocative "THE _____" label for the file. Generate via
+   =figlet -f smslant "THE FOUNDRY"=.
+4. A blank comment line.
+5. The filename + one-line description.
+6. The date in =YYYY-MM-DD= format.
+7. A blank comment line.
+8. A multi-line context paragraph.
+9. A blank comment line.
+10. An indented section list.
+11. A blank comment line.
+12. A =Guidelines:= block with rule lines.
+
+Tier 1 files in this repo (root config + governance only — *not*
+scripts; scripts get the simpler source-file header):
+
+| File                                       | Banner               |
+|--------------------------------------------+----------------------|
+| =.editorconfig=                            | THE DESK             |
+| =.gitattributes=                           | THE GRAIN            |
+| =.gitignore=                               | THE VOID             |
+| =CHANGELOG.org=                            | THE LOGS             |
+| =CONTRIBUTING.org=                         | THE GATE             |
+| =LICENSING.org=                            | THE PACT             |
+| =NOTICE=                                   | (no banner)          |
+| =README.org=                               | THE BEACON (+ logo)  |
+| =.github/CODEOWNERS=                       | THE SEAL             |
+| =.github/SECURITY.org=                     | THE SHIELD           |
+| =.github/PULL_REQUEST_TEMPLATE.md=         | THE BLUEPRINT        |
+| =.github/workflows/ci.yml=                 | THE WATCHTOWER       |
+| =.github/workflows/publish.yml=            | THE FOUNDRY          |
+
+Naming theme: a guardhouse / watchpost vocabulary. New Tier 1 files
+should pick a single noun in that register (≤12 characters) so the
+figlet output fits in a 4-line banner under 80 cols.
+
+*Header body below the figlet:* keep it concise. Pattern:
+1. =# <filename> — <one-line tagline>= (single line)
+2. =# <YYYY-MM-DD>= (single line)
+3. blank comment line
+4. 1–3 lines of WHAT + WHY, hard-wrapped at ≤70 chars
+5. blank comment line
+6. =# Guidelines:= followed by 1–3 single-line rules
+
+Section lists and verbose context paragraphs are out. The file's
+actual content is self-documenting via its section delimiters.
+
+* References
+- Source-of-truth conventions mirrored from
+  =kyo-web-online/LICENSING.org= and =kyo-recording-automation/=.
+- Session file: =dot-files/.config/doom-mac/gptel-directives/sessions/org-2-html.md= §1.x.
+- Roam plan node: =~/.brain.d/roam-nodes/org_2_html/2026-05-21-org_2_html_engine_plan.org=.

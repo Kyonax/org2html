@@ -1,0 +1,15 @@
+#+TITLE: Tables Demo
+
+An Org table with a header rule and per-column alignment:
+
+| Name  | Score |
+|-------+------:|
+| Alice |    90 |
+| Bob   |     7 |
+#+TBLFM: $2=vsum(@2..@3)
+
+A table.el table with +--+ borders:
+
++-------+-------+
+| cell1 | cell2 |
++-------+-------+

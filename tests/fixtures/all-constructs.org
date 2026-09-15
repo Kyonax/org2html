@@ -1,0 +1,84 @@
+#+TITLE: All Constructs
+#+OPTIONS: toc:2 num:t pri:t
+
+* TODO [#A] First heading :alpha:beta:
+  :PROPERTIES:
+  :CUSTOM_ID: first
+  :END:
+
+A paragraph with *bold*, /italic/, _underline_, +strike+, ~code~ and =verbatim=.
+A [[https://example.com][external link]] and an [[#first][internal link]].
+Water is H_{2}O and E = mc^{2}. Progress [1/2]. On <2026-07-01 Wed>.
+
+** Lists
+- unordered one
+- unordered two
+  - nested
+
+1. ordered one
+2. ordered two
+
+- [ ] a task
+- [X] a done task
+
+- term :: definition
+
+** A table
+| Name | Score |
+|------+-------|
+| Ada  |    99 |
+| Alan |    95 |
+
+** Blocks
+#+BEGIN_QUOTE
+A quote block.
+#+END_QUOTE
+
+#+BEGIN_EXAMPLE
+literal example
+#+END_EXAMPLE
+
+#+BEGIN_VERSE
+line one
+line two
+#+END_VERSE
+
+#+BEGIN_SRC javascript :tangle src/demo.js
+const x = 1
+#+END_SRC
+
+#+BEGIN_SRC diff
++added line
+-removed line
+#+END_SRC
+
+#+RESULTS:
+: 1
+
+#+BEGIN_NOTE
+A callout note.
+#+END_NOTE
+
+** Media and rules
+[[/img/cover.png]]
+
+#+ATTR_HTML: :class org-figure--bracket
+[[/img/framed.png]]
+
+#+ATTR_HTML: :class org-quote--pull
+#+BEGIN_QUOTE
+A pull-quote.
+#+END_QUOTE
+
+*************** TODO An inline task :now:
+*************** END
+
+:LOGBOOK:
+CLOCK: [2026-07-01]--[2026-07-01] =>  1:00
+:END:
+
+-----
+
+A footnote here.[fn:1]
+
+[fn:1] The footnote definition.

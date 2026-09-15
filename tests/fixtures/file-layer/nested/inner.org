@@ -1,0 +1,1 @@
+Inner content, sibling is [[file:sibling.txt][here]].

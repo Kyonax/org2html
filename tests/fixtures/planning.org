@@ -1,0 +1,18 @@
+#+TITLE: Planning & Clock
+#+OPTIONS: p:t c:t
+
+* Ship the release
+DEADLINE: <2026-07-20 Mon> SCHEDULED: <2026-07-15 Wed>
+CLOCK: [2026-07-01 Wed 09:00]--[2026-07-01 Wed 10:30] =>  1:30
+
+Body text under the heading.
+
+* Recurring standup
+SCHEDULED: <2026-07-02 Thu +1w>
+
+Notes about the standup.
+
+* Done task
+CLOSED: [2026-07-01 Wed 18:00]
+
+Wrapped up.

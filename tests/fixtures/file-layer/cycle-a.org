@@ -1,0 +1,2 @@
+#+SETUPFILE: cycle-b.org
+#+MACRO: froma A

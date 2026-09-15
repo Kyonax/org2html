@@ -1,0 +1,6 @@
+# The base setupfile: settings only, no content.
+#+OPTIONS: toc:nil num:nil
+#+LANGUAGE: en
+#+MACRO: brand @@html:<b class="brand">ZERONET</b>@@
+#+MACRO: greet Hello, $1 and $2!
+#+LINK: gh https://github.com/%s

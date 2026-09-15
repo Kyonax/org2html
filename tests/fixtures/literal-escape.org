@@ -1,0 +1,8 @@
+#+TITLE: Literal Escapes
+
+To print a literal structure character without triggering markup, use its Org
+entity: \ast{} for a star, \vert{} for a pipe, \lbrack{} \rbrack{} for brackets,
+\lbrace{} \rbrace{} for braces, \under{} for an underscore, \tilde{} for a tilde,
+\equal{} for an equals, \sol{} for a slash.
+
+So \ast{}not bold\ast{} stays literal, and a table pipe \vert{} in prose is fine.
