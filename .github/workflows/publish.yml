@@ -1,54 +1,106 @@
-name: Publish org2html to npm
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-3.0-only — see LICENSE.
+
+#  ________ ______  ________  __  ___  _____  _____  __
+# /_  __/ // / __/ / __/ __ \/ / / / |/ / _ \/ _ \ \/ /
+#  / / / _  / _/  / _// /_/ / /_/ /    / // / , _/\  /
+# /_/ /_//_/___/ /_/  \____/\____/_/|_/____/_/|_| /_/
+#
+# publish.yml — Tag-driven npm publish
+# 2026-05-21
+#
+# Trigger: tag matching v*.*.* (semver). Runs lint+test, then
+# builds and publishes @kyonax/org2html via NPM_TOKEN.
+#
+# Guidelines:
+#   Bump package.json BEFORE tagging (workflow does not bump)
+#   NPM_TOKEN lives in repo secrets — never inline it
+#   CLI version should read from package.json at build time
+
+name: Publish @kyonax/org2html to npm
 
 on:
-    push:
-        tags:
-            - "v*.*.*"
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
 
 jobs:
-    publish:
-        runs-on: ubuntu-latest
-        needs: [lint-and-test]
+  lint-and-test:
+    name: Lint + Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm ci
+      - run: npm run lint
+      # THE GATE HAS TO ACTUALLY GATE. This step used to read
+      #   if npm test 2>&1 | tee /tmp/vitest.log; then
+      # and a bare `run:` on Linux is `bash -e {0}` — no `pipefail`. The `if` therefore
+      # tested `tee`'s exit status, which is always 0, so a RED SUITE REPORTED "Vitest
+      # passed." and the job succeeded. In publish.yml that meant a failing test suite
+      # published to npm. Demonstrated locally before the fix:
+      #   bash -e -c 'if false | tee x; then echo PASSED; fi'   ->   PASSED
+      #
+      # The companion "no test files found" escape hatch is gone too: it existed when the
+      # suite was empty, and with 61 test files it can only ever turn a suite that stopped
+      # being discovered into a green job.
+      - run: npm test
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+      # ── EVERYTHING BELOW GATES A PUBLISH THAT NOTHING USED TO ────────────────────────
+      # This job ran lint and test, and that was all. Meanwhile ci.yml — which does run
+      # typecheck, precheck, publint, attw and install-smoke — was triggered on
+      # `branches: [master, main]` while every line of v1.1.0 was written on release-v0.1,
+      # so NONE of it had ever run on this work. A tag fires from any branch, so the two
+      # facts together meant a tag push could publish through gates that had never
+      # executed once. Duplicating them here is deliberate: a TAG-DRIVEN publish must not
+      # depend on a branch workflow having happened to run.
+      - run: npm run typecheck
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: "20.19.5"
-                  registry-url: "https://registry.npmjs.org"
+      # Six hand-maintained version literals, plus — under GITHUB_REF_TYPE=tag — the PUSHED
+      # TAG against package.json. publish.yml triggers on `v*.*.*` with no correlation step
+      # of any kind before this, so `git push origin v1.2.0` at a 1.1.0 tree published 1.1.0
+      # under a tag claiming otherwise.
+      - name: Version literals + tag agreement
+        run: node scripts/precheck.mjs
 
-            - name: Install dependencies
-              run: npm ci
+      - run: npm run build
 
-            - name: Build package
-              run: npm run build
+      # Resolution correctness, from the consumer's side rather than ours.
+      - name: publint (strict)
+        run: npx --yes publint@latest --strict
+      - name: Are the types wrong (ESM-only)
+        run: npx --yes @arethetypeswrong/cli@latest --pack . --ignore-rules cjs-resolves-to-esm
 
-            - name: Publish to npm
-              run: npm publish
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # The last gate before the registry: pack the real tarball, install it into a clean
+      # ESM consumer, run the CLI and import the library. Everything above tests the repo;
+      # this tests what someone actually receives.
+      - run: npm run smoke
 
-    lint-and-test:
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: "20.19.5"
-                  registry-url: "https://registry.npmjs.org"
-
-            - name: Install dependencies
-              run: npm ci
-
-            - name: Check Tests
-              run: npm run test
-
-            - name: Check Lint
-              run: npm run lint
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    needs: [lint-and-test]
+    # id-token: write lets npm attach a signed provenance statement ([R-16]).
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm ci
+      - run: npm run build
+      - name: Publish to npm (with provenance)
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,0 +1,13 @@
+#+TITLE: Math, Entities, Cookies, Timestamps
+
+Inline math \(a^2 + b^2 = c^2\) and dollar math $E=mc^2$ sit in prose.
+
+Display math: $$\int_0^1 x\,dx$$
+
+Greek entities: \alpha and \beta and an arrow \to and \times.
+
+Progress cookie [2/5] and a percentage [40%] on a task.
+
+Scheduled for <2024-01-15 Mon 10:00> with a deadline of [2024-02-01].
+
+Currency stays literal: $5 and $10 are numbers, not math.

@@ -1,0 +1,45 @@
+org2html Output & Runtime Exception
+Version 1.0 — 2026
+Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+
+This Exception is additional permission under section 7 of the GNU General
+Public License, version 3 ("GPLv3"). It applies to the software known as
+@kyonax/org2html (the "Program"). By exercising the permission below you
+accept its terms.
+
+1. Definitions.
+
+   "Program" means the org2html engine and its accompanying source, licensed
+   under GPLv3-only.
+
+   "Output" means the files produced by running the Program on input you
+   supply — including generated HTML, Vue single-file components, CSS, and
+   JSON metadata, and any other artifact the Program writes — together with
+   the portions of the Program's bundled templates, stylesheets, or runtime
+   helpers that the Program copies verbatim into, or embeds within, those
+   generated files in the ordinary course of conversion.
+
+2. Grant of Additional Permission.
+
+   You have permission to propagate and convey the Output under terms of your
+   choice. The requirements of GPLv3 do not extend to the Output solely
+   because the Output was produced by, or incidentally contains such portions
+   of, the Program. You may license, distribute, and use the Output as though
+   the Program had not been used to create it.
+
+3. Scope and Limitations.
+
+   This Exception does NOT grant any right to relicense, sublicense, or convey
+   the Program itself — its source or any distributed build — under terms
+   other than GPLv3-only. Modifications to the Program remain governed by
+   GPLv3-only, and any distribution of the Program or of works based on it
+   must comply with GPLv3-only in full, including its attribution and
+   source-disclosure requirements.
+
+4. No Warranty.
+
+   This Exception does not alter the disclaimer of warranty in GPLv3.
+
+When you distribute the Output, this Exception imposes no obligation on you to
+release the Program's source; your obligations regarding the Program's own
+source are governed solely by GPLv3-only.

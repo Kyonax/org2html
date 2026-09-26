@@ -1,0 +1,4 @@
+# Chains to the base, then overrides one macro and adds another.
+#+SETUPFILE: setup-base.org
+#+MACRO: greet Salutations, $1 and $2!
+#+MACRO: signoff Filed by $1.

@@ -1,0 +1,52 @@
+{
+  "name": "kwo",
+  "version": "1.2.0",
+  "engineCompat": "^1",
+  "classPrefix": "org-",
+  "themeColor": "#f9cd26",
+  "tokens": "kwo-tokens.css",
+  "styles": [
+    "../styles.css",
+    "kwo.css"
+  ],
+  "template": "../default.html",
+  "layouts": {},
+  "components": {},
+  "assets": [
+    "../favicon.svg",
+    "../manifest.json",
+    "../robots.txt",
+    "../o2h.js",
+    "../fonts/GeomanistRegular.woff2",
+    "../fonts/GeomanistBold.woff2",
+    "../fonts/SpaceMonoNerdFont-Regular.woff2",
+    "../fonts/SpaceMonoNerdFont-Bold.woff2"
+  ],
+  "scripts": [
+    "../o2h.js"
+  ],
+  "constructs": [
+    "org-root",
+    "org-heading",
+    "org-paragraph",
+    "org-code",
+    "org-verbatim",
+    "org-src",
+    "org-quote",
+    "org-example",
+    "org-verse",
+    "org-center",
+    "org-ul",
+    "org-ol",
+    "org-dl",
+    "org-table",
+    "org-link",
+    "org-figure",
+    "org-toc",
+    "org-footnotes",
+    "org-hr",
+    "org-drawer",
+    "org-timestamp",
+    "org-tag"
+  ]
+}

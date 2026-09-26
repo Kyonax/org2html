@@ -1,0 +1,19 @@
+#+TITLE: Links Demo
+
+* Target Heading
+Some content to anchor to.
+
+* Link Forms
+A bracket link with a description: [[https://example.com][Example]].
+
+A bare bracket link: [[https://orgmode.org]].
+
+An internal link to [[*Target Heading][the target]].
+
+A custom-id link: [[#my-anchor][jump]].
+
+An inline image: [[file:/img/photo.png]].
+
+A plain autolinked URL http://plain.example.org/path in prose.
+
+An angle link <https://angle.example.net>.

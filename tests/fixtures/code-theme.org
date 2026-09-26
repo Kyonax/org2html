@@ -1,0 +1,13 @@
+#+TITLE: Code Highlighting
+
+A source block is highlighted with Shiki. The default =css-variables=
+theme defers every color to a =--shiki-*= custom property, which the O2H
+stylesheet binds to the =--o2h-syn-*= tokens — so code re-themes with the
+active Style Book instead of a baked palette.
+
+#+BEGIN_SRC javascript
+const answer = 42 // the meaning
+function greet(name) {
+  return `hello, ${name}`
+}
+#+END_SRC

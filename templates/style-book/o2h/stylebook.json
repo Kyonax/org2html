@@ -1,0 +1,45 @@
+{
+  "name": "o2h",
+  "version": "1.2.0",
+  "engineCompat": "^1",
+  "classPrefix": "org-",
+  "themeColor": "#FF5114",
+  "tokens": "../o2h-tokens.css",
+  "styles": "../../styles.css",
+  "template": "../../default.html",
+  "layouts": {},
+  "components": {},
+  "assets": [
+    "../../favicon.svg",
+    "../../manifest.json",
+    "../../robots.txt",
+    "../../o2h.js"
+  ],
+  "scripts": [
+    "../../o2h.js"
+  ],
+  "constructs": [
+    "org-root",
+    "org-heading",
+    "org-paragraph",
+    "org-code",
+    "org-verbatim",
+    "org-src",
+    "org-quote",
+    "org-example",
+    "org-verse",
+    "org-center",
+    "org-ul",
+    "org-ol",
+    "org-dl",
+    "org-table",
+    "org-link",
+    "org-figure",
+    "org-toc",
+    "org-footnotes",
+    "org-hr",
+    "org-drawer",
+    "org-timestamp",
+    "org-tag"
+  ]
+}

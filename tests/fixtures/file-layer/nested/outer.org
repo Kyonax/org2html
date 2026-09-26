@@ -1,0 +1,3 @@
+Before.
+#+INCLUDE: "inner.org"
+After.

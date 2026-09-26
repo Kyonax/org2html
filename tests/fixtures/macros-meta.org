@@ -1,0 +1,14 @@
+#+TITLE: Macro & Meta Demo
+#+SUBTITLE: the last 1C construct
+#+AUTHOR: Kyo
+#+EMAIL: kyo@example.com
+#+DATE: May 21, 2026
+#+FILETAGS: :@work:#urgent:release:
+#+MACRO: greet Hello, $1 and $2!
+#+LINK: gh https://github.com/%s
+
+* Section
+
+{{{title}}} — {{{greet(Ada,Grace)}}}
+
+See [[gh:Kyonax/org2html][the repo]] and [[https://example.com][ext]].

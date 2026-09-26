@@ -1,0 +1,13 @@
+#+TITLE: SEO Demo
+#+AUTHOR: Cristian D. Moreno \orcidlink{0009-0006-4459-5538} \affiliation{Kyonax}
+#+DATE: <2026-07-01 Wed>
+#+DESCRIPTION: A demo post about SEO heads
+#+CANONICAL: https://example.com/seo-demo
+#+OG_IMAGE: https://example.com/card.png
+#+ROBOTS: index, follow
+#+SCHEMA_TYPE: TechArticle
+#+HTML_HEAD: <link rel="preload" href="/app.js" as="script">
+
+* Heading
+
+Body text.

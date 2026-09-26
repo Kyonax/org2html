@@ -1,0 +1,29 @@
+#+TITLE: The First Corpus Document
+#+DATE: 2026-07-02
+#+CATEGORY: engineering
+#+DESCRIPTION: A document that exercises tables, a marked main image and a macro.
+#+FILETAGS: :parsing:tables:
+#+POST_URL: https://x.com/kyonax_on_tech/status/1940123456789012345
+#+MACRO: engine org2html
+
+* Opening
+
+The {{{engine}}} macro must be expanded before this ever reaches an SFC.
+
+#+CAPTION: A table wide enough to need its own scroll frame
+#+ATTR_O2H: :highlight-col 2
+| Component | Purpose                       | Qty |
+|-----------+-------------------------------+-----|
+| lexer     | tokenise the document         |   1 |
+| parser    | build the AST                 |   1 |
+| renderer  | emit HTML and the .vue SFC    |   2 |
+
+#+CAPTION: The picture that stands for this document
+#+ATTR_O2H: :main t
+[[file:pixel.png]]
+
+* A section with code
+
+#+BEGIN_SRC javascript
+const total = [1, 2, 3].reduce((a, b) => a + b, 0)
+#+END_SRC

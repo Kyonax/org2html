@@ -1,0 +1,11 @@
+{
+  "name": "mini",
+  "version": "0.1.0",
+  "engineCompat": "^1",
+  "classPrefix": "org-",
+  "tokens": "tokens.css",
+  "styles": "book.css",
+  "components": { "Callout": "@mini/Callout.vue" },
+  "scripts": ["/mini-book.js"],
+  "constructs": ["org-root", "org-heading", "org-paragraph"]
+}

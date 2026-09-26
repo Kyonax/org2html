@@ -1,0 +1,9 @@
+#+TITLE: Options + Numbering Demo
+#+OPTIONS: num:2 ^:{}
+
+* First
+** First-One
+** First-Two
+* Second
+** Second-One
+*** Deep (beyond depth 2)

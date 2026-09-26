@@ -1,0 +1,146 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-3.0-only — see LICENSE.
+
+#  ________ ______  ________ __________
+# /_  __/ // / __/ / ___/ _ /_  __/ __/
+#  / / / _  / _/  / (_ / __ |/ / / _/
+# /_/ /_//_/___/  \___/_/ |_/_/ /___/
+#
+# CONTRIBUTING.org — Contributor onboarding
+# 2026-05-21
+#
+# Local setup, gate expectations, and PR review flow. Read before
+# opening a PR — Pre-Check Failed labels are mostly avoidable.
+#
+# Guidelines:
+#   Tests are expected but not blocking (vitest wired; tests/ empty)
+#   Maintainer owns all git writes — no push / tag / publish from branches
+
+#+TITLE: Contributing to @kyonax/org2html
+#+AUTHOR: [[https://orcid.org/0009-0006-4459-5538][Cristian D. Moreno - Kyonax]]
+#+EMAIL: kyonax.corp@gmail.com
+#+DATE: May 21, 2026
+#+FILETAGS: :ORG_2_HTML:CONTRIBUTING:
+#+LAST_UPDATE: May 21, 2026
+#+OPTIONS: toc:nil num:nil H:3
+
+* Local setup
+
+Node =>=18= is required. Tested on Node 20.
+
+#+BEGIN_SRC sh
+git clone https://github.com/Kyonax/org2html.git
+cd org2html
+nvm use      # picks the version pinned in .nvmrc
+npm ci
+npm run build
+node dist/cli/index.mjs help
+#+END_SRC
+
+Dev loop:
+
+#+BEGIN_SRC sh
+npm run dev          # tsup --watch
+npm test             # vitest (currently empty)
+npm run lint         # eslint flat config
+node scripts/precheck.mjs   # composite local gate
+#+END_SRC
+
+* Branching and commits
+
+- Default branch: =master=.
+- Feature branches: =feat/<short-slug>=. Bugfixes: =fix/<short-slug>=.
+- One concern per branch / PR. Don't bundle unrelated changes.
+- Conventional-commit-ish style for commit subjects: =type(scope): subject=.
+  Examples in =git log= — =feat=, =fix=, =chore=, =docs=, =refactor=, =test=.
+
+* The gate suite
+
+Every PR runs =.github/workflows/ci.yml=. Seven jobs:
+
+1. *ESLint* — =npm run lint=.
+2. *Precheck* — =node scripts/precheck.mjs= (composite local gate).
+3. *Vitest* — =npm test=. Tolerant of an empty =tests/= directory for now.
+4. *Production build* — =npm run build= (tsup). Uploads =dist/= as an artifact for 7 days.
+5. *Security Scan* — inline grep for =eval=, =Function()=, =innerHTML=,
+   =document.write=, string-arg timers, hardcoded secrets, insecure
+   =http://= URLs. See =.github/SECURITY.org= for the full pattern table.
+6. *Protected Files* — advisory PR comment when files in the protected
+   set are modified (=LICENSE=, =CODEOWNERS=, workflow files, lockfile,
+   etc.). Never blocks merge.
+7. *Pre-Check Label* — aggregator. Applies / removes the =Pre-Check Failed=
+   label.
+
+If any of the first five fail, =Pre-Check Failed= goes red on your PR.
+
+Run the same checks locally:
+
+#+BEGIN_SRC sh
+npm run lint && node scripts/precheck.mjs && npm test && npm run build
+#+END_SRC
+
+* PR template
+
+When you open a PR, GitHub auto-loads =.github/PULL_REQUEST_TEMPLATE.md=.
+Fill out every section that applies:
+
+- *Summary* — one to three sentences. The "why".
+- *Changes* — flat list with ticket / issue refs, OR themed =###= subsections.
+- *Technical Details* — non-obvious decisions, one bullet per file.
+- *Test Plan* — markdown checklist. Include golden path + edge cases.
+- *Special Deployment* — anything reviewers must know. Severity tags:
+  =BLOCKING= / =REQUIRED= / =NOTABLE= / =NONE=.
+- *Documentation* — per-media checklist (README / CHANGELOG / session
+  file / roam node / external).
+
+* Code conventions
+
+** TypeScript (=src/=)
+
+- AGENTS.md is strict: *no comments in TypeScript source*. The *only*
+  exception is the GPL-3.0-only license preamble + filename block at the
+  top of the file, plus JSDoc that documents non-obvious WHY on exported
+  helpers. =scripts/check-license-headers.mjs= verifies the preamble
+  exists on every committed source file; CI fails when it doesn't.
+- =eslint.config.mts= is the lint contract. Run =npm run lint:fix= for
+  auto-fixable issues.
+- Filenames: =kebab-case.ts=.
+- Imports: prefer alias-free relative paths (=./parser/parser.js=). Always
+  use the =.js= extension in imports — TypeScript requires it for ESM.
+
+** Tests (=tests/=)
+
+- Vitest. Filename pattern: =<unit>.test.ts=.
+- Fixtures live under =tests/fixtures/<topic>/=. Each fixture is its
+  own =.org= file that round-trips through the engine.
+
+** Org files / Markdown
+
+- Org files use file-tag drawer (=#+FILETAGS=) and the standard
+  =#+TITLE= / =#+AUTHOR= / =#+EMAIL= / =#+DATE= / =#+LAST_UPDATE= block.
+- Tier 1 root files carry the figlet banner (font =smslant=) + extended
+  header. See =LICENSING.org= §Tier 1 file headers.
+
+* Security
+
+- Never paste credentials into a PR. =.env*=, =*.key=, =*.pem=, =*.token=,
+  =*.secret= are gitignored.
+- Sanitization-first default in the renderer. Don't add a code path that
+  silently disables it.
+- Report vulnerabilities privately to *kyonax.corp@gmail.com* with subject
+  prefix =[SECURITY]=. 90-day coordinated disclosure window. See
+  =.github/SECURITY.org= for the full policy.
+
+* License posture
+
+The project is single-license: *GPL-3.0-only*. By opening a PR you agree
+that your contributions are licensed under the same terms and that you
+have the right to license them. New source files must carry the GPL
+preamble — see =LICENSING.org= §File headers for the exact template.
+
+* Asking for help
+
+- Open a draft PR early if you're unsure about direction.
+- Tag =@Kyonax= for review (CODEOWNERS auto-requests it anyway).
+- For broader design conversation, open a GitHub Discussion when one is
+  enabled on the repo.

@@ -1,0 +1,9 @@
+#+TITLE: Footnotes Demo
+
+The engine supports real footnotes[fn:1] with actual content, plus inline
+definitions[fn:2:the inline definition text] and anonymous
+ones[fn::an anonymous note].
+
+A repeated reference[fn:1] reuses the same number.
+
+[fn:1] The first footnote's real definition, collected from column zero.

@@ -1,0 +1,23 @@
+#+TITLE: Verbatim Integrity Demo
+
+An example block is literal — org-like lines are NOT interpreted:
+
+#+BEGIN_EXAMPLE
+- this stays a dash, not a list
+* this stays an asterisk, not a heading
+/no italics here/
+#+END_EXAMPLE
+
+A verse block preserves its line breaks:
+
+#+BEGIN_VERSE
+Roses are red
+Violets are blue
+#+END_VERSE
+
+Source code keeps every character verbatim:
+
+#+BEGIN_SRC text
+| pipes | stay |
++ plus stays
+#+END_SRC

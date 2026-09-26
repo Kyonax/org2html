@@ -1,0 +1,291 @@
+/*
+ * kwo-tokens.css — @kyonax/org2html DEFAULT styling properties (Kyo Web Online)
+ *
+ * WHAT  The default value layer for the engine's `--o2h-*` design tokens.
+ * WHY   Every token is `var(--host-X, <kwo>)`, so a consuming project overrides any token by
+ *       defining `--host-X` (or swapping --template-dir / --style-book) and the whole look is
+ *       replaced ([D-08]/[D-10]/[R-11]).
+ * NOTE  The `--o2h-` prefix is the ENGINE's token namespace — named after the first book that
+ *       filled it, not a claim about which book is loaded. templates/styles.css consumes these
+ *       names and nothing else, which is exactly why a book swap is a value swap.
+ *       The previous default (O2H) is preserved verbatim and still selectable:
+ *           org2html build src/ -o out --style-book <templates>/style-book/o2h
+ *
+ * ── THE FOUR AUTHORITIES (owner ruling 2026-08-24, in precedence order) ──────────────────
+ *
+ * [A1] kyo-web-online /resume + /privacy — THE MAIN STYLE.
+ *      src/views/components/document-page.vue is the shell an org2html article follows: the
+ *      sheet, the section rules, the prose rhythm and the SIGN-OFF. Its COLOUR LAW is quoted
+ *      verbatim in that file: "grayscale only. A document reads as a document, so it opts out
+ *      of the yellow accent, HUD decorations and flare. Typography still comes from the site
+ *      tokens." Everything below that spends accent does so under [A4]'s one-accent law.
+ *      Palette + scale: src/scss/abstracts/{_variables,_theme}.scss.
+ *
+ * [A2] kyo-web-online media standard — src/components/ui/{image,youtube-facade}.vue.
+ *      A framed hairline box, a ratio-locked well that reserves the space before the asset
+ *      lands, a placeholder plate, and a fade-in. Video is a FACADE: poster + a bordered play
+ *      target, never a raw autoplaying frame.
+ *
+ * [A3] nano-core dashboard — src/web/client/src/styles/tokens.scss, whose own header reads
+ *      "Kyonax Book tokens — the design laws for the dashboard client: accent #ededed, 1px
+ *      hairlines, the 8px grid, Space Mono + Poppins, no radius, no gradients, no emoji."
+ *      It supplies the REPORT ramp (ok / warn / danger) and the surface depth ladder.
+ *
+ * [A4] book-kyonax — canon "Kyonax Foundations v6", tokens/tokens.css + rules/kyonax.rules.json.
+ *      The laws every value below obeys: hairlines-only (1px, alpha from the ladder — weight
+ *      comes from alpha and repetition, never stroke width), one-accent-per-composition
+ *      (fields stay white-on-black; exactly ONE mark takes #f9cd26; state colours replace the
+ *      accent only to ENCODE state, never to decorate), grid-is-law (8·16·24·32·48·96),
+ *      no-radius-no-emoji-no-gradient, two-voices-split (mono = machine, sans = human),
+ *      content-legible (real content >=14px, chrome <=12px and only when aria-hidden).
+ *
+ * WHERE THEY DISAGREE, AND THE RULING
+ *   · Display face — [A1] Geomanist vs [A4] Poppins. [A1] wins: it is the main style and the
+ *     face the engine already ships. The two-voices LAW is what matters, and it holds.
+ *   · Prose face — [A4]'s body is mono; [A1]'s `.kyo-prose` is Geomanist. A document is human
+ *     prose, so prose reads sans and every label/chrome/code surface reads mono.
+ *   · State ramp — [A1]/[A4] share one ramp (#6cb42a/#f98b26/#d1263d); [A3] carries the
+ *     dashboard's own (#52e0a3/#e0c052/#e05252). The owner named [A3] for report colour, so
+ *     the dashboard triad IS the ramp here, and [A4]'s info + working fill the two states the
+ *     dashboard has no name for. ONE ramp, so a DONE badge and a TIP callout cannot disagree.
+ *
+ * SURFACE  Dark-first: near-black ground, neutral-50 body text, neutral-100 headings,
+ *          #f9cd26 as the single accent. A light inverse ships in kwo.css under
+ *          [data-theme="light"].
+ */
+
+:root {
+  /* ── TOK-000 · Hairline alpha ladder [A4 hairlines-only] ─────────────────────────────────
+   * The Book's five alphas. Every stroke in the book is 1px and picks one of these; a heavier
+   * line is a heavier ALPHA, never a wider stroke. l3 is the default frame, l1 the internal
+   * seam, l4 a marker edge, l5 a full-strength rule. */
+  --o2h-hair-1: var(--host-hair-1, 0.08);
+  --o2h-hair-2: var(--host-hair-2, 0.12);
+  --o2h-hair-3: var(--host-hair-3, 0.2);
+  --o2h-hair-4: var(--host-hair-4, 0.35);
+  --o2h-hair-5: var(--host-hair-5, 1);
+
+  /* ── TOK-001 · Primary yellow scale — the one accent [A1 primary / A4 kerf-primary] ───── */
+  --o2h-signal-50:  var(--host-signal-50,  oklch(92.6% 0.1077 95.8)); /* tint wash / soft fill  */
+  --o2h-signal-100: var(--host-signal-100, oklch(85.9% 0.1686 91.3)); /* #f9cd26 — THE brand    */
+  --o2h-signal-300: var(--host-signal-300, oklch(85.9% 0.1686 91.3)); /* accent on dark = brand */
+  --o2h-signal-500: var(--host-signal-500, oklch(85.9% 0.1686 91.3)); /* primary — CTA, marks   */
+  --o2h-signal-600: var(--host-signal-600, oklch(72.6% 0.1484 92.7)); /* hover / pressed        */
+  --o2h-signal-700: var(--host-signal-700, oklch(57.9% 0.1183 91.2)); /* deep accent            */
+
+  /* ── TOK-002 · Neutrals + the depth ladder [A1 neutrals · A3 ground/surface/raised] ─────
+   * `paper` is the instrument ground, `card` one layer up, `well` one layer DOWN — the well
+   * is where machine output sits (code, terminals, media letterbox), which is why it is the
+   * darkest plane on the page rather than a lighter card. */
+  --o2h-paper:     var(--host-paper,     oklch(14.5% 0 0));            /* #0a0a0a-class ground  */
+  --o2h-card:      var(--host-card,      oklch(17.5% 0 0));            /* raised surface        */
+  --o2h-card-2:    var(--host-card-2,    oklch(20.5% 0 0));            /* raised twice (chrome) */
+  --o2h-well:      var(--host-well,      oklch(9% 0 0));               /* machine well          */
+  --o2h-line:      var(--host-line,      oklch(100% 0 0 / 0.2));       /* hairline l3 — frames  */
+  --o2h-line-soft: var(--host-line-soft, oklch(100% 0 0 / 0.08));      /* hairline l1 — seams   */
+  --o2h-line-firm: var(--host-line-firm, oklch(100% 0 0 / 0.35));      /* hairline l4 — markers */
+  --o2h-mute:      var(--host-mute,      oklch(70%   0.016 285.938));  /* muted / captions      */
+  --o2h-slate:     var(--host-slate,     oklch(78%   0.014 286.375));  /* secondary text        */
+  --o2h-ink:       var(--host-ink,       oklch(98.5% 0 0));            /* headings / emphasis   */
+  --o2h-dim:       var(--host-dim,       oklch(52%   0 0));            /* [A3] $dim — chrome    */
+  /* [A4] --kerf-chrome: the telemetry voice on an annotated edge. Never content. */
+  --o2h-chrome:    var(--host-chrome,    oklch(98% 0 0 / 0.32));
+
+  /* ── TOK-003 · The REPORT ramp [A3 nano-core dashboard] + the two Book states [A4] ──────
+   * ok / warn / danger are the dashboard's own report colours, verbatim. A state colour
+   * REPLACES the accent to encode state; it is never spent on decoration [A4]. */
+  --o2h-go:      var(--host-go,      #52e0a3); /* [A3] $ok      — done, pass, added           */
+  --o2h-hold:    var(--host-hold,    #e0c052); /* [A3] $warn    — hold, caution, pending      */
+  --o2h-stop:    var(--host-stop,    #e05252); /* [A3] $danger  — fault, fail, removed        */
+  --o2h-info:    var(--host-info,    #265ef9); /* [A4] state-info    — note, neutral signal   */
+  --o2h-working: var(--host-working, #ee3ec5); /* [A4] state-working — live/in-flight         */
+  /* Status washes — a state tint over the surface, never a pastel paper. 10% is the Book's
+     code-diff wash; the callout band sits even quieter, on the surface itself. */
+  --o2h-accent-wash:  var(--host-accent-wash,  color-mix(in srgb, var(--o2h-signal-500) 6%, transparent));
+  --o2h-hold-wash:    var(--host-hold-wash,    color-mix(in srgb, var(--o2h-hold) 10%, transparent));
+  --o2h-stop-wash:    var(--host-stop-wash,    color-mix(in srgb, var(--o2h-stop) 10%, transparent));
+  --o2h-go-wash:      var(--host-go-wash,      color-mix(in srgb, var(--o2h-go) 10%, transparent));
+  --o2h-info-wash:    var(--host-info-wash,    color-mix(in srgb, var(--o2h-info) 12%, transparent));
+  /* The band a callout paints under its whole body — [A4] callout-band: white at 1.5%. */
+  --o2h-band:         var(--host-band,         oklch(100% 0 0 / 0.015));
+  /* State stripe width. A stripe is a FILL, not a stroke, so hairlines-only does not bind it;
+     [A4] callout-band paints 4px, code-diff 2px. */
+  --o2h-stripe:       var(--host-stripe,       4px);
+  --o2h-rail:         var(--host-rail,         4px);
+  --o2h-stripe-thin:  var(--host-stripe-thin,  2px);
+  /* A RULE is a stroke, so hairlines-only binds it: 1px at the frame alpha, never the
+     2px accent bar the O2H book paints. Rule variants pick their own alpha in kwo.css. */
+  --o2h-rule:         var(--host-rule,         1px solid var(--o2h-line));
+
+  /* ── TOK-004 · Font families — Geomanist reads, SpaceMono signals [A1 · A4 two-voices] ──
+   * Both are vendored as subset WOFF2 under templates/fonts/ and registered by kwo.css.
+   * Each carries a full system fallback, so the design degrades cleanly when a font is
+   * blocked, slow, or the assets were not copied alongside the stylesheet. */
+  --o2h-font-display:   var(--host-font-display,   'Geomanist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+  --o2h-font-editorial: var(--host-font-editorial, 'Geomanist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+  --o2h-font-mono:      var(--host-font-mono,      'SpaceMono', ui-monospace, 'SF Mono', 'SFMono-Regular', 'Cascadia Code', Menlo, Consolas, 'Liberation Mono', monospace);
+
+  /* ── TOK-005 · Type scale [A1 $typo-scale, LARGE tier at its 12px root] ─────────────────
+   * kyo-web-online sets html{font-size:12px} and scales in rem. The engine's output is
+   * embedded in someone else's page and must never restyle their <html>, so the scale is
+   * pinned to the px values that tier actually renders: fs-800 72 · fs-700 54 · fs-600 36 ·
+   * fs-500 24 · fs-400 18 · fs-300 15 · fs-200 13.5 · fs-100 10.5.
+   *
+   * BODY IS fs-300 (15px) — the size BOTH reference document pages actually render at:
+   * [A1] `.doc__sheet--prose { font-size: var(--fs-300) }`, and the CV sheet inherits the
+   * same step. An earlier pass here read "an article is reading prose" and moved the body up
+   * to fs-400; measured against the reference side by side that was simply a different page,
+   * so it is reverted to what the shell renders (owner call, 2026-08-24).
+   * The document TITLE is fs-700 (54px): [A1] privacy.vue rules the policy masthead one step
+   * below the CV nameplate (fs-800), "which is a nameplate rather than a document title". */
+  --o2h-fs-display: var(--host-fs-display, 72px);
+  --o2h-fs-h1:      var(--host-fs-h1,      54px);
+  --o2h-fs-h2:      var(--host-fs-h2,      36px);
+  --o2h-fs-h3:      var(--host-fs-h3,      24px);
+  --o2h-fs-body:    var(--host-fs-body,    15px);
+  --o2h-fs-caption: var(--host-fs-caption, 13.5px);
+  /* Code is machine CONTENT, not chrome: [A4] content-legible puts its floor at 14px, so the
+     book declares that floor rather than letting code inherit the caption size. */
+  --o2h-fs-code:    var(--host-fs-code,    14px);
+  --o2h-lh-body:    var(--host-lh-body,    1.55);  /* .kyo-prose                             */
+  /* THE MEASURE — the reference sheet, to the pixel. [A1] document-page.vue caps its sheet
+   * at 58rem against kyo-web-online's `html { font-size: 12px }`, i.e. 696px, and records
+   * the resulting line as SIGNED AS IS: "89 chars at 696px, owner ruling 2026-08-19 … the
+   * measure token governs landing surfaces, not the CV. Do not 'fix' it."
+   * Written as the multiplication rather than a bare 696px so the provenance survives: the
+   * engine may not restyle a host's <html>, so the reference's rem cannot be used directly.
+   * A host that wants the narrower landing measure sets --host-measure: 68ch. */
+  --o2h-measure:    var(--host-measure,    calc(58 * 12px));
+  --o2h-measure-wide: var(--host-measure-wide, 58rem); /* the signed CV sheet width          */
+  --o2h-gutter:     var(--host-gutter,     clamp(20px, 5vw, 40px));
+
+  /* Prose tracking — .kyo-prose carries letter/word spacing as part of its identity, so
+     they are tokens here rather than literals in the construct layer. */
+  --o2h-prose-track: var(--host-prose-track, 0.02em);
+  --o2h-prose-word:  var(--host-prose-word,  0.05em);
+
+  /* ── TOK-006 · The mono label primitive [A4 annotated-edges · A1 .doc-sub / .hud-deco] ──
+   * Chrome type is <=12px and only where it is aria-hidden or a real label; content never
+   * drops below 14px. Three tracking steps, each with a job:
+   *   label-track  0.12em — seals, indices, table heads  ([A4] seal-tag / list-num)
+   *   band-track   0.14em — callout titles, ledger bars  ([A4] callout-band / table-ledger)
+   *   chip-track   0.16em — dimension + telemetry chips  ([A4] media-image chip) */
+  --o2h-label-size:      var(--host-label-size,      11px);
+  --o2h-label-track:     var(--host-label-track,     0.12em);
+  --o2h-band-track:      var(--host-band-track,      0.14em);
+  --o2h-chip-track:      var(--host-chip-track,      0.16em);
+  --o2h-chip-size:       var(--host-chip-size,       10px);
+  --o2h-label-transform: var(--host-label-transform, uppercase);
+
+  /* ── TOK-007 · Spacing — the 8px grid [A4 grid-is-law · A3 $grid] ───────────────────────
+   * 8 · 16 · 24 · 32 · 48 · 96. The names carry the Book's own roles: label / sibling /
+   * card / canvas / component / section. Nothing in the sheet may invent a step between. */
+  --o2h-space-1: var(--host-space-1, 8px);   /* label   */
+  --o2h-space-2: var(--host-space-2, 16px);  /* sibling */
+  --o2h-space-3: var(--host-space-3, 24px);  /* card    */
+  --o2h-space-4: var(--host-space-4, 32px);  /* canvas  */
+  --o2h-space-5: var(--host-space-5, 48px);  /* component */
+  --o2h-space-6: var(--host-space-6, 96px);  /* section */
+  /* The half-step below the grid, for a hairline-adjacent inset (a chip's own padding).
+     Declared once so no rule invents 3px, 5px or 6px on its own. */
+  --o2h-space-0: var(--host-space-0, 4px);
+
+  /* ── TOK-008 · Radius — NONE [A4 no-radius-no-emoji-no-gradient] ────────────────────────
+   * The single exception the law names is the TIP at 4px. `--o2h-radius-full` survives only
+   * so a host that wants a round avatar can opt in; nothing in the book reaches for it. */
+  --o2h-radius:      var(--host-radius,      0);
+  --o2h-radius-tip:  var(--host-radius-tip,  4px);
+  --o2h-radius-full: var(--host-radius-full, 50%);
+
+  /* ── TOK-009 · Borders — one width, five alphas ─────────────────────────────────────────── */
+  --o2h-border:          var(--host-border,          1px solid var(--o2h-line));
+  --o2h-border-soft:     var(--host-border-soft,     1px solid var(--o2h-line-soft));
+  --o2h-border-firm:     var(--host-border-firm,     1px solid var(--o2h-line-firm));
+  --o2h-border-emphasis: var(--host-border-emphasis, 1px solid var(--o2h-signal-500));
+  --o2h-border-dashed:   var(--host-border-dashed,   1px dashed var(--o2h-line));
+  --o2h-seam-gap:        var(--host-seam-gap,        1px);
+
+  /* ── TOK-010 · Ambient field — OFF. KWO's chrome is corner HUD marks, not a grid. ────── */
+  --o2h-grid-module: var(--host-grid-module, 44px);
+  --o2h-grid-line:   var(--host-grid-line,   transparent);
+
+  /* ── TOK-011 · Syntax theme — the Book's six token roles [A4 code/code-tokens] ──────────
+   * "keyword accent · string live · number info-blue · comment neutral-300 · function
+   * neutral-100 · punctuation neutral-200". Six roles is the whole palette: a highlighter
+   * that reaches for a seventh hue is decorating, not encoding. */
+  --o2h-code-bg:      var(--host-code-bg,      var(--o2h-well));
+  --o2h-syn-keyword:  var(--host-syn-keyword,  var(--o2h-signal-500));
+  --o2h-syn-string:   var(--host-syn-string,   var(--o2h-go));
+  --o2h-syn-number:   var(--host-syn-number,   #6d92f9);
+  --o2h-syn-comment:  var(--host-syn-comment,  oklch(60% 0 0));
+  --o2h-syn-function: var(--host-syn-function, var(--o2h-ink));
+  --o2h-syn-plain:    var(--host-syn-plain,    var(--o2h-ink));
+  --o2h-syn-punct:    var(--host-syn-punct,    oklch(72% 0 0));
+  /* Inline code — [A4] code-inline verbatim: accent ink on a 6% accent wash inside a 35%
+     accent hairline, square corners. */
+  --o2h-code-inline-bg:     var(--host-code-inline-bg,     color-mix(in srgb, var(--o2h-signal-500) 6%, transparent));
+  --o2h-code-inline-border: var(--host-code-inline-border, color-mix(in srgb, var(--o2h-signal-500) 35%, transparent));
+  --o2h-code-inline-fg:     var(--host-code-inline-fg,     var(--o2h-signal-500));
+  --o2h-code-header-bg: var(--host-code-header-bg, transparent);
+  --o2h-code-gutter:    var(--host-code-gutter,    oklch(45% 0 0));
+
+  /* ── TOK-012 · Document chrome — ::selection is primary on the ground [A1 _theme] ────── */
+  --o2h-selection-bg: var(--host-selection-bg, var(--o2h-signal-500));
+  --o2h-selection-fg: var(--host-selection-fg, oklch(14.5% 0 0));
+  --o2h-theme-color:  var(--host-theme-color,  #f9cd26);
+
+  /* ── TOK-013 · Motion [A4 --kerf-motion-*] ─────────────────────────────────────────────
+   * One easing, three durations. Every transition in the book names one of them; the sheet's
+   * prefers-reduced-motion block turns all of them off at once. */
+  --o2h-ease:         var(--host-ease,         cubic-bezier(0.4, 0, 0.2, 1));
+  --o2h-motion-hover: var(--host-motion-hover, 200ms);
+  --o2h-motion-sweep: var(--host-motion-sweep, 250ms);
+  --o2h-motion-fold:  var(--host-motion-fold,  350ms);
+
+  /* ── TOK-014 · Media [A2 UiImage / youtube-facade · A4 media-image / media-video] ───────
+   * A media box reserves its space before the asset lands (no CLS), paints a grain plate
+   * while it is empty, and fades the asset in over it. */
+  --o2h-media-ratio:   var(--host-media-ratio,   16 / 9);
+  --o2h-media-plate:   var(--host-media-plate,   repeating-linear-gradient(45deg, oklch(20% 0 0) 0 9px, var(--o2h-paper) 9px 18px));
+  --o2h-media-scan:    var(--host-media-scan,    repeating-linear-gradient(0deg, oklch(100% 0 0 / 0.03) 0 1px, transparent 1px 4px));
+  --o2h-media-fade:    var(--host-media-fade,    400ms);
+  --o2h-media-inset:   var(--host-media-inset,   var(--o2h-space-0)); /* [A2] .ui-image--framed */
+
+  /* ── TOK-016 · Social brands + the embed badge [A2 youtube-facade] ──────────────────────
+   * An embed never shows a bare frame: it NAMES its platform, in the platform's own colour,
+   * on a blurred plate in the corner. The brand colour is the ONE place a hue outside the
+   * palette is allowed, because it is identity, not decoration. */
+  /* THE BRAND MARKS ARE GLYPHS, NOT SWATCHES. [A2] ui/brand-icon.vue draws each platform
+   * from its own SVG with `fill: currentColor` — the SHAPE identifies the platform, and the
+   * colour is inherited from the line it sits on. A coloured square identifies nothing to a
+   * reader who cannot see the colour ([A4] never colour alone), so the sheet masks the real
+   * mark in and lets currentColor paint it. Paths are the canonical Simple Icons outlines,
+   * the same sources kyo-web-online vendors under assets/brands/.
+   * A host swaps a platform's mark by pointing its --host-icon-* at another SVG data URI. */
+  --o2h-icon-youtube: var(--host-icon-youtube, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z'/%3E%3C/svg%3E"));
+  --o2h-icon-vimeo:   var(--host-icon-vimeo,   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M23.977 6.416c-.105 2.338-1.739 5.543-4.894 9.609-3.268 4.247-6.026 6.37-8.29 6.37-1.409 0-2.578-1.294-3.553-3.881L5.322 11.4C4.603 8.816 3.834 7.522 3.007 7.522c-.181 0-.807.376-1.87 1.132L0 7.197c1.185-1.044 2.351-2.084 3.501-3.128C5.08 2.701 6.266 1.984 7.055 1.91c1.867-.18 3.016 1.1 3.447 3.838.465 2.953.789 4.789.971 5.507.539 2.45 1.131 3.674 1.776 3.674.502 0 1.256-.796 2.265-2.385 1.004-1.589 1.54-2.797 1.612-3.628.144-1.371-.395-2.061-1.614-2.061-.574 0-1.167.121-1.777.391 1.186-3.868 3.434-5.757 6.762-5.637 2.473.06 3.628 1.664 3.493 4.797l-.013.01z'/%3E%3C/svg%3E"));
+  /* X — the post-rebrand mark, not the bird. Same Simple Icons source as its neighbours. */
+  --o2h-icon-x:       var(--host-icon-x,       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932L18.901 1.153zm-1.291 19.482h2.039L6.486 3.24H4.298L17.61 20.635z'/%3E%3C/svg%3E"));
+  /* Lucide `external-link`, the mark kyo-web-online puts on every off-site link
+   * (_theme.scss .icon-mask--external). Stroke geometry, so it stays legible at 0.8em. */
+  --o2h-icon-external: var(--host-icon-external, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 3h6v6'/%3E%3Cpath d='M10 14 21 3'/%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3C/svg%3E"));
+  --o2h-badge-bg:      var(--host-badge-bg,      color-mix(in srgb, #000 78%, transparent));
+  --o2h-badge-line:    var(--host-badge-line,    color-mix(in srgb, oklch(98.5% 0 0) 18%, transparent));
+  --o2h-badge-blur:    var(--host-badge-blur,    6px);
+
+  /* ── TOK-017 · The flag rail — one height for every headline chip ────────────────────────
+   * TODO / DONE / priority / tag / cookie / timestamp / cite ride the same line inside a
+   * heading, so they share ONE box height and ONE padding. Anything that sets its own is
+   * how a row of flags ends up looking ragged. */
+  --o2h-flag-height:  var(--host-flag-height,  20px);
+  --o2h-flag-pad:     var(--host-flag-pad,     0 var(--o2h-space-1));
+  --o2h-flag-dot:     var(--host-flag-dot,     6px);
+
+  /* ── TOK-015 · Semantic aliases — what the .org-* rules actually read ────────────────── */
+  --o2h-bg:        var(--host-bg,        var(--o2h-paper));
+  --o2h-fg:        var(--host-fg,        oklch(76% 0 0));  /* neutral-50 — body copy         */
+  --o2h-surface:   var(--host-surface,   var(--o2h-card));
+  --o2h-accent:    var(--host-accent,    var(--o2h-signal-500));
+  --o2h-accent-fg: var(--host-accent-fg, oklch(14.5% 0 0));
+  --o2h-link:      var(--host-link,      var(--o2h-ink)); /* neutral-100 + underline; yellow on hover */
+}

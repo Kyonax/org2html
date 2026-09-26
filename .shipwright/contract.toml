@@ -1,0 +1,193 @@
+# =============================================================================
+# shipwright contract — org2html
+# =============================================================================
+# Fingerprinted. Change any byte and shipwright refuses this repo until:
+#     shipwright approve org2html
+# =============================================================================
+
+schema = 1
+
+[repo]
+# Short name for notifications, the ledger and `status`. The working directory
+# is org-2-html, the GitHub remote is Kyonax/org2html and the npm package is
+# @kyonax/org2html; the unhyphenated form is the one two of those three agree on.
+name = "org2html"
+
+# Tier: mine, but reviewed — the same posture as kyo-web-online. Declaring it
+# makes the minimum binding: a pull-request mode, or a require_pr list naming
+# what must be looked at. This contract has both.
+tier = "guarded"
+
+# The 1.1.0 line lives here, and so do all 58 currently-changed paths. GitHub
+# still calls `master` the default branch, but master is the published v1.0.2
+# line and nothing has moved there since. Owner's choice, 2026-09-04.
+default_branch = "release-v0.1"
+
+# NOT origin. This repo has exactly one remote and it is named `org2html`
+# (https://github.com/Kyonax/org2html). Leaving this at the default would make
+# enrollment fail with "no remote named 'origin'" — and, worse, a contract that
+# names a remote the repo does not have describes a repo that can never push.
+remote = "org2html"
+
+hot_window_min = 1
+# Seconds, not minutes. A whole minute of sitting on finished work is a long
+# time; this is the wait that stops a run landing on top of an edit you are
+# still making, and 30s is enough for that. Same value as kyo-web-online.
+hot_window_s = 30
+
+[commit]
+# Derived from the last 30 subjects, which use exactly feat / fix / chore / test.
+# docs and style are deliberately ABSENT even though COMMIT.md's prepared blocks
+# use them, because a closed list is what stops an unattended run inventing a
+# type — and until those blocks are actually committed they are authored intent,
+# not history. Add docs and style here once a hand-written commit has introduced
+# them, which the 51-block backlog will do the moment it lands.
+types = ["feat", "fix", "chore", "test"]
+
+scope_required = true
+
+# The committed history offers only one scope (`package`), which is too thin to
+# compose against. The rest are the owner's OWN authored vocabulary for exactly
+# this tree, read out of the prepared blocks in COMMIT.md — so they are not
+# invented, they are the scopes this work already uses in writing.
+#
+# `showcase` was REMOVED when examples/ was deleted at v1.1.0. It named a demo
+# Vue application that no longer exists in this tree, and a scope vocabulary that
+# offers a word for a directory nobody can touch invites a commit that claims to
+# change something it cannot. What the showcase used to gate is now
+# tests/integration/cli-build.test.ts, which is `tests` work under no new scope.
+scopes = [
+  "package", "pkg", "cli", "parser", "renderer", "engine", "export",
+  "styling", "styles", "book", "head", "seo", "blog", "math", "chart",
+  "tables", "blocks", "components", "runtime", "vue", "tooling",
+  "repo",
+]
+
+# Anything matching none of the above — package.json, tsconfig, eslint.config.mts,
+# .gitignore, the root README / CHANGELOG / COMMIT.md. Without it a scope-less
+# subject would slip out despite scope_required. `repo` rather than `tooling`
+# because COMMIT.md already uses `tooling` to mean the corpus scanner, and a
+# catch-all that collides with a real scope stops being readable.
+default_scope = "repo"
+
+split_by_scope = true
+
+# Left at the narrow default ON PURPOSE, and it is doing real work here: the
+# tree currently carries 58 changed paths against 51 hand-authored commit blocks
+# in COMMIT.md. At 25 a run DEFERS that backlog instead of composing its own
+# messages over two months of authored commit text. Once the backlog has landed
+# by hand, normal forward work in this repo is well under 25 files, so this stays
+# where it is rather than being raised.
+max_files = 300
+
+trailer = true
+
+[flow]
+# Owner's choice, 2026-09-04, and a deliberate DIVERGENCE from kyo-web-online's
+# literal setting. That repo uses `pr-on-protected` and its `main` IS protected
+# (1 approving review), so in practice every run there opens a pull request.
+# NEITHER branch here is protected, so copying `pr-on-protected` across would
+# have meant the opposite behaviour — a 23:00 slot committing straight to the
+# working branch with no review step. `pr-always` is what preserves the rule as
+# it actually behaves on kyo-web-online rather than as it is spelled.
+mode = "pr-always"
+branch_prefix = "auto/"
+pr_draft = false
+pr_reviewers = []
+
+[gates]
+# Every command below was run against this tree on 2026-09-04 and passed; the
+# six together take about 16 seconds, so the 900s timeout is generous by design
+# rather than by guess. Cheap checks gate the commit, the build and the suite
+# gate the push — the same split kyo-web-online uses.
+#
+# Deliberately NOT wired:
+#   npm run scan:corpus    a deep-test instrument, not a gate. It reads a 409
+#                          document corpus on another disk and reports non-fatal
+#                          anomalies by design, so a run must not fail on it.
+#   npm run test:coverage  the same suite as `npm test` with instrumentation.
+pre_commit = ["npm run lint", "npm run typecheck"]
+pre_push   = ["npm run build", "npm test", "node scripts/check-license-headers.mjs"]
+timeout_s  = 900
+
+[tag]
+# OFF, and this is the single most important line in the file for THIS repo.
+# .github/workflows/publish.yml is TAG-DRIVEN: pushing a v* tag publishes
+# @kyonax/org2html to the npm registry. An automated tag would therefore be an
+# automated PUBLIC RELEASE. package.json already sits at an untagged 1.1.0 with
+# six breaking changes waiting, so the gap between "tagged" and "released" here
+# is zero. Releasing stays a hand operation, deliberately.
+enabled = false
+when = "never"
+manifest = "package.json"
+pattern = "v{version}"
+push_tag = false
+
+# -----------------------------------------------------------------------------
+# [version] — what a run may prepare on its own.
+# -----------------------------------------------------------------------------
+# [tag] above reacts to a version somebody already changed. This block lets
+# shipwright derive one: the level comes from --release or from this run's
+# commit types, and the next number is worked out from the current one.
+#
+# READ THIS TOGETHER WITH [tag].enabled = false ABOVE. A run may bump the
+# version, fold the changelog and make the release commit — and it will NOT
+# tag, because tagging here publishes to npm. So this PREPARES a release and
+# leaves the publishing decision exactly where it was: with a person.
+#
+# `allow` is a CEILING, and `major` is deliberately absent. This package is
+# consumed by other people, and a breaking release is a decision to make in
+# front of a keyboard. A run that derives a major REFUSES — it does not quietly
+# release a minor instead — and names both ways out.
+#
+# The bump touches package.json ONLY. Six other literals carry the version here
+# (README.org's #+VERSION, its figlet banner, the shields badge three times, and
+# both stylebook.json files), and scripts/check-version.mjs is what compares
+# them. The version step runs BEFORE the gates precisely so that check fails by
+# name on every literal still holding the old number, instead of a half-updated
+# release slipping through.
+[version]
+allow = ["patch", "minor"]
+manifest = "package.json"
+changelog = "CHANGELOG.org"
+
+[paths]
+# The mandatory secret floor is unioned in automatically. These are additions:
+# build output and installed dependencies that must never be tracked even if an
+# ignore rule regresses. dist/ is rebuilt by every gate run, so it is guaranteed
+# to be present and dirty at exactly the moment a run inspects the tree.
+never_commit = ["dist/**", "node_modules/**", "coverage/**"]
+
+# .github/** because a workflow change alters what CI is allowed to do — and in
+# this repo one of those workflows can publish to npm.
+# package.json because it carries the version, the exports map and publishConfig:
+# a version bump is the first half of a release, and the files/exports fields
+# decide what a consumer actually receives when they install the package.
+require_pr = [".github/**", "package.json"]
+
+[repair]
+process = true
+
+# Owner's posture across the queue: this is software, not notes, so a conflict
+# is a decision about behaviour. A run that conflicts simply fails and leaves the
+# worktree untouched rather than letting a model edit source to resolve it.
+conflicts = false
+
+max_attempts = 2
+
+[schedule]
+# One end-of-day sweep, exactly as kyo-web-online. A repo is skipped unless the
+# run's slot is listed here, so an ad-hoc run must name the slot explicitly:
+#     shipwright run --repo org2html --slot 23:00 [--dry-run]
+slots = ["23:00"]
+min_interval_min = 0
+
+# -----------------------------------------------------------------------------
+# [context] - which brain session node explains the work in this repository.
+# -----------------------------------------------------------------------------
+# Shipwright only ever READS that node. The map lives HERE, in a file that is
+# fingerprinted and approved, rather than being searched for at run time: an
+# agent acting on the WRONG context is a worse failure than one acting on none.
+[context]
+session = "org-2-html"
+branches = {}

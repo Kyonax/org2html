@@ -1,0 +1,9 @@
+* Alpha
+:PROPERTIES:
+:CUSTOM_ID: alpha-id
+:END:
+Alpha body.
+** Alpha child
+Child body.
+* Beta
+Beta body.

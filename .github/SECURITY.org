@@ -1,0 +1,151 @@
+# Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+# Distributed under the terms of GPL-3.0-only — see LICENSE.
+
+#  ________ ______  ______ ____________   ___
+# /_  __/ // / __/ / __/ // /  _/ __/ /  / _ \
+#  / / / _  / _/  _\ \/ _  // // _// /__/ // /
+# /_/ /_//_/___/ /___/_//_/___/___/____/____/
+#
+# SECURITY.org — Banned patterns, enforcement, reporting
+# 2026-05-21
+#
+# Banned code/file patterns, the three enforcement layers (ESLint
+# + precheck + CI grep), and the private vulnerability-report flow.
+# GitHub's Security tab only auto-links SECURITY.md; add a stub if
+# that link surface becomes important.
+#
+# Guidelines:
+#   90-day coordinated disclosure window
+#   sanitize-first default in the renderer is non-negotiable
+
+#+TITLE: org-2-html Security Policy
+#+AUTHOR: [[https://orcid.org/0009-0006-4459-5538][Cristian D. Moreno - Kyonax]]
+#+EMAIL: kyonax.corp@gmail.com
+#+DATE: May 21, 2026
+#+FILETAGS: :ORG_2_HTML:SECURITY:
+#+LAST_UPDATE: May 21, 2026
+#+OPTIONS: toc:nil num:nil H:3
+
+* Banned Code Patterns
+
+| Pattern                                            | Reason             | Enforcement                    |
+|----------------------------------------------------+--------------------+--------------------------------|
+| =eval()=, =Function()=                                 | Code injection     | ESLint + CI security scan      |
+| =innerHTML= assignment                               | XSS vector         | CI security scan               |
+| =document.write=                                     | XSS vector         | CI security scan               |
+| =setTimeout= / =setInterval= with string args        | Implicit eval      | CI security scan               |
+| Hardcoded tokens, secrets, API keys                | Credential leak    | CI security scan               |
+| =http://= URLs (except localhost / XML namespaces)   | Insecure transport | CI security scan               |
+| Unsafe regex (catastrophic backtracking)           | ReDoS              | =eslint-plugin-security=         |
+| Comments in TypeScript source (except preamble)    | Style policy       | AGENTS.md + license-header gate |
+
+The engine's renderer must sanitize by default. The CLI must require an
+explicit =--no-sanitize= flag to skip sanitization. Downstream consumers
+who accept user-supplied =.org= input MUST keep sanitization on.
+
+* Banned File Patterns
+These must never be committed. Enforced by =.gitignore=.
+
+| Pattern                | Covers                            |
+|------------------------+-----------------------------------|
+| =.env=, =.env.*=           | Runtime environment variables     |
+| =*.pem=, =*.key=, =*.crt=    | TLS certificates and private keys |
+| =*.gpg=                  | GPG-encrypted files               |
+| =id_rsa*=, =id_ed25519*=   | SSH keys                          |
+| =*.token=, =*.secret=      | Generic secret files              |
+| =.npmrc= (with auth)     | npm publish tokens                |
+| =auth.json=              | Authentication credentials        |
+| =*.sqlite=, =*.db=         | Database files                    |
+| =secrets/=, =credentials/= | Secret directories                |
+
+* Enforcement
+Three layers run on every pull request:
+
+** ESLint (=eslint.config.mts=)
+- =no-eval=, =no-implied-eval=, =no-new-func=, =no-script-url= (all =error=).
+- =eslint-plugin-security= rules (when wired): =detect-eval-with-expression=,
+  =detect-unsafe-regex=, =detect-buffer-noassert=, =detect-new-buffer=,
+  =detect-no-csrf-before-method-override=.
+- =no-restricted-syntax= blocks =innerHTML= assignment.
+- =no-restricted-properties= blocks =document.write=.
+
+** Local precheck (=scripts/precheck.mjs=)
+Composite gate. Runs:
+- =check-license-headers.mjs= — verifies every =src/= and =scripts/=
+  TypeScript / JavaScript file carries the GPL-3.0-only preamble.
+- Additional checks land here as the engine grows (plugin-API integrity,
+  template-variable contract, shortcode resolver, etc.).
+
+Run locally before opening a PR: =node scripts/precheck.mjs=.
+
+** CI Security Scan (=.github/workflows/ci.yml=)
+The =security-scan= job greps the entire codebase for patterns ESLint
+cannot catch:
+
+- Dangerous function calls (=eval=, =Function=, =innerHTML=, =document.write=).
+- String-based timers (=setTimeout("...")=, =setInterval("...")=).
+- Hardcoded secrets (regex against =token=, =secret=, =api_key=, =password=,
+  =apikey=, =api_secret= with quoted values).
+- Insecure HTTP URLs (=http://= excluding localhost / 127.0.0.1 /
+  =xmlns= XML namespace identifiers).
+- Emits =::error= annotations on matching lines.
+
+Excludes =eslint.config.mts=, =scripts/check-*.mjs=, =node_modules/=,
+=dist/=, =.cache/=. Those files contain banned patterns as rule strings,
+not as real code.
+
+** CI License Headers (=.github/workflows/ci.yml=)
+Every committed =*.ts=, =*.tsx=, =*.js=, =*.mjs=, =*.html=, =*.css= file
+in =src/=, =scripts/=, =templates/= must contain =Cristian D. Moreno= in
+the first 5 lines. Inspected by =scripts/check-license-headers.mjs=.
+
+** CI Pre-Check Failed Label
+The =pre-check-label= CI job aggregates all gate results. If any gate
+fails on a PR, the =Pre-Check Failed= label is applied. Removed
+automatically when all gates pass on the next push.
+
+** CI Protected Files (advisory)
+Quiet edits to =LICENSE=, =NOTICE=, =LICENSING.org=, =CODEOWNERS=,
+=SECURITY.org=, =package.json=, =package-lock.json=, =ci.yml=,
+=publish.yml=, =eslint.config.mts=, =scripts/precheck.mjs=,
+=scripts/_lib.mjs=, =tsup.config.ts=, =tsconfig.json=, =.gitignore=,
+=.gitattributes=, =CHANGELOG.org=, =README.org= trigger a categorized
+PR comment. Advisory only — never blocks merge.
+
+* Environment Variables
+Runtime config in =scripts/= is read from =process.env= directly. There
+is no =.env.example= template yet; add one when the engine starts
+consuming env-driven config.
+
+Never hardcode credentials in source files. The npm publish token
+(=NPM_TOKEN=) lives only in GitHub Actions secrets — never in code or
+=.env=.
+
+* Reporting a vulnerability
+
+Email *kyonax.corp@gmail.com* with subject prefix =[SECURITY]=.
+
+Do *not* open a public GitHub issue for a security report. Allow 90
+days for triage and disclosure before any public write-up. Coordinated
+disclosure is preferred.
+
+* Out of scope
+- Untrusted Org-mode input rendered with =--no-sanitize= — the engine
+  defaults to sanitize-on. Opting out is the consumer's decision and
+  their security responsibility.
+- Third-party transitive-dependency CVEs without a working exploit
+  against the engine's surface.
+- Behavior of downstream consumers (e.g. =kyo-blog=) when they wire
+  the engine into their own pipelines.
+
+* For Contributors
+
+Before opening a PR, verify:
+
+1. =npm run lint= reports 0 errors.
+2. =node scripts/precheck.mjs= reports all green.
+3. No =.env=, =*.key=, =*.pem=, or secret files are staged (=git status=).
+4. New source files have the GPL-3.0-only license header.
+5. No =http://= URLs (use =https://= or =ws://localhost=).
+6. No =eval=, =innerHTML=, =document.write=, or string-based timers.
+7. No hardcoded passwords, tokens, or API keys.

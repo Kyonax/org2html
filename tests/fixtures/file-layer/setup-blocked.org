@@ -1,0 +1,4 @@
+#+MACRO: live defined-outside-a-block
+#+BEGIN_EXAMPLE
+#+MACRO: buried should-never-be-imported
+#+END_EXAMPLE

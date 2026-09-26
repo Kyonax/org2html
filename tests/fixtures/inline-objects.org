@@ -1,0 +1,11 @@
+#+TITLE: Macros, Inline Src, Snippets, Citations
+
+Inline code src_js{const x = 1} appears mid-sentence.
+
+A citation [cite:@doe2020] backs the claim.
+
+An HTML export snippet @@html:<mark>kept</mark>@@ passes through.
+
+A LaTeX export snippet @@latex:\dropped@@ is discarded.
+
+An undefined macro {{{unknown(x)}}} expands to nothing here.

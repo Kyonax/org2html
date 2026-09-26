@@ -1,0 +1,83 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Phase 3·INT / Phase 8 — golden all-constructs render > matches the committed golden snapshot (catches hook/structure drift) 1`] = `
+"<div class="org-root">
+<header class="org-article-header">
+<h1 class="org-heading org-heading--title" id="doc-title">All Constructs</h1>
+</header>
+<nav class="org-toc" aria-label="Table of Contents"><h2 class="org-toc-title">Table of Contents</h2><ul><li class="org-toc-item"><a class="org-toc-link" href="#first">First heading</a><ul><li class="org-toc-item"><a class="org-toc-link" href="#lists">Lists</a></li><li class="org-toc-item"><a class="org-toc-link" href="#a-table">A table</a></li><li class="org-toc-item"><a class="org-toc-link" href="#blocks">Blocks</a></li><li class="org-toc-item"><a class="org-toc-link" href="#media-and-rules">Media and rules</a></li></ul></li></ul></nav>
+<section class="org-section">
+<h2 class="org-heading outline-1 org-heading--flagged" id="first"><span class="org-headline-flags"><span class="org-todo">TODO</span> <span class="org-priority" data-priority="A">[#A]</span>  <span class="org-tags"><span class="org-tag">alpha</span><span class="org-tag">beta</span></span></span><span class="org-heading-text"><span class="org-heading-number">1</span> First heading</span></h2>
+<p class="org-paragraph">A paragraph with <strong>bold</strong>, <em>italic</em>, <u>underline</u>, <del>strike</del>, <code class="org-code">code</code> and <code class="org-verbatim">verbatim</code>. A <a class="org-link" href="https://example.com" rel="noopener noreferrer" target="_blank">external link<span class="org-link-external" aria-hidden="true">↗</span></a> and an <a class="org-link" href="#first">internal link</a>. Water is H<sub class="org-subscript">2</sub>O and E = mc<sup class="org-superscript">2</sup>. Progress <span class="org-statistics-cookie">1/2</span>. On <time class="org-timestamp" datetime="2026-07-01">&lt;2026-07-01 Wed&gt;</time>.</p>
+<section class="org-section">
+<h3 class="org-heading outline-2" id="lists"><span class="org-heading-number">1.1</span> Lists</h3>
+<ul class="org-ul">
+<li>unordered one</li>
+<li>unordered two<ul class="org-ul">
+<li>nested</li>
+</ul>
+</li>
+</ul>
+<ol class="org-ol">
+<li>ordered one</li>
+<li>ordered two</li>
+</ol>
+<ul class="org-ul">
+<li class="org-li--checkbox" data-checkbox="unchecked"><input type="checkbox" disabled aria-label="unchecked"> a task</li>
+<li class="org-li--checkbox" data-checkbox="checked"><input type="checkbox" disabled checked aria-label="checked"> a done task</li>
+</ul>
+<dl class="org-dl">
+<dt class="org-dt">term</dt>
+<dd class="org-dd">definition</dd>
+</dl>
+</section>
+<section class="org-section">
+<h3 class="org-heading outline-2" id="a-table"><span class="org-heading-number">1.2</span> A table</h3>
+<div class="org-table-scroll">
+<table class="org-table">
+<thead>
+<tr>
+<th scope="col">Name</th>
+<th scope="col">Score</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ada</td>
+<td>99</td>
+</tr>
+<tr>
+<td>Alan</td>
+<td>95</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="org-section">
+<h3 class="org-heading outline-2" id="blocks"><span class="org-heading-number">1.3</span> Blocks</h3>
+<blockquote class="org-quote">
+A quote block.</blockquote>
+<pre class="org-example">literal example</pre>
+<p class="org-verse">line one<br>
+line two</p>
+<div class="org-src-block"><div class="org-src-header"><span class="org-src-lights" aria-hidden="true"><span class="org-src-light"></span><span class="org-src-light"></span><span class="org-src-light"></span></span><span class="org-src-title"><span class="org-src-filename">demo.js</span><span class="org-src-lang">javascript</span></span><button class="org-src-copy" type="button" aria-label="Copy code to clipboard">COPY</button></div><pre class="org-src org-src--numbered" data-lang="javascript" data-filename="demo.js"><code class="language-javascript">const x = 1</code></pre></div>
+<div class="org-src-block"><div class="org-src-header"><span class="org-src-lights" aria-hidden="true"><span class="org-src-light"></span><span class="org-src-light"></span><span class="org-src-light"></span></span><span class="org-src-title"><span class="org-src-lang">diff</span></span><button class="org-src-copy" type="button" aria-label="Copy code to clipboard">COPY</button></div><pre class="org-src org-diff" data-lang="diff"><code class="language-diff">+added line
+-removed line</code></pre></div>
+<pre class="org-fixed-width org-results">1</pre>
+<div class="org-callout org-callout--note" role="note"><p class="org-callout-label">NOTE</p><div class="org-callout-body">A callout note.</div></div>
+</section>
+<section class="org-section">
+<h3 class="org-heading outline-2" id="media-and-rules"><span class="org-heading-number">1.4</span> Media and rules</h3>
+<figure class="org-figure"><img class="org-image" src="/img/cover.png" alt="" loading="lazy" decoding="async"></figure>
+<figure class="org-figure org-figure--bracket"><img class="org-image" src="/img/framed.png" alt="" loading="lazy" decoding="async"></figure>
+<blockquote class="org-quote org-quote--pull">
+A pull-quote.</blockquote>
+<div class="org-inlinetask"><p class="org-inlinetask-heading"><span class="org-todo">TODO</span> An inline task <span class="org-tags"><span class="org-tag">now</span></span></p></div>
+<details class="org-drawer org-drawer--logbook" data-drawer="LOGBOOK"><summary class="org-drawer-summary">LOGBOOK</summary><div class="org-drawer-body">CLOCK: [2026-07-01]--[2026-07-01] =&gt;  1:00</div></details>
+<hr class="org-hr"><p class="org-paragraph">A footnote here.<sup id="fnref-1" class="org-fnref"><a href="#fn-1" role="doc-noteref" aria-label="Footnote 1">1</a></sup></p>
+</section>
+</section>
+<section class="org-footnotes"><hr><ol><li id="fn-1" class="org-footnote"><a href="#fnref-1" class="org-footnote-back" role="doc-backlink" aria-label="Back to reference 1">↩</a> The footnote definition.</li></ol></section></div>
+"
+`;

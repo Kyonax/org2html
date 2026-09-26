@@ -1,0 +1,134 @@
+/*
+ * o2h-tokens.css — @kyonax/org2html DEFAULT styling properties (O2H Style Book)
+ *
+ * WHAT  The canonical default value layer for the engine's `--o2h-*` design tokens, translated
+ *       1:1 from the O2H Style Book (templates/style-book/o2h-style-book.html,
+ *       md5 3291e058) and verified by the 2026-06-28 dual audit. Every value is an EXACT literal
+ *       from the style book.
+ * WHY   This is the "default structure for future stylings": each token is `var(--host-X, <o2h>)`,
+ *       so a consuming project overrides any token by defining `--host-X` (or swapping --template-dir)
+ *       and O2H is replaced wholesale ([D-08]/[D-10]/[R-11]). Agents add/adjust decorations and
+ *       construct styling by referencing the numbered registry in org-style-book-matrix.md (TOK-/DEC-/MAP-).
+ * NOTE  Token DEFINITIONS only. The per-construct rules that CONSUME these tokens (the `.org-*` hooks)
+ *       are implemented in templates/styles.css during Plan Phase 3·INT — see org-style-book-matrix.md.
+ */
+
+:root {
+  /* ── TOK-001 · Signal Orange scale (SB-015) — orange is a signal, not a surface ───────── */
+  --o2h-signal-50:  var(--host-signal-50,  #FFEDE6); /* tint wash / soft callout fill        */
+  --o2h-signal-100: var(--host-signal-100, #FFD2C0); /* hover/active bg, tip-callout border  */
+  --o2h-signal-300: var(--host-signal-300, #FF8B5C); /* illustration / code accents on dark  */
+  --o2h-signal-500: var(--host-signal-500, #FF5114); /* THE primary — CTA, active, reg marks */
+  --o2h-signal-600: var(--host-signal-600, #E8410A); /* primary hover/active (text → white)  */
+  --o2h-signal-700: var(--host-signal-700, #BC3406); /* pressed / orange text on light (code)*/
+
+  /* ── TOK-002 · Paper & Ink neutrals (SB-016) — ink carries, paper holds ───────────────── */
+  --o2h-paper:     var(--host-paper,     #E9E9E6); /* page canvas / app background             */
+  --o2h-card:      var(--host-card,      #FFFFFF); /* surfaces: cards, inputs, modals, tbody   */
+  --o2h-line:      var(--host-line,      #C9C9C4); /* borders, 1px rules, hairline-seam fill   */
+  --o2h-line-soft: var(--host-line-soft, #EFEFEA); /* internal dividers inside a white card    */
+  --o2h-mute:      var(--host-mute,      #7A7A76); /* mono meta text, captions, secondary      */
+  --o2h-slate:     var(--host-slate,     #3A3A37); /* secondary fills                          */
+  --o2h-ink:       var(--host-ink,       #0B0B0B); /* text, primary fills, dark blocks, rules  */
+
+  /* ── TOK-003 · Functional / status (SB-017) ───────────────────────────────────────────── */
+  --o2h-go:   var(--host-go,   #2E9E5B); /* success / published / online                       */
+  --o2h-hold: var(--host-hold, #D9A300); /* warning / draft / caution                          */
+  --o2h-stop: var(--host-stop, #D23B2B); /* error / danger / destructive / offline             */
+  /* Status washes (SB-057–060) — the tinted callout / error-input fills. Pastel paper tints
+     in this book; other books derive them from their own surface. */
+  --o2h-accent-wash: var(--host-accent-wash, #FFF4EF); /* tip callout fill                    */
+  --o2h-hold-wash:   var(--host-hold-wash,   #FFFBEF); /* warning callout fill                */
+  --o2h-stop-wash:   var(--host-stop-wash,   #FCEEEC); /* danger callout / input error fill   */
+
+  /* ── TOK-004 · Font families (SB-019) — Display / Editorial / Technical ───────────────── */
+  /* Each family carries a full system-font fallback, so the design renders cleanly
+     even when the webfont is slow, blocked, or offline — never bare sans-serif. */
+  --o2h-font-display:   var(--host-font-display,   'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);        /* headings 500–700 */
+  --o2h-font-editorial: var(--host-font-editorial, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);                /* body/titles      */
+  --o2h-font-mono:      var(--host-font-mono,      'JetBrains Mono', ui-monospace, 'SF Mono', 'SFMono-Regular', 'Cascadia Code', Menlo, Consolas, 'Liberation Mono', monospace); /* labels/code */
+
+  /* ── TOK-005 · Type scale, ratio 1.25 (SB-020) — never below 12px ─────────────────────── */
+  --o2h-fs-display: var(--host-fs-display, 72px);
+  --o2h-fs-h1:      var(--host-fs-h1,      48px);
+  --o2h-fs-h2:      var(--host-fs-h2,      36px);
+  --o2h-fs-h3:      var(--host-fs-h3,      24px);
+  --o2h-fs-body:    var(--host-fs-body,    16px);
+  --o2h-fs-caption: var(--host-fs-caption, 12px);
+  --o2h-fs-code:    var(--host-fs-code,    12px);
+  --o2h-lh-body:    var(--host-lh-body,    1.65); /* reading column line-height               */
+  --o2h-measure:    var(--host-measure,    72ch); /* content column max width (a normal site) */
+  --o2h-measure-wide: var(--host-measure-wide, 56rem); /* #+TITLE_BLEED masthead width — clearly wider than the reading body */
+  --o2h-gutter:     var(--host-gutter,     clamp(20px, 5vw, 44px)); /* side gutter OUTSIDE the content column; the page surface/background is full-width */
+
+  /* ── TOK-006 · Mono label primitive (SB-021) — the pervasive caption/meta token ──────── */
+  --o2h-label-size:    var(--host-label-size,    11px);
+  --o2h-label-track:   var(--host-label-track,   0.14em);
+  --o2h-label-transform: var(--host-label-transform, uppercase);
+
+  /* ── TOK-007 · Spacing scale, 4px base (SB-023) — 44 is the grid module ──────────────── */
+  --o2h-space-1: var(--host-space-1, 4px);
+  --o2h-space-2: var(--host-space-2, 8px);
+  --o2h-space-3: var(--host-space-3, 16px);
+  --o2h-space-4: var(--host-space-4, 24px);
+  --o2h-space-5: var(--host-space-5, 44px);
+  --o2h-space-6: var(--host-space-6, 64px);
+
+  /* ── TOK-008 · Radius (SB-024) — sharp by default; soften only via bracket decorations ── */
+  /* ── Stroke + stripe weights (tokenised 2026-08-24) ──────────────────────────────────────
+   * The shared sheet used to hardcode these. They are values, so they belong to the book:
+   * O2H keeps exactly what it had — a 2px orange rule, a 4px callout stripe, 3px rails and
+   * 2px line markers. */
+  --o2h-rule:        var(--host-rule,        2px solid var(--o2h-signal-500));
+  --o2h-stripe:      var(--host-stripe,      4px);
+  --o2h-rail:        var(--host-rail,        3px);
+  --o2h-stripe-thin: var(--host-stripe-thin, 2px);
+  --o2h-go-wash:     var(--host-go-wash,     rgba(46, 158, 91, 0.16));
+  --o2h-info-wash:   var(--host-info-wash,   rgba(38, 94, 249, 0.12));
+  --o2h-band:        var(--host-band,        transparent);
+
+  --o2h-radius:      var(--host-radius,      0);
+  --o2h-radius-full: var(--host-radius-full, 50%); /* sole exception: status dots / avatars  */
+
+  /* ── TOK-009 · Borders & hairline-seam recipe (SB-025/026) ────────────────────────────── */
+  --o2h-border:          var(--host-border,          1px solid var(--o2h-line));
+  --o2h-border-emphasis: var(--host-border-emphasis, 1px solid var(--o2h-ink));
+  --o2h-border-dashed:   var(--host-border-dashed,   1px dashed var(--o2h-line));
+  --o2h-seam-gap:        var(--host-seam-gap,        1px);   /* container bg=line, gap=1px, cells=card */
+
+  /* ── TOK-010 · O2H grid field (SB-006/033) ──────────────────────────────────────── */
+  --o2h-grid-module:  var(--host-grid-module,  44px);
+  --o2h-grid-line:    var(--host-grid-line,    rgba(11,11,11,0.035)); /* faint two-axis grid */
+
+  /* ── TOK-011 · Shiki "o2h" syntax theme (SB-073) — code on ink ──────────────────── */
+  --o2h-code-bg:      var(--host-code-bg,      #0B0B0B);
+  --o2h-syn-keyword:  var(--host-syn-keyword,  #FF8B5C);
+  --o2h-syn-plain:    var(--host-syn-plain,    #EDEDEA);
+  --o2h-syn-punct:    var(--host-syn-punct,    #7A7A74);
+  --o2h-syn-comment:  var(--host-syn-comment,  #6E6E68);
+  --o2h-syn-string:   var(--host-syn-string,   #C7C7C2);
+  /* Two roles the Book names that the O2H sheet used to fold into others (2026-08-24).
+     Bound to the values O2H already rendered, so the preserved book does not shift. */
+  --o2h-syn-number:   var(--host-syn-number,   #C7C7C2);
+  --o2h-syn-function: var(--host-syn-function, #EDEDEA);
+  --o2h-code-inline-bg:     var(--host-code-inline-bg,     #F0EFEB);
+  --o2h-code-inline-border: var(--host-code-inline-border, #D7D7D3);
+  --o2h-code-inline-fg:     var(--host-code-inline-fg,     #BC3406);
+  /* Code-block chrome (MAP-036): header bar surface + the line-number gutter
+   * ink (SB-072) that sits inside the dark code surface. */
+  --o2h-code-header-bg: var(--host-code-header-bg, #161614);
+  --o2h-code-gutter:    var(--host-code-gutter,    #4A4A46);
+
+  /* ── TOK-012 · Document chrome defaults (SB-007) ──────────────────────────────────────── */
+  --o2h-selection-bg: var(--host-selection-bg, var(--o2h-signal-500));
+  --o2h-selection-fg: var(--host-selection-fg, #FFFFFF);
+  --o2h-theme-color:  var(--host-theme-color,  var(--o2h-signal-500)); /* <meta name=theme-color> */
+
+  /* ── TOK-013 · Semantic aliases (engine → O2H) — what the .org-* rules read ─────── */
+  --o2h-bg:        var(--host-bg,        var(--o2h-paper));
+  --o2h-fg:        var(--host-fg,        var(--o2h-ink));
+  --o2h-surface:   var(--host-surface,   var(--o2h-card));
+  --o2h-accent:    var(--host-accent,    var(--o2h-signal-500));
+  --o2h-accent-fg: var(--host-accent-fg, var(--o2h-ink));
+  --o2h-link:      var(--host-link,      var(--o2h-signal-700)); /* orange text on light = pressed */
+}

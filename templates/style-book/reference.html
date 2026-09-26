@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<!--
+  Copyright (c) 2026 Cristian D. Moreno — @Kyonax
+  Distributed under the terms of GPL-3.0-only — see LICENSE.
+
+  reference.html — the O2H Style Book component & class REFERENCE.
+  A hand-authored (not org-converted) living catalog: every token, construct,
+  component, decoration, chrome part and interactive behaviour is shown with its
+  NAME / CSS selector so you can copy it into a project and refine here directly.
+  Loads the SAME /styles.css + /o2h.js the engine ships, so this IS the live look.
+  Serve the build output (which hosts /styles.css and /o2h.js) and open /reference.html.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>O2H Style Book — Component &amp; Class Reference</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <!-- The engine's design system + interactive runtime (hosted assets). -->
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/o2h.js" defer></script>
+  <style>
+    /* Reference-doc chrome only — NOT part of the design system. */
+    :root { --ref-nav: 240px; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Archivo', system-ui, sans-serif; color: #0B0B0B; background: #E9E9E6; }
+    .ref-shell { display: grid; grid-template-columns: var(--ref-nav) 1fr; min-height: 100vh; }
+    .ref-nav { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 24px 16px; border-right: 1px solid #C9C9C4; background: #fff; }
+    .ref-nav strong { display: block; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; margin: 0 0 12px; }
+    .ref-nav a { display: block; padding: 4px 8px; color: #0B0B0B; text-decoration: none; font-size: 14px; border-left: 2px solid transparent; }
+    .ref-nav a:hover { border-left-color: #FF5114; color: #BC3406; }
+    .ref-main { padding: 40px clamp(20px, 4vw, 56px) 120px; max-width: 1100px; display: block; }
+    .ref-main.org-root { display: block; background: transparent; padding: 40px clamp(20px, 4vw, 56px) 120px; }
+    .ref-head h1 { font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 900; letter-spacing: -.02em; margin: 0 0 8px; }
+    .ref-head p { max-width: 60ch; color: #3A3A37; margin: 0 0 8px; }
+    .ref-head code, .ref-label code { font-family: 'JetBrains Mono', monospace; }
+    .ref-section { margin: 56px 0 0; scroll-margin-top: 20px; }
+    .ref-section > h2 { font-size: 1.6rem; font-weight: 800; border-top: 2px solid #0B0B0B; padding-top: 12px; margin: 0 0 6px; }
+    .ref-section > p { color: #3A3A37; margin: 0 0 20px; max-width: 64ch; }
+    .ref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .ref-item { border: 1px solid #C9C9C4; background: #fff; display: flex; flex-direction: column; }
+    .ref-item--wide { grid-column: 1 / -1; }
+    .ref-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #EFEFEA; background: #F7F7F4; }
+    .ref-label b { font-weight: 600; font-size: 13px; }
+    .ref-label code { font-size: 11px; color: #BC3406; background: #F0EFEB; border: 1px solid #D7D7D3; padding: 1px 6px; cursor: copy; }
+    .ref-label code:hover { background: #FFEDE6; }
+    .ref-demo { padding: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; min-height: 64px; }
+    .ref-demo > * { margin: 0; }
+    .ref-note { font-size: 12px; color: #6E6E68; padding: 0 12px 10px; font-family: 'JetBrains Mono', monospace; }
+    table.ref-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    table.ref-table th, table.ref-table td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #EFEFEA; }
+    table.ref-table code { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #BC3406; }
+    @media (max-width: 760px) { .ref-shell { grid-template-columns: 1fr; } .ref-nav { position: static; height: auto; } }
+  </style>
+</head>
+<body>
+<div class="ref-shell">
+  <nav class="ref-nav">
+    <strong>O2H Reference</strong>
+    <a href="#tokens">Design tokens</a>
+    <a href="#constructs">Native constructs</a>
+    <a href="#code">Code chrome</a>
+    <a href="#components">Components</a>
+    <a href="#decorations">Decorations</a>
+    <a href="#chrome">Template chrome</a>
+    <a href="#layouts">Layouts</a>
+    <a href="#interactive">Interactive (o2h.js)</a>
+  </nav>
+
+  <main class="org-root ref-main">
+    <header class="ref-head">
+      <h1>O2H Style Book — Reference</h1>
+      <p>Every token, construct, component, decoration and behaviour the engine
+        ships, labelled with its <b>name</b> / <b>CSS selector</b> so you can copy
+        it into a project and refine it here. Click a <code>selector</code> to copy it.
+        This page loads the same <code>/styles.css</code> and <code>/o2h.js</code> the
+        build hosts — so it is the live look, not a screenshot.</p>
+    </header>
+
+    <!-- ── TOKENS ─────────────────────────────────────────────────────────── -->
+    <section id="tokens" class="ref-section">
+      <h2>Design tokens (TOK)</h2>
+      <p>The <code>--o2h-*</code> custom properties. Override any of them by defining
+        the matching <code>--host-*</code> variable.</p>
+      <div class="ref-grid">
+        <div class="ref-item ref-item--wide">
+          <div class="ref-label"><b>Palette</b><code>--o2h-signal-500 / --o2h-ink / …</code></div>
+          <div class="ref-demo">
+            <span class="org-swatch org-swatch--signal-300">signal-300</span>
+            <span class="org-swatch org-swatch--signal-500">signal-500</span>
+            <span class="org-swatch org-swatch--signal-700">signal-700</span>
+            <span class="org-swatch org-swatch--ink">ink</span>
+            <span class="org-swatch org-swatch--slate">slate</span>
+            <span class="org-swatch org-swatch--paper">paper</span>
+            <span class="org-swatch org-swatch--line">line</span>
+            <span class="org-swatch org-swatch--card">card</span>
+            <span class="org-swatch org-swatch--go">go</span>
+            <span class="org-swatch org-swatch--hold">hold</span>
+            <span class="org-swatch org-swatch--stop">stop</span>
+          </div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-label"><b>Type</b><code>--o2h-font-editorial / -mono</code></div>
+          <div class="ref-demo" style="display:block">
+            <p class="org-type-sample--editorial">Archivo — editorial</p>
+            <p class="org-type-sample--mono">JetBrains Mono — code</p>
+          </div>
+        </div>
+        <div class="ref-item">
+          <div class="ref-label"><b>Spacing (4px)</b><code>--o2h-space-1…6</code></div>
+          <div class="ref-demo">
+            <div class="org-space-scale">
+              <span style="width:4px;height:4px"></span><span style="width:8px;height:8px"></span>
+              <span style="width:16px;height:16px"></span><span style="width:24px;height:24px"></span>
+              <span style="width:44px;height:44px"></span><span style="width:64px;height:64px"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── NATIVE CONSTRUCTS ──────────────────────────────────────────────── -->
+    <section id="constructs" class="ref-section">
+      <h2>Native constructs (MAP / DEC)</h2>
+      <p>The HTML the Org parser emits, each with a stable <code>.org-*</code> hook.</p>
+      <div class="ref-grid">
+        <div class="ref-item"><div class="ref-label"><b>Inline emphasis</b><code>.org-code / .org-verbatim / .org-link</code></div>
+          <div class="ref-demo"><p class="org-paragraph"><strong>bold</strong>, <em>italic</em>, <u>underline</u>, <code class="org-code">code</code>, <code class="org-verbatim">verbatim</code>, <a class="org-link" href="#">link</a></p></div></div>
+        <div class="ref-item"><div class="ref-label"><b>Callout · note</b><code>.org-callout--note</code></div>
+          <div class="ref-demo" style="display:block"><div class="org-callout org-callout--note" role="note"><p class="org-callout-label">NOTE</p><div class="org-callout-body">A note callout.</div></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>Callout · tip</b><code>.org-callout--tip</code></div>
+          <div class="ref-demo" style="display:block"><div class="org-callout org-callout--tip" role="note"><p class="org-callout-label">TIP</p><div class="org-callout-body">A tip callout.</div></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>Callout · warning</b><code>.org-callout--warning</code></div>
+          <div class="ref-demo" style="display:block"><div class="org-callout org-callout--warning" role="note"><p class="org-callout-label">WARNING</p><div class="org-callout-body">A warning callout.</div></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>Callout · danger</b><code>.org-callout--danger</code></div>
+          <div class="ref-demo" style="display:block"><div class="org-callout org-callout--danger" role="note"><p class="org-callout-label">DANGER</p><div class="org-callout-body">A danger callout.</div></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>Quote</b><code>.org-quote</code></div>
+          <div class="ref-demo" style="display:block"><blockquote class="org-quote">An ordinary quote block.</blockquote></div></div>
+        <div class="ref-item"><div class="ref-label"><b>Pull-quote</b><code>.org-quote--pull</code></div>
+          <div class="ref-demo" style="display:block"><blockquote class="org-quote org-quote--pull">A pull-quote.</blockquote></div></div>
+        <div class="ref-item"><div class="ref-label"><b>Table</b><code>.org-table</code></div>
+          <div class="ref-demo" style="display:block"><table class="org-table"><thead><tr><th scope="col">Name</th><th scope="col">Score</th></tr></thead><tbody><tr><td>Ada</td><td>99</td></tr></tbody></table></div></div>
+        <div class="ref-item"><div class="ref-label"><b>Lists</b><code>.org-ul / .org-ol</code></div>
+          <div class="ref-demo" style="display:block"><ul class="org-ul"><li>one</li><li>two</li></ul></div></div>
+        <div class="ref-item"><div class="ref-label"><b>Inline task</b><code>.org-inlinetask</code></div>
+          <div class="ref-demo" style="display:block"><div class="org-inlinetask"><p class="org-inlinetask-heading"><span class="org-todo">TODO</span> A boxed task <span class="org-tags"><span class="org-tag">now</span></span></p></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>Rule variants</b><code>.org-hr--dashed / --tick / --boxed-x</code></div>
+          <div class="ref-demo" style="display:block;gap:24px"><hr class="org-hr"><hr class="org-hr org-hr--dashed"><hr class="org-hr org-hr--tick"></div></div>
+      </div>
+    </section>
+
+    <!-- ── CODE CHROME ────────────────────────────────────────────────────── -->
+    <section id="code" class="ref-section">
+      <h2>Code chrome (MAP-036…038)</h2>
+      <p>Source blocks render inside a header bar. The COPY button below is live (o2h.js).</p>
+      <div class="ref-grid">
+        <div class="ref-item ref-item--wide"><div class="ref-label"><b>Code block</b><code>.org-src-block / .org-src-header / .org-src-copy</code></div>
+          <div class="ref-demo" style="display:block">
+            <div class="org-src-block"><div class="org-src-header"><span class="org-src-lights" aria-hidden="true"><span class="org-src-light"></span><span class="org-src-light"></span><span class="org-src-light"></span></span><span class="org-src-title"><span class="org-src-filename">demo.ts</span><span class="org-src-lang">typescript</span></span><button class="org-src-copy" type="button" aria-label="Copy code to clipboard">COPY</button></div><pre class="org-src org-src--numbered"><code>const answer = 42</code></pre></div>
+          </div>
+          <div class="ref-note">Diff variant: <code>.org-src.org-diff</code> · results: <code>.org-results</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── COMPONENTS ─────────────────────────────────────────────────────── -->
+    <section id="components" class="ref-section">
+      <h2>Components (CMP-001…038)</h2>
+      <p>Authored with <code>{{&lt; name … &gt;}}</code>; emitted as
+        <code>&lt;div data-component="name"&gt;</code>. Styling attrs mirror to
+        <code>data-*</code>. Below are the 35 names + key variants.</p>
+      <div class="ref-grid">
+        <div class="ref-item ref-item--wide"><div class="ref-label"><b>button</b><code>[data-component="button"][data-variant]</code></div>
+          <div class="ref-demo">
+            <div data-component="button" data-variant="primary" data-label="Primary"></div>
+            <div data-component="button" data-variant="outline" data-label="Outline"></div>
+            <div data-component="button" data-variant="ink" data-label="Ink"></div>
+            <div data-component="button" data-variant="ghost" data-label="Ghost"></div>
+            <div data-component="button" data-variant="bracketed" data-label="Bracketed"></div>
+            <div data-component="button" data-variant="primary" data-size="sm" data-label="sm"></div>
+            <div data-component="button" data-variant="primary" data-size="lg" data-label="lg"></div>
+            <div data-component="button" data-variant="primary" data-state="disabled" data-label="disabled"></div>
+            <div data-component="button" data-variant="primary" data-state="loading" data-label="loading"></div>
+          </div></div>
+        <div class="ref-item ref-item--wide"><div class="ref-label"><b>card</b><code>[data-component="card"][data-variant]</code></div>
+          <div class="ref-demo" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
+            <div data-component="card" data-variant="blog" data-title="Blog card"></div>
+            <div data-component="card" data-variant="feature" data-title="Feature card"></div>
+            <div data-component="card" data-variant="compact" data-title="Compact card"></div>
+          </div></div>
+        <div class="ref-item"><div class="ref-label"><b>stat-grid</b><code>[data-component="stat-grid"]</code></div><div class="ref-demo" style="display:block"><div data-component="stat-grid" data-label="Traffic"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>callout · restricted</b><code>[data-component="callout"]</code></div><div class="ref-demo" style="display:block"><div data-component="callout" data-label="RESTRICTED"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>kbd</b><code>[data-component="kbd"]</code></div><div class="ref-demo"><div data-component="kbd" data-label="Ctrl"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>command</b><code>[data-component="command"]</code></div><div class="ref-demo" style="display:block"><div data-component="command" data-text="npm run build"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>terminal</b><code>[data-component="terminal"]</code></div><div class="ref-demo" style="display:block"><div data-component="terminal" data-text="serve ./dist"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>file-tree</b><code>[data-component="file-tree"]</code></div><div class="ref-demo" style="display:block"><div data-component="file-tree" data-label="src/"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>diagram</b><code>[data-component="diagram"]</code></div><div class="ref-demo" style="display:block"><div data-component="diagram" data-label="architecture"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>input</b><code>[data-component="input"] / [data-state="error"]</code></div><div class="ref-demo" style="display:block"><div data-component="input" data-label="Name"></div><div data-component="input" data-state="error" data-label="Email (invalid)"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>search / select / textarea</b><code>[data-component="search|select|textarea"]</code></div><div class="ref-demo" style="display:block"><div data-component="search" data-label="Search…"></div><div data-component="select" data-label="Choose one"></div><div data-component="textarea" data-label="Message"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>toggle</b><code>[data-component="toggle"]</code></div><div class="ref-demo"><div data-component="toggle" data-state="on"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>tabs</b><code>[data-component="tabs"]</code></div><div class="ref-demo" style="display:block"><div data-component="tabs" data-label="All"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>newsletter</b><code>[data-component="newsletter"]</code></div><div class="ref-demo" style="display:block"><div data-component="newsletter" data-label="Subscribe"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>modal / alert</b><code>[data-component="modal"][data-variant="alert"]</code></div><div class="ref-demo" style="display:block"><div data-component="modal" data-label="Modal"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>toast</b><code>[data-component="toast"]</code></div><div class="ref-demo"><div data-component="toast" data-label="Saved"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>tooltip</b><code>[data-component="tooltip"]</code></div><div class="ref-demo"><span data-component="tooltip" data-label="Hover me"></span></div></div>
+        <div class="ref-item"><div class="ref-label"><b>accordion</b><code>[data-component="accordion"]</code></div><div class="ref-demo" style="display:block"><div data-component="accordion" data-label="Details"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>pagination</b><code>[data-component="pagination"]</code></div><div class="ref-demo"><div data-component="pagination"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>skeleton</b><code>[data-component="skeleton"]</code></div><div class="ref-demo" style="display:block"><div data-component="skeleton"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>spinner</b><code>[data-component="spinner"][data-variant="dots"]</code></div><div class="ref-demo"><div data-component="spinner"></div><div data-component="spinner" data-variant="dots"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>progress</b><code>[data-component="progress"][data-variant="indeterminate"]</code></div><div class="ref-demo" style="display:block"><div data-component="progress"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>empty</b><code>[data-component="empty"]</code></div><div class="ref-demo" style="display:block"><div data-component="empty" data-label="No results"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>error · 404 / offline</b><code>[data-component="error"][data-code][data-variant]</code></div><div class="ref-demo" style="display:block"><div data-component="error" data-code="404"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>avatar-group</b><code>[data-component="avatar-group"]</code></div><div class="ref-demo"><div data-component="avatar-group" data-count="+5"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>badge</b><code>[data-component="badge"]</code></div><div class="ref-demo"><div data-component="badge" data-count="7"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>back-to-top</b><code>[data-component="back-to-top"]</code></div><div class="ref-demo"><div data-component="back-to-top" style="position:static;opacity:1;visibility:visible"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>read-progress</b><code>[data-component="read-progress"]</code></div><div class="ref-demo"><div data-component="read-progress"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>gallery</b><code>[data-component="gallery"]</code></div><div class="ref-demo" style="display:block"><div data-component="gallery"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>carousel</b><code>[data-component="carousel"]</code></div><div class="ref-demo" style="display:block"><div data-component="carousel"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>lightbox</b><code>[data-component="lightbox"]</code></div><div class="ref-demo" style="display:block"><div data-component="lightbox" data-label="Zoom"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>reticle / connector</b><code>[data-component="reticle|connector"]</code></div><div class="ref-demo"><div data-component="reticle"></div><span data-component="connector"></span></div></div>
+      </div>
+    </section>
+
+    <!-- ── DECORATIONS ────────────────────────────────────────────────────── -->
+    <section id="decorations" class="ref-section">
+      <h2>Decorations (DEC)</h2>
+      <p>Reusable utility classes — apply to any element via <code>#+ATTR_HTML :class</code> or in markup.</p>
+      <div class="ref-grid">
+        <div class="ref-item"><div class="ref-label"><b>ribbon</b><code>.org-deco-ribbon</code></div><div class="ref-demo" style="display:block"><div class="org-deco-ribbon">Ribbon</div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>vertical label</b><code>.org-deco-vlabel</code></div><div class="ref-demo"><span class="org-deco-vlabel">Vertical</span></div></div>
+        <div class="ref-item"><div class="ref-label"><b>reticle</b><code>.org-deco-reticle</code></div><div class="ref-demo"><span class="org-deco-reticle"></span></div></div>
+        <div class="ref-item"><div class="ref-label"><b>boxed-x</b><code>.org-deco-boxed-x</code></div><div class="ref-demo"><span class="org-deco-boxed-x"></span></div></div>
+        <div class="ref-item"><div class="ref-label"><b>dot-matrix</b><code>.org-deco-dot-matrix</code></div><div class="ref-demo" style="display:block"><div class="org-deco-dot-matrix" style="height:44px"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>scanline</b><code>.org-deco-scanline</code></div><div class="ref-demo" style="display:block"><div class="org-deco-scanline"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>barcode</b><code>.org-deco-barcode</code></div><div class="ref-demo" style="display:block"><div class="org-deco-barcode"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>connector</b><code>.org-deco-connector</code></div><div class="ref-demo"><span class="org-deco-connector"></span></div></div>
+      </div>
+    </section>
+
+    <!-- ── TEMPLATE CHROME ────────────────────────────────────────────────── -->
+    <section id="chrome" class="ref-section">
+      <h2>Template chrome (CHR)</h2>
+      <p>Reusable classes for a nav / footer / cover — place them in a template or an export block.</p>
+      <div class="ref-grid">
+        <div class="ref-item ref-item--wide"><div class="ref-label"><b>nav + brand</b><code>.org-nav / .org-brand</code></div><div class="ref-demo" style="display:block"><nav class="org-nav"><span class="org-brand">O2H</span><a href="#">Articles</a></nav></div></div>
+        <div class="ref-item"><div class="ref-label"><b>breadcrumb</b><code>.org-breadcrumb</code></div><div class="ref-demo" style="display:block"><div class="org-breadcrumb"><span>Home</span><span>Docs</span></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>statusbar</b><code>.org-statusbar</code></div><div class="ref-demo" style="display:block"><div class="org-statusbar"><span>STATUS: LIVE</span><span>SERIAL 0001</span></div></div></div>
+        <div class="ref-item ref-item--wide"><div class="ref-label"><b>cover + ribbon</b><code>.org-cover / .org-cover-ribbon</code></div><div class="ref-demo" style="display:block"><div class="org-cover"><span class="org-cover-ribbon">Issue 01</span></div></div></div>
+        <div class="ref-item ref-item--wide"><div class="ref-label"><b>footer + barcode</b><code>.org-footer / .org-footer-cols / .org-footer-bar</code></div><div class="ref-demo" style="display:block"><footer class="org-footer"><div class="org-footer-cols"><div>About</div><div>Docs</div><div>Legal</div></div><div class="org-footer-bar"></div></footer></div></div>
+      </div>
+    </section>
+
+    <!-- ── LAYOUTS ────────────────────────────────────────────────────────── -->
+    <section id="layouts" class="ref-section">
+      <h2>Page layouts (LAY-001…008)</h2>
+      <p>Set with <code>#+HTML_LAYOUT: &lt;slug&gt;</code> → <code>org-layout--&lt;slug&gt;</code> on <code>.org-root</code>. Page-level, so listed rather than boxed.</p>
+      <table class="ref-table">
+        <thead><tr><th>Slug</th><th>Class</th><th>Character</th></tr></thead>
+        <tbody>
+          <tr><td>magazine</td><td><code>.org-layout--magazine</code></td><td>Wide measure, heavy masthead</td></tr>
+          <tr><td>archive</td><td><code>.org-layout--archive</code></td><td>List-dense rhythm</td></tr>
+          <tr><td>editorial</td><td><code>.org-layout--editorial</code></td><td>Narrow measure, airy leading</td></tr>
+          <tr><td>feed</td><td><code>.org-layout--feed</code></td><td>Compact stream</td></tr>
+          <tr><td>author</td><td><code>.org-layout--author</code></td><td>Bordered bio masthead</td></tr>
+          <tr><td>article</td><td><code>.org-layout--article</code></td><td>The default reading measure</td></tr>
+          <tr><td>category</td><td><code>.org-layout--category</code></td><td>Wide index measure</td></tr>
+          <tr><td>newsletter</td><td><code>.org-layout--newsletter</code></td><td>Email-width centred masthead</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:16px">Also: <code>#+TITLE_BLEED: t</code> → <code>.org-title-bleed</code> (wide masthead over a narrow body); media breakout <code>.org-wide</code> / <code>.org-full-bleed</code>.</p>
+    </section>
+
+    <!-- ── INTERACTIVE ────────────────────────────────────────────────────── -->
+    <section id="interactive" class="ref-section">
+      <h2>Interactive (o2h.js)</h2>
+      <p>The default runtime enhances these hooks — everything below is live on this page.</p>
+      <div class="ref-grid">
+        <div class="ref-item ref-item--wide"><div class="ref-label"><b>Tabs</b><code>[data-o2h="tabs"] · [data-tab] · [data-panel]</code></div>
+          <div class="ref-demo" style="display:block">
+            <div data-o2h="tabs">
+              <div role="tablist" aria-label="Reference tabs"><button data-tab="a" role="tab" type="button">Overview</button><button data-tab="b" role="tab" type="button">Details</button></div>
+              <div data-panel="a" role="tabpanel"><p class="org-paragraph">Panel one — click a tab.</p></div>
+              <div data-panel="b" role="tabpanel"><p class="org-paragraph">Panel two, shown by JS.</p></div>
+            </div>
+          </div></div>
+        <div class="ref-item"><div class="ref-label"><b>Modal</b><code>[data-o2h-open] · [data-o2h="modal"] · [data-o2h-close]</code></div>
+          <div class="ref-demo" style="display:block">
+            <p><button data-o2h-open="ref-modal" data-component="button" data-variant="primary" type="button">Open modal</button></p>
+            <div data-o2h="modal" id="ref-modal"><div data-component="modal"><p class="org-paragraph">A real modal. Esc or backdrop closes.</p><button data-o2h-close data-component="button" data-variant="outline" type="button">Close</button></div></div>
+          </div></div>
+        <div class="ref-item"><div class="ref-label"><b>Copy button</b><code>.org-src-copy</code></div><div class="ref-note">Live on the code block above — click COPY.</div><div class="ref-demo"><span class="org-paragraph">Also: <code class="org-code">[data-o2h-copy]</code></span></div></div>
+        <div class="ref-item"><div class="ref-label"><b>Lightbox / carousel / toggle</b><code>.org-figure img · .org-carousel-strip · [data-component="toggle"]</code></div><div class="ref-note">Click an image to zoom · carousel gains arrows · toggle flips.</div><div class="ref-demo"><div data-component="toggle" data-state="off"></div></div></div>
+        <div class="ref-item"><div class="ref-label"><b>Back-to-top / read-progress</b><code>.org-back-to-top · .org-read-progress</code></div><div class="ref-note">Injected automatically — scroll this page to see the top bar + the FAB.</div><div class="ref-demo"></div></div>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+  // Click a selector label to copy it (a reference-doc convenience).
+  document.addEventListener("click", function (e) {
+    var c = e.target.closest && e.target.closest(".ref-label code")
+    if (!c || !navigator.clipboard) return
+    navigator.clipboard.writeText(c.textContent)
+    var prev = c.textContent
+    c.textContent = "copied!"
+    setTimeout(function () { c.textContent = prev }, 900)
+  })
+</script>
+</body>
+</html>
